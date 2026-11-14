@@ -5,6 +5,7 @@ let map = null;
 let geojsonLayer = null;
 let marker = null;
 let forecastChart = null;
+let lastTelemetryData = null;
 
 // Dashboard Charts Instances
 let dashMoistureChart = null;
@@ -165,6 +166,11 @@ function applyTheme(theme) {
             themeIcon.innerText = "☀️";
             themeText.innerText = "Light";
         }
+    }
+
+    // Immediately re-render forecast chart with theme-aligned colors
+    if (lastTelemetryData && lastTelemetryData.chart_data) {
+        renderForecastChart(lastTelemetryData.chart_data);
     }
 }
 
@@ -423,6 +429,7 @@ function loadDistrictData(district) {
     fetch(`/api/telemetry?district=${encodeURIComponent(district)}&lang=${currentLang}`)
         .then(res => res.json())
         .then(data => {
+            lastTelemetryData = data;
             renderTelemetry(data);
         })
         .catch(err => console.error("Error loading telemetry:", err));
@@ -508,10 +515,20 @@ function renderTelemetry(data) {
 
 // Chart.js Forecast Line Chart
 function renderForecastChart(chartData) {
-    const ctx = document.getElementById("forecastChart").getContext("2d");
+    const canvas = document.getElementById("forecastChart");
+    if (!canvas) return;
+    const ctx = canvas.getContext("2d");
     if (forecastChart) {
         forecastChart.destroy();
     }
+
+    const isLight = document.documentElement.getAttribute("data-theme") === "light";
+    const textColor = isLight ? "#0F172A" : "#F1F5F9";
+    const mutedColor = isLight ? "#475569" : "#94A3B8";
+    const gridColor = isLight ? "rgba(0, 0, 0, 0.06)" : "rgba(255, 255, 255, 0.08)";
+    const smapBorder = isLight ? "#0284C7" : "#38BDF8";
+    const smapFill = isLight ? "rgba(2, 132, 199, 0.12)" : "rgba(56, 189, 248, 0.12)";
+    const fcBorder = isLight ? "#D97706" : "#F59E0B";
 
     const labels = [...chartData.history_dates, ...chartData.forecast_dates];
     const histPoints = [...chartData.history_sm];
@@ -529,20 +546,22 @@ function renderForecastChart(chartData) {
                 {
                     label: "30-Day SMAP Soil Moisture",
                     data: histPoints,
-                    borderColor: "#0F4C5C",
+                    borderColor: smapBorder,
+                    backgroundColor: smapFill,
                     borderWidth: 2.5,
                     pointRadius: 0,
-                    tension: 0.2
+                    tension: 0.25,
+                    fill: true
                 },
                 {
                     label: "7-Day Random Forest Forecast",
                     data: fcPoints,
-                    borderColor: "#B45309",
+                    borderColor: fcBorder,
                     borderWidth: 2.5,
                     borderDash: [5, 5],
-                    pointRadius: 3,
-                    pointBackgroundColor: "#B45309",
-                    tension: 0.2
+                    pointRadius: 3.5,
+                    pointBackgroundColor: fcBorder,
+                    tension: 0.25
                 }
             ]
         },
@@ -552,20 +571,32 @@ function renderForecastChart(chartData) {
             plugins: {
                 legend: {
                     position: "top",
-                    labels: { color: "#1E293B", font: { weight: "600" } }
+                    labels: {
+                        color: textColor,
+                        font: { weight: "700", size: 12 },
+                        boxWidth: 14,
+                        padding: 12
+                    }
+                },
+                tooltip: {
+                    backgroundColor: isLight ? "rgba(255, 255, 255, 0.96)" : "rgba(7, 25, 36, 0.95)",
+                    titleColor: isLight ? "#0F172A" : "#F8FAFC",
+                    bodyColor: isLight ? "#334155" : "#E2E8F0",
+                    borderColor: isLight ? "#CBD5E1" : "rgba(56, 189, 248, 0.3)",
+                    borderWidth: 1
                 }
             },
             scales: {
                 x: {
-                    grid: { color: "#E2E8F0" },
-                    ticks: { color: "#475569", maxTicksLimit: 6 }
+                    grid: { color: gridColor },
+                    ticks: { color: mutedColor, maxTicksLimit: 7, font: { size: 11 } }
                 },
                 y: {
                     min: 0.0,
                     max: 0.65,
-                    grid: { color: "#E2E8F0" },
-                    ticks: { color: "#475569" },
-                    title: { display: true, text: "Soil Moisture (m³/m³)", color: "#475569" }
+                    grid: { color: gridColor },
+                    ticks: { color: mutedColor, font: { size: 11 } },
+                    title: { display: true, text: "Soil Moisture (m³/m³)", color: mutedColor, font: { weight: "600", size: 11 } }
                 }
             }
         }

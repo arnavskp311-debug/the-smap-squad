@@ -312,19 +312,20 @@ select.region-select {
 }
 
 .white-card {
-    background-color: #FFFFFF;
-    border: 1px solid #E2E8F0;
+    background-color: var(--card-bg);
+    border: 1px solid var(--border-color);
     border-radius: 10px;
     padding: 18px 20px;
-    color: #0F172A;
+    color: var(--text-main);
     margin-bottom: 16px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    box-shadow: 0 4px 14px rgba(0,0,0,0.25);
+    transition: background-color 0.25s ease, border-color 0.25s ease;
 }
 
 .white-card-title {
     font-size: 0.96rem;
     font-weight: 700;
-    color: #0F172A;
+    color: var(--text-main);
     margin-bottom: 12px;
 }
 
@@ -985,14 +986,17 @@ select.region-select {
     border-bottom: 2px solid #0284C7;
 }
 
-[data-theme="light"] .dark-card {
-    background-color: #FFFFFF;
-    border-color: #E2E8F0;
-    box-shadow: 0 4px 14px rgba(15, 23, 42, 0.06);
+[data-theme="light"] .dark-card,
+[data-theme="light"] .white-card {
+    background-color: #FFFFFF !important;
+    border-color: #E2E8F0 !important;
+    color: #0F172A !important;
+    box-shadow: 0 4px 14px rgba(15, 23, 42, 0.06) !important;
 }
 
-[data-theme="light"] .card-title {
-    color: #0F172A;
+[data-theme="light"] .card-title,
+[data-theme="light"] .white-card-title {
+    color: #0F172A !important;
 }
 
 [data-theme="light"] select.region-select,
