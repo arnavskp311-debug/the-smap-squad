@@ -328,6 +328,116 @@ select.region-select {
     margin-bottom: 12px;
 }
 
+/* Map Layer Toolbar */
+.map-layer-toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 10px;
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 8px 12px;
+    transition: background-color 0.25s, border-color 0.25s;
+}
+
+.map-layer-label {
+    font-size: 0.80rem;
+    font-weight: 700;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.layer-pill-group {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+}
+
+.layer-pill-btn {
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid var(--border-color);
+    color: var(--text-muted);
+    border-radius: 6px;
+    padding: 5px 12px;
+    font-size: 0.78rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    user-select: none;
+}
+
+.layer-pill-btn:hover {
+    background: rgba(56, 189, 248, 0.15);
+    color: var(--accent-teal);
+    border-color: var(--accent-teal);
+    transform: translateY(-1px);
+}
+
+.layer-pill-btn.active {
+    background: #0284C7;
+    color: #FFFFFF;
+    border-color: #38BDF8;
+    box-shadow: 0 2px 10px rgba(2, 132, 199, 0.35);
+}
+
+[data-theme="light"] .map-layer-toolbar {
+    background: #FFFFFF;
+    border-color: #E2E8F0;
+}
+
+[data-theme="light"] .layer-pill-btn {
+    background: #F1F5F9;
+    border-color: #CBD5E1;
+    color: #475569;
+}
+
+[data-theme="light"] .layer-pill-btn:hover {
+    background: #E0F2FE;
+    color: #0284C7;
+    border-color: #0284C7;
+}
+
+[data-theme="light"] .layer-pill-btn.active {
+    background: #0284C7;
+    color: #FFFFFF;
+    border-color: #0284C7;
+}
+
+/* Styled Leaflet Layer Control in Dark and Light Theme */
+.leaflet-control-layers {
+    background: rgba(9, 32, 44, 0.95) !important;
+    border: 1px solid #163649 !important;
+    border-radius: 8px !important;
+    color: #E2E8F0 !important;
+    font-size: 0.82rem !important;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.45) !important;
+    padding: 6px 10px !important;
+    backdrop-filter: blur(6px);
+}
+
+.leaflet-control-layers-toggle {
+    background-color: rgba(9, 32, 44, 0.9) !important;
+    border-radius: 6px !important;
+}
+
+[data-theme="light"] .leaflet-control-layers {
+    background: #FFFFFF !important;
+    border-color: #E2E8F0 !important;
+    color: #0F172A !important;
+    box-shadow: 0 4px 14px rgba(15, 23, 42, 0.1) !important;
+}
+
 /* Map Container */
 #map {
     height: 385px;

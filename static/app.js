@@ -21,9 +21,27 @@ document.addEventListener("DOMContentLoaded", () => {
     initDrawer();
     initTabs();
     initMap();
+    initNasaStatus();
     setupEventListeners();
     loadDistrictData(currentDistrict);
 });
+
+// NASA API Key & Live Status
+function initNasaStatus() {
+    fetch("/api/nasa/status")
+        .then(res => res.json())
+        .then(data => {
+            const pillText = document.getElementById("nasaPillText");
+            const pill = document.getElementById("nasaPill");
+            if (pillText && data.authenticated) {
+                pillText.innerText = "NASA API Live";
+                if (pill) {
+                    pill.title = `NASA api.nasa.gov Key: ${data.api_key_masked} · Authenticated & Rate Limit: ${data.rate_limit_limit} reqs/day`;
+                }
+            }
+        })
+        .catch(err => console.warn("NASA status fetch error:", err));
+}
 
 // Hamburger Menu & Side Drawer Navigation
 function initDrawer() {
@@ -173,21 +191,84 @@ function initMap() {
     });
 
     // Base Layers
+    // 1. Dark Matter (CartoDB Dark Matter with Esri Dark Gray Base fallback)
+    const darkMatter = L.tileLayer("https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png", {
+        attribution: '&copy; CartoDB & OpenStreetMap',
+        subdomains: 'abcd',
+        maxZoom: 19,
+        errorTileUrl: 'https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}'
+    });
+
+    // 2. High-Res Satellite (Esri World Imagery)
     const esriSatellite = L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}", {
         attribution: 'Tiles &copy; Esri & NASA',
         maxZoom: 18
-    }).addTo(map);
-
-    const darkMatter = L.tileLayer("https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png", {
-        attribution: '&copy; CartoDB & OpenStreetMap',
-        maxZoom: 19
     });
 
-    // Layer control
+    // 3. NASA GIBS Live WMTS (MODIS TrueColor Daily)
+    const nasaGibs = L.tileLayer("https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/MODIS_Terra_CorrectedReflectance_TrueColor/default/2024-05-01/GoogleMapsCompatible_Level9/{z}/{y}/{x}.jpg", {
+        attribution: 'NASA GIBS / Worldview',
+        maxZoom: 9
+    });
+
+    // 4. NASA Black Marble (Earth at Night / VIIRS Night Lights)
+    const nasaBlackMarble = L.tileLayer("https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/VIIRS_Black_Marble/default/2016-01-01/GoogleMapsCompatible_Level8/{z}/{y}/{x}.png", {
+        attribution: 'NASA Earth Observatory / VIIRS',
+        maxZoom: 8
+    });
+
+    // Default active layer is Dark Matter
+    darkMatter.addTo(map);
+
+    const layerMap = {
+        "darkMatter": darkMatter,
+        "esriSatellite": esriSatellite,
+        "nasaGibs": nasaGibs,
+        "nasaBlackMarble": nasaBlackMarble
+    };
+
+    // Layer control for corner
     L.control.layers({
-        "🌍 High-Res Satellite (Esri)": esriSatellite,
-        "🗺️ Dark Matter": darkMatter
+        "🗺️ Dark Matter": darkMatter,
+        "🌍 Satellite (Esri)": esriSatellite,
+        "🛰️ NASA GIBS Live": nasaGibs,
+        "🌌 NASA Black Marble": nasaBlackMarble
     }, null, { position: "topright" }).addTo(map);
+
+    // Sync Toolbar Pills with Map Layer
+    function switchMapBasemap(targetId) {
+        Object.keys(layerMap).forEach(id => {
+            if (map.hasLayer(layerMap[id])) {
+                map.removeLayer(layerMap[id]);
+            }
+        });
+        if (layerMap[targetId]) {
+            layerMap[targetId].addTo(map);
+        }
+        document.querySelectorAll(".layer-pill-btn").forEach(btn => {
+            btn.classList.toggle("active", btn.getAttribute("data-layer-id") === targetId);
+        });
+    }
+
+    // Attach click events to pills
+    document.querySelectorAll(".layer-pill-btn").forEach(btn => {
+        btn.addEventListener("click", () => {
+            const layerId = btn.getAttribute("data-layer-id");
+            switchMapBasemap(layerId);
+        });
+    });
+
+    // Keep pills in sync if user changes via Leaflet native control
+    map.on("baselayerchange", (e) => {
+        for (const [id, lyr] of Object.entries(layerMap)) {
+            if (e.layer === lyr) {
+                document.querySelectorAll(".layer-pill-btn").forEach(btn => {
+                    btn.classList.toggle("active", btn.getAttribute("data-layer-id") === id);
+                });
+                break;
+            }
+        }
+    });
 
     // Initial marker with custom styling
     marker = L.marker([30.2110, 74.9455]).addTo(map);

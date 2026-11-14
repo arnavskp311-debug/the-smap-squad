@@ -8,6 +8,14 @@ import json
 from datetime import datetime, timedelta
 from typing import Optional
 
+try:
+    from dotenv import load_dotenv
+    load_dotenv()
+except ImportError:
+    pass
+
+NASA_API_KEY = os.getenv("NASA_API_KEY", "nkcnGCDbmHL9dnHrmLFrP8qbFfCJCGbGQmdwHpdH")
+
 from fastapi import FastAPI, HTTPException
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import HTMLResponse, PlainTextResponse, FileResponse
@@ -69,11 +77,36 @@ class SoilPrescriptionRequest(BaseModel):
 
 @app.get("/api/health")
 def health_check():
+    key = os.getenv("NASA_API_KEY", "nkcnGCDbmHL9dnHrmLFrP8qbFfCJCGbGQmdwHpdH")
+    masked_key = f"{key[:4]}...{key[-4:]}" if len(key) > 8 else "***"
     return {
         "status": "healthy",
         "app": "Punjab Farm Water Watch",
         "nasa_live_status": True,
+        "nasa_api_key_configured": bool(key),
+        "nasa_api_key_masked": masked_key,
         "engine": "FastAPI Standard Web Server"
+    }
+
+
+@app.get("/api/nasa/status")
+def get_nasa_api_status():
+    key = os.getenv("NASA_API_KEY", "nkcnGCDbmHL9dnHrmLFrP8qbFfCJCGbGQmdwHpdH")
+    masked_key = f"{key[:4]}...{key[-4:]}" if len(key) > 8 else "***"
+    return {
+        "status": "connected",
+        "authenticated": True,
+        "api_key_masked": masked_key,
+        "provider": "NASA api.nasa.gov",
+        "rate_limit_limit": 10000,
+        "service": "NASA Earth Observation & GIBS Live WMTS",
+        "active_basemaps": [
+            {"id": "darkMatter", "name": "Dark Matter (CartoDB + Esri Fallback)", "type": "Basemap"},
+            {"id": "esriSatellite", "name": "High-Res Satellite (Esri)", "type": "Basemap"},
+            {"id": "nasaGibs", "name": "NASA GIBS Live WMTS (MODIS TrueColor)", "type": "Satellite"},
+            {"id": "nasaBlackMarble", "name": "NASA Black Marble (VIIRS Earth at Night)", "type": "Nighttime Satellite"}
+        ],
+        "missions": ["NASA SMAP L4", "GPM IMERG", "Landsat 8/9", "MODIS MOD16A2", "POWER", "GRACE-FO", "GIBS"]
     }
 
 

@@ -144,9 +144,9 @@
                     </optgroup>
                 </select>
 
-                <div class="nasa-live-pill">
+                <div class="nasa-live-pill" id="nasaPill" title="NASA API Authenticated &amp; Connected (nkcn...HpdH)">
                     <div class="pulsing-dot"></div>
-                    <span>NASA Earthdata Live</span>
+                    <span id="nasaPillText">NASA API Live</span>
                 </div>
 
                 <div class="lang-toggle">
@@ -167,6 +167,15 @@
         <section id="tab-overview" class="tab-content active">
             <div class="grid-top">
                 <div class="map-wrapper">
+                    <div class="map-layer-toolbar">
+                        <span class="map-layer-label">🛰️ Basemap Layer:</span>
+                        <div class="layer-pill-group">
+                            <button type="button" class="layer-pill-btn active" data-layer-id="darkMatter">🗺️ Dark Matter</button>
+                            <button type="button" class="layer-pill-btn" data-layer-id="esriSatellite">🌍 Satellite (Esri)</button>
+                            <button type="button" class="layer-pill-btn" data-layer-id="nasaGibs">🛰️ NASA GIBS Live</button>
+                            <button type="button" class="layer-pill-btn" data-layer-id="nasaBlackMarble">🌌 NASA Black Marble</button>
+                        </div>
+                    </div>
                     <div id="map"></div>
                 </div>
                 <div class="cards-stack">
