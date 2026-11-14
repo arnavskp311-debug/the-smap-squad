@@ -352,13 +352,19 @@ function initMap() {
             geojsonLayer = L.geoJSON(data, {
                 style: feature => {
                     const color = feature.properties.color || "#10B981";
+                    const isHotspot = feature.properties.name && (
+                        feature.properties.name.includes("Central Valley") || 
+                        feature.properties.name.includes("Nile Delta") || 
+                        feature.properties.name.includes("Murray-Darling")
+                    );
                     return {
                         fillColor: color,
-                        weight: 1.6,
-                        opacity: 0.85,
-                        color: "#38BDF8", // Clean cyan administrative border
-                        fillOpacity: 0.35, // Balanced opacity so real agricultural fields are visible
-                        dashArray: ""
+                        weight: isHotspot ? 2.0 : 1.6,
+                        opacity: 0.9,
+                        color: isHotspot ? color : "#38BDF8", // Clean boundary outline matching risk tone
+                        fillOpacity: isHotspot ? 0.20 : 0.35, // Natural transparency so satellite agricultural fields are crisp
+                        dashArray: isHotspot ? "4, 4" : "",
+                        smoothFactor: 1.2
                     };
                 },
                 onEachFeature: (feature, layer) => {

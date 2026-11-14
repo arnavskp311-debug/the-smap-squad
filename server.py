@@ -21,6 +21,7 @@ from fastapi import FastAPI, HTTPException
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import HTMLResponse, PlainTextResponse, FileResponse
 from pydantic import BaseModel
+import numpy as np
 import pandas as pd
 import geopandas as gpd
 
@@ -356,21 +357,48 @@ def get_geojson():
             "geometry": geom
         })
 
-    # Add Global Hotspot regional district boundaries with Red, Yellow, Green zones
-    for hname, hdata in GLOBAL_HOTSPOTS.items():
+    # Add Global Hotspot regional district boundaries with realistic organic natural contours
+    def make_organic_polygon(lat, lon, rx, ry, tilt_rad=0.0, points=24, seed=42):
+        rng = np.random.RandomState(seed)
+        angles = np.linspace(0, 2 * np.pi, points, endpoint=False)
+        radii_x = rx * (1.0 + 0.18 * np.sin(2 * angles) + 0.10 * np.cos(3 * angles))
+        radii_y = ry * (1.0 + 0.15 * np.cos(2 * angles) - 0.08 * np.sin(4 * angles))
+        xs = radii_x * np.cos(angles)
+        ys = radii_y * np.sin(angles)
+        rot_xs = xs * np.cos(tilt_rad) - ys * np.sin(tilt_rad)
+        rot_ys = xs * np.sin(tilt_rad) + ys * np.cos(tilt_rad)
+        coords = [[round(lon + rot_xs[i], 4), round(lat + rot_ys[i], 4)] for i in range(points)]
+        coords.append(coords[0])
+        return coords
+
+    organic_configs = {
+        # Central Valley - tilted along NW-SE Great Valley syncline (-0.62 rad)
+        "Central Valley - Fresno County (USA)": {"rx": 0.46, "ry": 0.32, "tilt": -0.62, "seed": 101},
+        "Central Valley - Kern County (USA)": {"rx": 0.52, "ry": 0.36, "tilt": -0.45, "seed": 102},
+        "Central Valley - Tulare County (USA)": {"rx": 0.42, "ry": 0.32, "tilt": -0.55, "seed": 103},
+        "Central Valley - San Joaquin (USA)": {"rx": 0.36, "ry": 0.28, "tilt": -0.68, "seed": 104},
+        "Central Valley - Sacramento (USA)": {"rx": 0.40, "ry": 0.34, "tilt": -0.72, "seed": 105},
+
+        # Nile Delta - fan delta spread out towards Mediterranean
+        "Nile Delta - Kafr El-Sheikh (Egypt)": {"rx": 0.34, "ry": 0.26, "tilt": 0.15, "seed": 201},
+        "Nile Delta - Beheira (Egypt)": {"rx": 0.40, "ry": 0.30, "tilt": -0.30, "seed": 202},
+        "Nile Delta - Dakahlia (Egypt)": {"rx": 0.32, "ry": 0.26, "tilt": 0.35, "seed": 203},
+        "Nile Delta - Gharbia (Egypt)": {"rx": 0.25, "ry": 0.22, "tilt": 0.05, "seed": 204},
+
+        # Murray-Darling - curving river catchment basins
+        "Murray-Darling - Riverina (Australia)": {"rx": 0.50, "ry": 0.36, "tilt": 0.25, "seed": 301},
+        "Murray-Darling - Sunraysia (Australia)": {"rx": 0.44, "ry": 0.32, "tilt": -0.15, "seed": 302},
+        "Murray-Darling - Murrumbidgee (Australia)": {"rx": 0.46, "ry": 0.34, "tilt": 0.40, "seed": 303},
+        "Murray-Darling - Goulburn Valley (Australia)": {"rx": 0.40, "ry": 0.30, "tilt": -0.10, "seed": 304},
+    }
+
+    for hname, cfg in organic_configs.items():
+        if hname not in GLOBAL_HOTSPOTS:
+            continue
+        hdata = GLOBAL_HOTSPOTS[hname]
         lat = hdata["lat"]
         lon = hdata["lon"]
-        d = hdata.get("poly_delta", 0.35)
-        poly_coords = [
-            [round(lon - d, 4), round(lat - d * 0.65, 4)],
-            [round(lon - d * 0.75, 4), round(lat + d * 0.75, 4)],
-            [round(lon + d * 0.2, 4), round(lat + d, 4)],
-            [round(lon + d, 4), round(lat + d * 0.55, 4)],
-            [round(lon + d * 0.85, 4), round(lat - d * 0.45, 4)],
-            [round(lon + d * 0.15, 4), round(lat - d * 0.95, 4)],
-            [round(lon - d * 0.8, 4), round(lat - d * 0.75, 4)],
-            [round(lon - d, 4), round(lat - d * 0.65, 4)]
-        ]
+        poly_coords = make_organic_polygon(lat, lon, cfg["rx"], cfg["ry"], cfg["tilt"], 24, cfg["seed"])
         features.append({
             "type": "Feature",
             "properties": {
