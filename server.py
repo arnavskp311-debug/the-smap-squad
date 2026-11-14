@@ -299,7 +299,7 @@ def get_report(district: str = "Bathinda"):
 
     md = f"""# Punjab Farm Water Watch - District Officer Brief
 **NASA Space Apps Challenge 2026 · Delhi NCR**
-**Team:** The SMAP Squad
+**Team:** The SMAP Squad (Arnav Sharma [Lead & Coder], Chetan Kaushik [Coder], Aryan Sharma [Researcher], Amisha Ajana [Designer])
 **Target District:** {district} (Coordinates: {telemetry['lat']:.4f}°N, {telemetry['lon']:.4f}°E)
 **Generated At:** {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
 

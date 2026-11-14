@@ -167,4 +167,9 @@ python server.py
 ## 👥 8. Team & Credits
 * **Challenge:** NASA Space Apps Challenge 2026 (Delhi NCR)
 * **Team:** The SMAP Squad
+* **Team Members:**
+  * **Arnav Sharma** — **Team Leader & Coder** (System Architecture, FastAPI, NASA Pipelines, Full-Stack Development)
+  * **Chetan Kaushik** — **Member & Coder** (Machine Learning, RandomForest Forecaster, Water Stress Scoring Engine, Testing)
+  * **Aryan Sharma** — **Member & Researcher** (Agronomy & Soil Science, NASA GRACE Hydrology, PAU Protocols, Trilingual Advisories)
+  * **Amisha Ajana** — **Member & Designer** (UI/UX Design, Mission Control Aesthetics, Design System, Accessibility & Farmer Experience)
 * **Data Sources:** NASA Earth Science Data Systems (ESDS), NASA Earthdata, LP DAAC, NSIDC DAAC, GES DISC, NASA Langley POWER, JPL PO.DAAC.
