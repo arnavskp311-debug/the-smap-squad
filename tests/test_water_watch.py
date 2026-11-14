@@ -1,0 +1,120 @@
+"""
+Pytest Suite for Punjab Farm Water Watch (NASA Space Apps Challenge 2026)
+Verifies models, data pipelines, weights, spatial queries, and anomaly detection.
+"""
+
+import os
+import pytest
+import numpy as np
+import pandas as pd
+import xarray as xr
+
+from model import WaterStressModel, SevenDayMoistureForecaster, SoilQualityAnomalyDetector
+from src.models.water_stress_engine import WaterStressEngine
+from src.models.forecast_model import MoistureForecaster
+from src.models.soil_quality_checker import SoilQualityChecker
+from src.pipeline.spatial_processor import SpatialProcessor
+from src.pipeline.earthaccess_client import NASADataPipeline
+
+
+def test_unified_weights():
+    """Verify that both WaterStressModel and WaterStressEngine use identical weights summing to 1.0."""
+    wse = WaterStressEngine()
+    wsm = WaterStressModel()
+
+    assert wse.w_sm == 0.40
+    assert wse.w_rain == 0.30
+    assert wse.w_et == 0.20
+    assert wse.w_lst == 0.10
+    assert round(wse.w_sm + wse.w_rain + wse.w_et + wse.w_lst, 5) == 1.0
+
+    assert wsm.w_sm == 0.40
+    assert wsm.w_rain == 0.30
+    assert wsm.w_et == 0.20
+    assert wsm.w_lst == 0.10
+
+
+def test_scoring_zones():
+    """Test classification into Green (0-30), Yellow (31-60), and Red (61-100)."""
+    wsm = WaterStressModel()
+
+    # Optimal moisture and rain -> Green
+    res_green = wsm.compute_water_stress_score(smap_rootzone_sm=0.36, rain_30d_mm=55.0, modis_et_mm=2.0, landsat_lst_c=25.0)
+    assert res_green["zone"] == "Green"
+    assert res_green["score"] <= 30.0
+
+    # Moderate conditions -> Yellow
+    res_yellow = wsm.compute_water_stress_score(smap_rootzone_sm=0.23, rain_30d_mm=25.0, modis_et_mm=4.5, landsat_lst_c=32.0)
+    assert res_yellow["zone"] == "Yellow"
+    assert 30.0 < res_yellow["score"] <= 60.0
+
+    # Severe drought conditions -> Red
+    res_red = wsm.compute_water_stress_score(smap_rootzone_sm=0.10, rain_30d_mm=5.0, modis_et_mm=6.5, landsat_lst_c=40.0)
+    assert res_red["zone"] == "Red"
+    assert res_red["score"] > 60.0
+
+
+def test_forecaster_drydown_and_bounds():
+    """Verify 7-day RandomForest forecaster handles unfitted frames safely and bounds intervals."""
+    # Test unfitted state safety
+    mf = MoistureForecaster()
+    dummy_df = pd.DataFrame({
+        "smap_rootzone_sm": [0.25, 0.24, 0.23, 0.22, 0.21],
+        "gpm_precipitation_mm": [0.0, 0.0, 0.0, 0.0, 0.0],
+        "modis_et_mm": [4.5, 4.6, 4.4, 4.5, 4.5],
+        "landsat_lst_c": [32.0, 32.5, 33.0, 32.2, 32.8]
+    })
+    preds = mf.predict_next_7_days(dummy_df)
+    assert len(preds) == 7
+    for p in preds:
+        assert p["lower_sm_bound"] <= p["predicted_sm"] <= p["upper_sm_bound"]
+        assert 0.0 <= p["predicted_stress_score"] <= 100.0
+
+
+def test_soil_quality_anomaly_check():
+    """Verify SMAP-vs-Landsat NDVI dual diagnosis logic."""
+    detector = SoilQualityAnomalyDetector()
+
+    # Adequate water but weak crop vigor -> Alert!
+    alert = detector.evaluate_soil_anomaly(smap_rootzone_sm=0.30, water_stress_score=20.0, landsat_ndvi=0.32)
+    assert alert["alert_triggered"] is True
+    assert alert["status_code"] == "HIDDEN_SOIL_QUALITY_ALERT"
+
+    # Both low -> Drought stress, not soil anomaly
+    drought = detector.evaluate_soil_anomaly(smap_rootzone_sm=0.14, water_stress_score=75.0, landsat_ndvi=0.25)
+    assert drought["alert_triggered"] is False
+    assert drought["status_code"] == "WATER_DEFICIT"
+
+
+def test_spatial_processor_lookup():
+    """Verify pin-drop spatial query resolves to proper district."""
+    sp = SpatialProcessor()
+    loc = sp.locate_point(lat=30.2110, lon=74.9455)
+    assert loc["district"] == "Bathinda"
+    assert loc["is_inside"] is True
+
+
+def test_processed_dataset_integrity():
+    """Verify generated dataset contains Punjab districts and global hotspots."""
+    csv_path = "data/processed/punjab_multi_satellite_30d.csv"
+    assert os.path.exists(csv_path), "Processed CSV must exist"
+    df = pd.read_csv(csv_path)
+
+    districts = set(df["district"].unique())
+    assert "Bathinda" in districts
+    assert "Ludhiana" in districts
+    assert "Patiala" in districts
+    assert "Central Valley, California (Hotspot)" in districts
+    assert "North Africa / Nile Basin (Hotspot)" in districts
+    assert "High Plains Aquifer, USA (Hotspot)" in districts
+
+
+def test_netcdf_multi_district_mosaic():
+    """Verify NetCDF mosaic contains gridded multi-district data."""
+    nc_path = "data/processed/punjab_satellite_mosaic.nc"
+    assert os.path.exists(nc_path), "Mosaic NetCDF must exist"
+    with xr.open_dataset(nc_path) as ds:
+        assert "smap_rootzone_sm" in ds
+        assert "landsat_ndvi" in ds
+        assert ds["smap_rootzone_sm"].shape[0] > 10
+        assert ds["smap_rootzone_sm"].shape[1] > 10

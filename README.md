@@ -33,14 +33,14 @@ Punjab is ground zero for a critical groundwater depletion crisis in South Asia:
 
 The system computes a weighted, multi-satellite scarcity index designed for Punjab's alluvial agro-hydrological conditions:
 
-$$\text{Water Stress Score} = 0.40 \times \text{SMAP\_Deficit} + 0.30 \times \text{GPM\_Deficit} + 0.20 \times \text{MODIS\_ET} + 0.10 \times \text{Landsat\_LST}$$
+$$\text{Water Stress Score} = 0.40 \times \text{SMAP Deficit} + 0.30 \times \text{GPM Deficit} + 0.20 \times \text{MODIS ET} + 0.10 \times \text{Landsat LST}$$
 
 ### Component Formulations:
 1. **SMAP Soil Moisture Deficit ($40\%$):**
-   $$\text{SMAP\_Deficit} = \text{clip}\left(\frac{0.36 - \text{SM}}{0.36 - 0.10} \times 100, 0, 100\right)$$
+   $$\text{SMAP Deficit} = \text{clip}\left(\frac{0.36 - \text{SM}}{0.36 - 0.10} \times 100, 0, 100\right)$$
    *(0.36 = Field Capacity, 0.10 = Permanent Wilting Point)*
 2. **GPM Rainfall Deficit ($30\%$):**
-   $$\text{GPM\_Deficit} = \left(1.0 - \min\left(\frac{\text{Rain}_{30d}}{50.0}, 1.0\right)\right) \times 100$$
+   $$\text{GPM Deficit} = \left(1.0 - \min\left(\frac{\text{Rain}_{30\text{d}}}{50.0}, 1.0\right)\right) \times 100$$
 3. **MODIS ET Anomaly ($20\%$):**
    Atmospheric moisture draw scaled from 2.0 mm/day (low) to 7.0 mm/day (extreme draw).
 4. **Landsat LST Heat Anomaly ($10\%$):**
