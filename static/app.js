@@ -1066,25 +1066,11 @@ function initAuth() {
         if (stored) {
             currentUser = JSON.parse(stored);
         } else {
-            // Default active demo sentinel: Arnav Sharma
-            currentUser = {
-                name: "Arnav Sharma",
-                email: "arnav@punjabfarms.gov.in",
-                role: "Lead Farmer & Water Steward",
-                district: "Bathinda",
-                farm_acres: 12.5,
-                primary_crop: "Wheat & Direct Seeded Rice (DSR)",
-                water_saved_litres: 2250000,
-                electricity_saved_kwh: 1775,
-                soil_health_grade: "Grade A (Optimized via SMAP)",
-                member_id: "PWW-2026-PB-0482",
-                provider: "google",
-                avatar_initials: "AS"
-            };
-            localStorage.setItem("pww_user", JSON.stringify(currentUser));
+            currentUser = null; // No default hardcoded user; forces manual registration or login
         }
     } catch (e) {
         console.warn("Storage load error:", e);
+        currentUser = null;
     }
 
     updateUserUI(currentUser);
@@ -1098,7 +1084,7 @@ function updateUserUI(user) {
     const drawerAvatar = document.getElementById("drawerAvatar");
     const drawerUserName = document.getElementById("drawerUserName");
     const drawerUserRole = document.getElementById("drawerUserRole");
-    const drawerPassId = document.getElementById("drawerPassId");
+    const drawerPassBadge = document.getElementById("drawerPassBadge");
     const drawerAuthBtnLabel = document.getElementById("drawerAuthBtnLabel");
 
     if (user && user.email) {
@@ -1108,7 +1094,12 @@ function updateUserUI(user) {
         if (drawerAvatar) drawerAvatar.innerHTML = `<img src="/default_avatar.png" alt="Profile" class="avatar-img">`;
         if (drawerUserName) drawerUserName.innerText = user.name || "Lead Farmer";
         if (drawerUserRole) drawerUserRole.innerText = `${user.role || "Sentinel"} · ${user.district || "Punjab"}`;
-        if (drawerPassId) drawerPassId.innerText = user.member_id || "PWW-2026-PB-0482";
+        if (drawerPassBadge) {
+            drawerPassBadge.innerHTML = `
+                <span class="pass-chip">🛡️ Active Sentinel</span>
+                <span class="pass-id" id="drawerPassId">${user.member_id || "PWW-2026-PB-0482"}</span>
+            `;
+        }
         if (drawerAuthBtnLabel) drawerAuthBtnLabel.innerText = "View Digital Water Pass";
 
         // Update Pass modal fields
@@ -1127,25 +1118,30 @@ function updateUserUI(user) {
         if (passAvatar) passAvatar.innerHTML = `<img src="/default_avatar.png" alt="Profile" class="avatar-img">`;
         if (passMemberId) passMemberId.innerText = user.member_id || "PWW-2026-PB-0482";
         if (passName) passName.innerText = user.name;
-        if (passRole) passRole.innerText = user.role || "Lead Farmer & Water Steward";
+        if (passRole) passRole.innerText = user.role || "Registered Farmer & Water Sentinel";
         if (passDistrict) passDistrict.innerText = user.district || "Bathinda";
         if (passAcres) passAcres.innerText = `${user.farm_acres} Acres`;
         if (passCrop) passCrop.innerText = user.primary_crop || "Wheat & Rice";
-        if (passAuthType) passAuthType.innerText = `${user.provider === "google" ? "Google OAuth 2.0" : "Govt Ag-Stack Email"} · Verified`;
+        if (passAuthType) passAuthType.innerText = `Punjab Ag-Stack Verified · ${user.irrigation_source || "Tubewell"}`;
 
-        const savedMillions = (user.water_saved_litres / 1000000).toFixed(2);
+        const savedMillions = ((user.water_saved_litres || 1800000) / 1000000).toFixed(2);
         if (passWaterSaved) passWaterSaved.innerText = `${savedMillions}M L`;
-        if (passPowerSaved) passPowerSaved.innerText = `${user.electricity_saved_kwh.toLocaleString()} kWh`;
+        if (passPowerSaved) passPowerSaved.innerText = `${(user.electricity_saved_kwh || 1420).toLocaleString()} kWh`;
         if (passSoilGrade) passSoilGrade.innerText = user.soil_health_grade || "Grade A";
     } else {
         if (navAvatar) navAvatar.innerHTML = `<img src="/default_avatar.png" alt="Profile" class="avatar-img">`;
         if (navText) navText.innerText = "Sign In";
 
         if (drawerAvatar) drawerAvatar.innerHTML = `<img src="/default_avatar.png" alt="Profile" class="avatar-img">`;
-        if (drawerUserName) drawerUserName.innerText = "Guest Sentinel";
-        if (drawerUserRole) drawerUserRole.innerText = "Sign in to unlock dossier";
-        if (drawerPassId) drawerPassId.innerText = "LOCKED";
-        if (drawerAuthBtnLabel) drawerAuthBtnLabel.innerText = "Sign In with Google";
+        if (drawerUserName) drawerUserName.innerText = "Guest Farmer";
+        if (drawerUserRole) drawerUserRole.innerText = "Register to unlock dossier";
+        if (drawerPassBadge) {
+            drawerPassBadge.innerHTML = `
+                <span class="pass-chip" style="background:rgba(245,158,11,0.15); color:var(--accent-amber);">🔒 Not Registered</span>
+                <span class="pass-id" id="drawerPassId">UNREGISTERED</span>
+            `;
+        }
+        if (drawerAuthBtnLabel) drawerAuthBtnLabel.innerText = "Register / Sign In";
     }
 }
 
@@ -1154,10 +1150,11 @@ function setupAuthListeners() {
     const drawerAuthActionBtn = document.getElementById("drawerAuthActionBtn");
     const closeAuthModalBtn = document.getElementById("closeAuthModalBtn");
     const closeProfileModalBtn = document.getElementById("closeProfileModalBtn");
-    const tabGoogleAuth = document.getElementById("tabGoogleAuth");
-    const tabEmailAuth = document.getElementById("tabEmailAuth");
-    const btnGoogleInstantLogin = document.getElementById("btnGoogleInstantLogin");
-    const panelEmailAuth = document.getElementById("panelEmailAuth");
+    const tabRegisterAuth = document.getElementById("tabRegisterAuth");
+    const tabLoginAuth = document.getElementById("tabLoginAuth");
+    const panelRegisterAuth = document.getElementById("panelRegisterAuth");
+    const panelLoginAuth = document.getElementById("panelLoginAuth");
+    const linkSwitchToRegister = document.getElementById("linkSwitchToRegister");
     const btnPrintPassBtn = document.getElementById("btnPrintPassBtn");
     const btnSignOutBtn = document.getElementById("btnSignOutBtn");
 
@@ -1205,67 +1202,38 @@ function setupAuthListeners() {
     }
 
     // Auth Modal Tabs
-    if (tabGoogleAuth && tabEmailAuth) {
-        tabGoogleAuth.addEventListener("click", () => {
-            tabGoogleAuth.classList.add("active");
-            tabEmailAuth.classList.remove("active");
-            document.getElementById("panelGoogleAuth").style.display = "block";
-            document.getElementById("panelEmailAuth").style.display = "none";
-        });
-        tabEmailAuth.addEventListener("click", () => {
-            tabEmailAuth.classList.add("active");
-            tabGoogleAuth.classList.remove("active");
-            document.getElementById("panelGoogleAuth").style.display = "none";
-            document.getElementById("panelEmailAuth").style.display = "block";
-        });
+    function showRegisterTab() {
+        if (tabRegisterAuth) tabRegisterAuth.classList.add("active");
+        if (tabLoginAuth) tabLoginAuth.classList.remove("active");
+        if (panelRegisterAuth) panelRegisterAuth.style.display = "block";
+        if (panelLoginAuth) panelLoginAuth.style.display = "none";
     }
 
-    // Google Instant Login Action
-    if (btnGoogleInstantLogin) {
-        btnGoogleInstantLogin.addEventListener("click", async () => {
-            btnGoogleInstantLogin.innerHTML = `<span>⏳ Verifying with Google OAuth...</span>`;
-            try {
-                const res = await fetch("/api/auth/login", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({
-                        name: "Arnav Sharma",
-                        email: "arnav@punjabfarms.gov.in",
-                        provider: "google",
-                        district: "Bathinda",
-                        farm_acres: 12.5,
-                        role: "Lead Farmer & Water Steward",
-                        primary_crop: "Wheat & Direct Seeded Rice (DSR)"
-                    })
-                });
-                const data = await res.json();
-                if (data.status === "success" && data.user) {
-                    currentUser = data.user;
-                    localStorage.setItem("pww_user", JSON.stringify(currentUser));
-                    updateUserUI(currentUser);
-                    closeAuthModal();
-                    openProfileModal();
-                }
-            } catch (err) {
-                console.error("Google login failed:", err);
-            } finally {
-                btnGoogleInstantLogin.innerHTML = `<span>Sign in with Google</span>`;
-            }
-        });
+    function showLoginTab() {
+        if (tabLoginAuth) tabLoginAuth.classList.add("active");
+        if (tabRegisterAuth) tabRegisterAuth.classList.remove("active");
+        if (panelLoginAuth) panelLoginAuth.style.display = "block";
+        if (panelRegisterAuth) panelRegisterAuth.style.display = "none";
     }
 
-    // Email Registration / Login Submit
-    if (panelEmailAuth) {
-        panelEmailAuth.addEventListener("submit", async (e) => {
+    if (tabRegisterAuth) tabRegisterAuth.addEventListener("click", showRegisterTab);
+    if (tabLoginAuth) tabLoginAuth.addEventListener("click", showLoginTab);
+    if (linkSwitchToRegister) linkSwitchToRegister.addEventListener("click", showRegisterTab);
+
+    // Registration Form Submit
+    if (panelRegisterAuth) {
+        panelRegisterAuth.addEventListener("submit", async (e) => {
             e.preventDefault();
-            const submitBtn = document.getElementById("btnEmailSubmit");
-            if (submitBtn) submitBtn.innerHTML = `<span>⏳ Creating Sentinel Profile...</span>`;
+            const submitBtn = document.getElementById("btnRegisterSubmit");
+            if (submitBtn) submitBtn.innerHTML = `<span>⏳ Registering &amp; Validating Farm...</span>`;
 
-            const name = document.getElementById("authName") ? document.getElementById("authName").value : "Farmer";
-            const email = document.getElementById("authEmail") ? document.getElementById("authEmail").value : "farmer@punjab.gov.in";
+            const name = document.getElementById("authName") ? document.getElementById("authName").value.trim() : "Farmer";
+            const email = document.getElementById("authEmail") ? document.getElementById("authEmail").value.trim() : "";
+            const phone = document.getElementById("authPhone") ? document.getElementById("authPhone").value.trim() : "";
             const district = document.getElementById("authDistrict") ? document.getElementById("authDistrict").value : "Bathinda";
             const farm_acres = document.getElementById("authAcres") ? parseFloat(document.getElementById("authAcres").value) : 10;
             const primary_crop = document.getElementById("authCrop") ? document.getElementById("authCrop").value : "Wheat & Rice";
+            const irrigation_source = document.getElementById("authSource") ? document.getElementById("authSource").value : "Submersible Tubewell";
 
             try {
                 const res = await fetch("/api/auth/signup", {
@@ -1274,11 +1242,13 @@ function setupAuthListeners() {
                     body: JSON.stringify({
                         name,
                         email,
+                        phone,
                         district,
                         farm_acres,
                         primary_crop,
+                        irrigation_source,
                         provider: "email",
-                        role: "Farmer & Water Sentinel"
+                        role: "Registered Farmer & Water Sentinel"
                     })
                 });
                 const data = await res.json();
@@ -1291,8 +1261,58 @@ function setupAuthListeners() {
                 }
             } catch (err) {
                 console.error("Registration failed:", err);
+                alert("Registration failed. Please verify your connection.");
             } finally {
-                if (submitBtn) submitBtn.innerHTML = `<span>Unlock Farm Water Pass &amp; Dossier</span>`;
+                if (submitBtn) submitBtn.innerHTML = `<span>Register Account &amp; Unlock Water Pass</span>`;
+            }
+        });
+    }
+
+    // Direct Login Form Submit
+    if (panelLoginAuth) {
+        panelLoginAuth.addEventListener("submit", async (e) => {
+            e.preventDefault();
+            const submitBtn = document.getElementById("btnLoginSubmit");
+            const feedback = document.getElementById("loginFeedback");
+            const emailInput = document.getElementById("loginEmail");
+            const email = emailInput ? emailInput.value.trim() : "";
+
+            if (submitBtn) submitBtn.innerHTML = `<span>⏳ Signing In...</span>`;
+            if (feedback) feedback.style.display = "none";
+
+            try {
+                const res = await fetch("/api/auth/login", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ email })
+                });
+                const data = await res.json();
+                if (data.status === "success" && data.user) {
+                    currentUser = data.user;
+                    localStorage.setItem("pww_user", JSON.stringify(currentUser));
+                    updateUserUI(currentUser);
+                    closeAuthModal();
+                    openProfileModal();
+                } else {
+                    if (feedback) {
+                        feedback.style.display = "block";
+                        feedback.style.background = "rgba(220, 38, 38, 0.15)";
+                        feedback.style.border = "1px solid rgba(220, 38, 38, 0.4)";
+                        feedback.style.color = "#FCA5A5";
+                        feedback.innerText = data.message || "Email not registered. Please register your farm above.";
+                    }
+                }
+            } catch (err) {
+                console.error("Direct login failed:", err);
+                if (feedback) {
+                    feedback.style.display = "block";
+                    feedback.style.background = "rgba(220, 38, 38, 0.15)";
+                    feedback.style.border = "1px solid rgba(220, 38, 38, 0.4)";
+                    feedback.style.color = "#FCA5A5";
+                    feedback.innerText = "Network error. Please try again.";
+                }
+            } finally {
+                if (submitBtn) submitBtn.innerHTML = `<span>Direct Sign-In to Farm Account</span>`;
             }
         });
     }

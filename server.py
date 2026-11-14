@@ -77,14 +77,16 @@ class SoilPrescriptionRequest(BaseModel):
 
 
 class AuthRequest(BaseModel):
-    name: str = "Arnav Sharma"
-    email: str = "arnav@punjabfarms.gov.in"
+    name: Optional[str] = "Farmer"
+    email: str = "farmer@punjabfarms.gov.in"
+    phone: Optional[str] = ""
     password: Optional[str] = None
-    provider: str = "google"
-    district: str = "Bathinda"
-    farm_acres: float = 12.5
-    role: str = "Lead Farmer & Water Steward"
-    primary_crop: str = "Wheat & Direct Seeded Rice (DSR)"
+    provider: str = "email"
+    district: Optional[str] = "Bathinda"
+    farm_acres: Optional[float] = 10.0
+    role: Optional[str] = "Farmer & Water Sentinel"
+    primary_crop: Optional[str] = "Wheat & Direct Seeded Rice (DSR)"
+    irrigation_source: Optional[str] = "Submersible Tubewell"
 
 
 USERS_FILE = "data/users.json"
@@ -96,15 +98,17 @@ def load_users():
             "arnav@punjabfarms.gov.in": {
                 "name": "Arnav Sharma",
                 "email": "arnav@punjabfarms.gov.in",
+                "phone": "+91 98765 43210",
                 "role": "Lead Farmer & Water Steward",
                 "district": "Bathinda",
                 "farm_acres": 12.5,
                 "primary_crop": "Wheat & Direct Seeded Rice (DSR)",
+                "irrigation_source": "Solar-Assisted Submersible Tubewell",
                 "water_saved_litres": 2250000,
                 "electricity_saved_kwh": 1775,
                 "soil_health_grade": "A (Optimized)",
                 "member_id": "PWW-2026-PB-0482",
-                "provider": "google",
+                "provider": "email",
                 "avatar_initials": "AS",
                 "created_at": datetime.now().isoformat()
             }
@@ -130,30 +134,30 @@ def save_users(users):
 def signup_user(req: AuthRequest):
     users = load_users()
     email = req.email.strip().lower()
-    if email in users:
-        user = users[email]
-    else:
-        initials = "".join([part[0].upper() for part in req.name.split()[:2]]) if req.name else "PB"
-        member_id = f"PWW-2026-PB-{random.randint(1000, 9999)}"
-        saved_litres = int(float(req.farm_acres) * 180000)
-        saved_kwh = int(saved_litres * 0.000789)
-        user = {
-            "name": req.name,
-            "email": email,
-            "role": req.role or "Farmer & Water Steward",
-            "district": req.district or "Bathinda",
-            "farm_acres": float(req.farm_acres),
-            "primary_crop": req.primary_crop or "Wheat & Rice",
-            "water_saved_litres": saved_litres,
-            "electricity_saved_kwh": saved_kwh,
-            "soil_health_grade": "A (Verified via NASA SMAP)",
-            "member_id": member_id,
-            "provider": req.provider,
-            "avatar_initials": initials or "PB",
-            "created_at": datetime.now().isoformat()
-        }
-        users[email] = user
-        save_users(users)
+    initials = "".join([part[0].upper() for part in (req.name or "PB").split()[:2]]) or "PB"
+    member_id = f"PWW-2026-PB-{random.randint(1000, 9999)}"
+    acres = float(req.farm_acres or 10.0)
+    saved_litres = int(acres * 180000)
+    saved_kwh = int(saved_litres * 0.000789)
+    user = {
+        "name": req.name or "Punjab Farmer",
+        "email": email,
+        "phone": req.phone or "",
+        "role": req.role or "Registered Farmer & Water Sentinel",
+        "district": req.district or "Bathinda",
+        "farm_acres": acres,
+        "primary_crop": req.primary_crop or "Wheat & Rice",
+        "irrigation_source": req.irrigation_source or "Submersible Tubewell",
+        "water_saved_litres": saved_litres,
+        "electricity_saved_kwh": saved_kwh,
+        "soil_health_grade": "A (Verified via NASA SMAP)",
+        "member_id": member_id,
+        "provider": "email",
+        "avatar_initials": initials,
+        "created_at": datetime.now().isoformat()
+    }
+    users[email] = user
+    save_users(users)
     return {"status": "success", "user": user}
 
 
@@ -163,7 +167,10 @@ def login_user(req: AuthRequest):
     email = req.email.strip().lower()
     if email in users:
         return {"status": "success", "user": users[email]}
-    return signup_user(req)
+    return {
+        "status": "error",
+        "message": f"No registered farm profile found for '{email}'. Please fill out the registration form to create your account and unlock your pass."
+    }
 
 
 @app.get("/api/auth/profile")

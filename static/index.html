@@ -53,17 +53,17 @@
                         <img src="/default_avatar.png" alt="Farmer Profile" class="avatar-img">
                     </div>
                     <div class="drawer-profile-info">
-                        <div class="drawer-user-name" id="drawerUserName">Arnav Sharma</div>
-                        <div class="drawer-user-role" id="drawerUserRole">Lead Farmer · Bathinda</div>
+                        <div class="drawer-user-name" id="drawerUserName">Guest Farmer</div>
+                        <div class="drawer-user-role" id="drawerUserRole">Register to unlock dossier</div>
                     </div>
                 </div>
                 <div class="drawer-profile-badge" id="drawerPassBadge">
-                    <span class="pass-chip">🛡️ Active Sentinel</span>
-                    <span class="pass-id" id="drawerPassId">PWW-2026-PB-0482</span>
+                    <span class="pass-chip" style="background:rgba(245,158,11,0.15); color:var(--accent-amber);">🔒 Not Registered</span>
+                    <span class="pass-id" id="drawerPassId">UNREGISTERED</span>
                 </div>
                 <button class="drawer-profile-action-btn" id="drawerAuthActionBtn">
-                    <span>🪪</span>
-                    <span id="drawerAuthBtnLabel">View Digital Water Pass</span>
+                    <span>📝</span>
+                    <span id="drawerAuthBtnLabel">Register / Sign In</span>
                 </button>
             </div>
         </div>
@@ -189,7 +189,7 @@
                     <div class="profile-nav-avatar" id="navAvatar">
                         <img src="/default_avatar.png" alt="Profile" class="avatar-img">
                     </div>
-                    <span class="profile-nav-text" id="navProfileText">Farmer Profile</span>
+                    <span class="profile-nav-text" id="navProfileText">Sign In</span>
                 </button>
             </div>
         </header>
@@ -1125,51 +1125,30 @@
             </div>
 
             <div class="auth-tabs">
-                <button type="button" class="auth-tab active" id="tabGoogleAuth" data-mode="google">⚡ Quick Sign-In (Google)</button>
-                <button type="button" class="auth-tab" id="tabEmailAuth" data-mode="email">📧 Register / Email</button>
+                <button type="button" class="auth-tab active" id="tabRegisterAuth" data-mode="register">📝 New Farmer Registration</button>
+                <button type="button" class="auth-tab" id="tabLoginAuth" data-mode="login">🔑 Direct Sign-In</button>
             </div>
 
-            <!-- Google Instant Sign-In Panel -->
-            <div class="auth-panel" id="panelGoogleAuth">
-                <div class="google-prompt-card">
-                    <img src="/default_avatar.png" alt="Arnav Sharma" class="avatar-img" style="width: 40px; height: 40px; flex-shrink: 0; border: 1.5px solid var(--border-color);">
-                    <div class="google-prompt-text">
-                        <div class="google-prompt-title">Continue as Arnav Sharma</div>
-                        <div class="google-prompt-sub">arnav@punjabfarms.gov.in · Bathinda Hub</div>
-                    </div>
-                    <div class="google-icon-large" style="width: 32px; height: 32px;">
-                        <svg width="18" height="18" viewBox="0 0 24 24">
-                            <path fill="#4285F4" d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.82-2.4 3.68v3.05h3.88c2.27-2.09 3.66-5.17 3.66-9.17z"/>
-                            <path fill="#34A853" d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.88-3.05c-1.08.72-2.45 1.16-4.05 1.16-3.12 0-5.77-2.1-6.72-4.93H1.25v3.15C3.26 21.36 7.34 24 12 24z"/>
-                            <path fill="#FBBC05" d="M5.28 14.27c-.25-.72-.38-1.49-.38-2.27s.13-1.55.38-2.27V6.58H1.25C.45 8.16 0 9.94 0 12s.45 3.84 1.25 5.42l4.03-3.15z"/>
-                            <path fill="#EA4335" d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.34 0 3.26 2.64 1.25 6.58l4.03 3.15c.95-2.83 3.6-4.93 6.72-4.93z"/>
-                        </svg>
-                    </div>
-                </div>
-                <button type="button" class="btn-auth-primary btn-google-action" id="btnGoogleInstantLogin">
-                    <span>Sign in with Google</span>
-                </button>
-                <div class="auth-helper-note">
-                    🔒 Instant verification powered by Google OAuth 2.0 &amp; Govt of Punjab Ag-Stack
-                </div>
-            </div>
-
-            <!-- Email Registration & Login Panel -->
-            <form class="auth-panel" id="panelEmailAuth" style="display: none;">
+            <!-- Farmer Registration Panel (Mandatory Data Capture) -->
+            <form class="auth-panel" id="panelRegisterAuth">
                 <div class="form-row-2">
                     <div class="auth-input-group">
-                        <label for="authName">Full Name</label>
-                        <input type="text" id="authName" class="auth-input" placeholder="e.g. Gurpreet Singh" required value="Gurpreet Singh">
+                        <label for="authName">Full Name *</label>
+                        <input type="text" id="authName" class="auth-input" placeholder="e.g. Gurpreet Singh" required>
                     </div>
                     <div class="auth-input-group">
-                        <label for="authEmail">Email Address</label>
-                        <input type="email" id="authEmail" class="auth-input" placeholder="farmer@punjab.gov.in" required value="gurpreet@punjabfarms.gov.in">
+                        <label for="authEmail">Email Address *</label>
+                        <input type="email" id="authEmail" class="auth-input" placeholder="farmer@punjab.gov.in" required>
                     </div>
                 </div>
 
-                <div class="form-row-3">
+                <div class="form-row-2">
                     <div class="auth-input-group">
-                        <label for="authDistrict">District</label>
+                        <label for="authPhone">Mobile / WhatsApp No. (For Daily Telemetry Alerts) *</label>
+                        <input type="tel" id="authPhone" class="auth-input" placeholder="+91 98765 43210" required>
+                    </div>
+                    <div class="auth-input-group">
+                        <label for="authDistrict">Punjab District *</label>
                         <select id="authDistrict" class="auth-input">
                             <option value="Bathinda">Bathinda</option>
                             <option value="Sangrur">Sangrur</option>
@@ -1195,24 +1174,61 @@
                             <option value="SBS Nagar">SBS Nagar</option>
                         </select>
                     </div>
+                </div>
+
+                <div class="form-row-3">
                     <div class="auth-input-group">
-                        <label for="authAcres">Farm Size (Acres)</label>
-                        <input type="number" id="authAcres" class="auth-input" min="1" max="500" step="0.5" value="15">
+                        <label for="authAcres">Farm Holding (Acres) *</label>
+                        <input type="number" id="authAcres" class="auth-input" min="0.5" max="500" step="0.5" value="10" required>
                     </div>
                     <div class="auth-input-group">
-                        <label for="authCrop">Primary Crop</label>
+                        <label for="authCrop">Primary Cropping Cycle *</label>
                         <select id="authCrop" class="auth-input">
                             <option value="Wheat & Direct Seeded Rice (DSR)">Wheat &amp; DSR Rice</option>
                             <option value="Conventional Puddled Rice">Conventional Rice</option>
                             <option value="Cotton & Mustard">Cotton &amp; Mustard</option>
                             <option value="Sugarcane & Maize">Sugarcane &amp; Maize</option>
+                            <option value="Vegetables & Kinnow Citrus">Vegetables &amp; Citrus</option>
+                        </select>
+                    </div>
+                    <div class="auth-input-group">
+                        <label for="authSource">Tubewell / Irrigation Type *</label>
+                        <select id="authSource" class="auth-input">
+                            <option value="Deep Submersible Tubewell">Deep Submersible Tubewell</option>
+                            <option value="Canal Lift + Tubewell">Canal Lift + Tubewell</option>
+                            <option value="Solar Powered Drip System">Solar Powered Drip</option>
+                            <option value="Centrifugal Shallow Pump">Centrifugal Shallow Pump</option>
                         </select>
                     </div>
                 </div>
 
-                <button type="submit" class="btn-auth-primary" id="btnEmailSubmit">
-                    <span>Unlock Farm Water Pass &amp; Dossier</span>
+                <button type="submit" class="btn-auth-primary" id="btnRegisterSubmit">
+                    <span>Register Account &amp; Unlock Water Pass</span>
                 </button>
+                <div class="auth-helper-note">
+                    🔒 All farm information is securely cataloged into Punjab Ag-Stack for authentic telemetry.
+                </div>
+            </form>
+
+            <!-- Direct Sign-In Panel (Registered Users Only) -->
+            <form class="auth-panel" id="panelLoginAuth" style="display: none;">
+                <div class="auth-input-group" style="margin-bottom: 16px;">
+                    <label for="loginEmail">Registered Email Address *</label>
+                    <input type="email" id="loginEmail" class="auth-input" placeholder="e.g. yourname@punjabfarms.gov.in" required>
+                </div>
+
+                <div id="loginFeedback" style="display:none; padding:10px 14px; border-radius:6px; font-size:0.82rem; margin-bottom:14px;"></div>
+
+                <button type="submit" class="btn-auth-primary" id="btnLoginSubmit">
+                    <span>Direct Sign-In to Farm Account</span>
+                </button>
+
+                <div style="text-align:center; margin-top:14px; font-size:0.8rem; color:var(--text-muted);">
+                    Don't have an account yet? 
+                    <button type="button" id="linkSwitchToRegister" style="background:none; border:none; color:var(--accent-teal); cursor:pointer; font-weight:700; text-decoration:underline;">
+                        Register Your Farm Here
+                    </button>
+                </div>
             </form>
         </div>
     </div>

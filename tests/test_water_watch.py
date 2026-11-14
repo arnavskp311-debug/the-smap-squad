@@ -166,23 +166,36 @@ def test_smart_calendar_generator():
 
 def test_auth_system():
     """Verify backend profile, registration, and user data persistence."""
-    from server import load_users, signup_user, AuthRequest
+    from server import load_users, signup_user, login_user, AuthRequest
     users = load_users()
     assert "arnav@punjabfarms.gov.in" in users
     assert users["arnav@punjabfarms.gov.in"]["member_id"] == "PWW-2026-PB-0482"
+
+    # Test login with unregistered email fails
+    unreg_req = AuthRequest(email="nonexistent@punjab.gov.in")
+    login_res = login_user(unreg_req)
+    assert login_res["status"] == "error"
 
     # Test signup
     req = AuthRequest(
         name="Amritsar Steward",
         email="steward@punjab.gov.in",
+        phone="+91 98765 00000",
         district="Amritsar",
         farm_acres=8.0,
         role="Water Steward",
-        primary_crop="Mustard"
+        primary_crop="Mustard",
+        irrigation_source="Canal Lift + Tubewell"
     )
     res = signup_user(req)
     assert res["status"] == "success"
     assert res["user"]["name"] == "Amritsar Steward"
     assert res["user"]["water_saved_litres"] == int(8.0 * 180000)
     assert "PWW-2026-PB-" in res["user"]["member_id"]
+
+    # Test login with newly registered email succeeds
+    login_res2 = login_user(req)
+    assert login_res2["status"] == "success"
+    assert login_res2["user"]["email"] == "steward@punjab.gov.in"
+
 

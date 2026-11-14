@@ -32,16 +32,18 @@
   "steward@punjab.gov.in": {
     "name": "Amritsar Steward",
     "email": "steward@punjab.gov.in",
+    "phone": "+91 98765 00000",
     "role": "Water Steward",
     "district": "Amritsar",
     "farm_acres": 8.0,
     "primary_crop": "Mustard",
+    "irrigation_source": "Canal Lift + Tubewell",
     "water_saved_litres": 1440000,
     "electricity_saved_kwh": 1136,
     "soil_health_grade": "A (Verified via NASA SMAP)",
-    "member_id": "PWW-2026-PB-6803",
-    "provider": "google",
+    "member_id": "PWW-2026-PB-1142",
+    "provider": "email",
     "avatar_initials": "AS",
-    "created_at": "2026-11-14T16:12:47.539458"
+    "created_at": "2026-11-14T16:45:54.479510"
   }
 }
