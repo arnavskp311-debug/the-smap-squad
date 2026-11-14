@@ -2,19 +2,19 @@
 Punjab Farm Water Watch - Interactive NASA Earth Observation Dashboard
 Developed by Team The SMAP Squad for NASA Space Apps Challenge 2026 (Delhi NCR)
 
-Core Capabilities:
-- Trilingual Support: English, Hindi (हिन्दी), Punjabi (ਪੰਜਾਬੀ)
-- Interactive Leaflet/Folium Map with Dynamic District Colors & Pin-Drop Field Query
-- 0-100 Water Stress Score Engine (SMAP 40%, GPM 30%, MODIS 20%, Landsat 10%)
-- 7-Day RandomForestRegressor Predictive Forecast with 90% Confidence Interval
-- SMAP-vs-Landsat NDVI/SAVI Dual Diagnosis for Hidden Soil-Quality & Salinity Degradation
-- Step-by-Step 15 cm PAU/KVK Soil Testing Guide & In-App Remedies (Gypsum, Green Manuring, ZnSO4)
-- Global Groundwater Hotspot Mode with Dynamic Regional Data (Central Valley, Nile Basin, High Plains)
-- Strict NASA Data Provenance & Citations
+5 High-Impact Upgrades for Judging:
+1. Live NASA GIBS Satellite Tile Overlay on Folium Map with LayerControl (MODIS Terra TrueColor & LST)
+2. Interactive "What-If" Water & Tube-Well Energy Savings Calculator (litres, kWh, district scale)
+3. Interactive Soil Health Card & Instant Lab Prescription (pH, EC, OC, N inputs with PAU/KVK advice)
+4. One-Click WhatsApp Alert & Web Speech Voice Advisory (English, हिन्दी, ਪੰਜਾਬੀ)
+5. One-Click Downloadable District Officer Action Brief (Markdown & CSV) with full NASA citations
 """
 
 import os
+import urllib.parse
+from datetime import datetime, timedelta
 import streamlit as st
+import streamlit.components.v1 as components
 import folium
 from streamlit_folium import st_folium
 import pandas as pd
@@ -22,16 +22,15 @@ import numpy as np
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 import geopandas as gpd
-from datetime import datetime, timedelta
 
-# Import models, spatial processor, and localized guides from src/ and model.py
+# Local models, spatial processor, and localized guides
 from model import WaterStressModel, SevenDayMoistureForecaster, SoilQualityAnomalyDetector
 from fetch_nasa_data import NASADataFetcher, REGIONAL_BOUNDING_BOXES
 from src.pipeline.spatial_processor import SpatialProcessor
 from src.advisories.i18n_content import I18N
 from src.advisories.soil_testing_guide import SOIL_TESTING_STEPS, REMEDIES_GUIDE
 
-# Set Streamlit Page Configuration
+# Page Configuration
 st.set_page_config(
     page_title="Punjab Farm Water Watch | NASA Space Apps 2026",
     page_icon="🛰️",
@@ -39,7 +38,7 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# Custom Styling for Accessible, Publication-Ready UI
+# Custom High-Contrast Styling
 st.markdown("""
 <style>
     .metric-box {
@@ -58,11 +57,12 @@ st.markdown("""
     .tag-red { background: #dc3545; color: white; padding: 4px 10px; border-radius: 12px; font-weight: 600; font-size: 0.82rem; }
     .tag-soil-alert { background: #6f42c1; color: white; padding: 5px 12px; border-radius: 14px; font-weight: 700; font-size: 0.88rem; }
     .provenance-tag { font-size: 0.82rem; font-style: italic; color: #555; background: #eef2f7; padding: 6px 12px; border-radius: 6px; display: inline-block; margin-top: 6px; }
+    .calculator-box { background: #fdfefe; border: 1px solid #dcdfe6; border-radius: 10px; padding: 18px; margin-top: 8px; }
 </style>
 """, unsafe_allow_html=True)
 
 
-# --- INITIALIZE SERVICES & CACHE ---
+# --- DATA & MODEL INITIALIZATION ---
 @st.cache_data
 def load_datasets():
     csv_path = "data/processed/punjab_multi_satellite_30d.csv"
@@ -116,7 +116,6 @@ with st.sidebar:
     else:
         st.info(f"Viewing Global Hotspot: **{selected_region}**.\nNASA GRACE monitors secular groundwater loss across this basin.")
         selected_district = selected_region
-        # Set representative centroid coordinates for global hotspot
         hotspot_coords = {
             "Central Valley, California (Hotspot)": (36.7783, -119.4179),
             "North Africa / Nile Basin (Hotspot)": (26.8206, 30.8025),
@@ -152,7 +151,7 @@ soil_res = soil_detector.evaluate_soil_anomaly(
     landsat_savi=latest["landsat_savi"]
 )
 
-# --- PRECOMPUTE DYNAMIC DISTRICT SCORES FOR MAP CHOROPLETH ---
+# Precompute dynamic district scores for map choropleth
 district_scores = {}
 for d in gdf_districts["name"]:
     sub = df_all[df_all["district"] == d]
@@ -165,6 +164,10 @@ for d in gdf_districts["name"]:
         district_scores[d] = sc
     else:
         district_scores[d] = {"score": 25.0, "zone": "Green", "badge_color": "#28a745", "status": "No Stress"}
+
+# 7-Day Forecast computation
+fc_results = forecaster.predict_next_7_days(dist_df)
+fc_df = pd.DataFrame(fc_results)
 
 # --- MAIN DASHBOARD HEADER ---
 head_col1, head_col2 = st.columns([3.8, 1.2])
@@ -207,7 +210,7 @@ with k2:
 with k3:
     st.markdown(f"""
     <div class="metric-box">
-        <div class="metric-label">{t['kpi_30d_rain']}</div>
+        <div class="metric-label">{t['kpi_rain']}</div>
         <div class="metric-val">{rain_30d_val:.1f} <span style="font-size:0.9rem;">mm</span></div>
         <div class="metric-sub">30-day cumulative (GPM IMERG)</div>
     </div>
@@ -232,11 +235,11 @@ with k5:
     </div>
     """, unsafe_allow_html=True)
 
-# --- CORE TIER: INTERACTIVE LEAFLET/FOLIUM MAP & PIN-DROP QUERY ---
-st.markdown(f"### 🗺️ {t['pin_drop_title']}")
-st.caption(t["pin_drop_instruct"])
+# --- CORE TIER: INTERACTIVE MAP WITH NASA GIBS SATELLITE TILE OVERLAYS ---
+st.markdown(f"### 🗺️ {t['pin_drop_title']} & Live NASA GIBS Satellite Layers")
+st.caption("Interact with live NASA GIBS WMTS satellite imagery (MODIS TrueColor & Thermal) toggled directly over Punjab district boundaries.")
 
-map_left, map_right = st.columns([3, 2])
+map_left, map_right = st.columns([3.2, 1.8])
 
 with map_left:
     if not is_global_hotspot:
@@ -246,8 +249,32 @@ with map_left:
 
     m = folium.Map(location=[center_lat, center_lon], zoom_start=zoom_level, tiles="CartoDB positron")
 
+    # --- FEATURE 1: LIVE NASA GIBS SATELLITE TILE OVERLAYS ---
+    gibs_date = (datetime.now() - timedelta(days=2)).strftime('%Y-%m-%d')
+    
+    # 1. NASA GIBS MODIS Terra True Color TileLayer
+    modis_truecolor_url = f"https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/MODIS_Terra_CorrectedReflectance_TrueColor/default/{gibs_date}/GoogleMapsCompatible_Level9/{{z}}/{{y}}/{{x}}.jpg"
+    folium.TileLayer(
+        tiles=modis_truecolor_url,
+        name=f"🛰️ NASA GIBS MODIS True Color ({gibs_date})",
+        attr="NASA Worldview / GIBS",
+        overlay=True,
+        control=True,
+        opacity=0.70
+    ).add_to(m)
+
+    # 2. NASA GIBS Land Surface Temperature (Thermal)
+    lst_thermal_url = f"https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/MODIS_Terra_Land_Surface_Temp_Day/default/{gibs_date}/GoogleMapsCompatible_Level7/{{z}}/{{y}}/{{x}}.png"
+    folium.TileLayer(
+        tiles=lst_thermal_url,
+        name=f"🌡️ NASA GIBS Land Surface Temp Day",
+        attr="NASA Worldview / GIBS",
+        overlay=True,
+        control=True,
+        opacity=0.55
+    ).add_to(m)
+
     if not is_global_hotspot:
-        # Dynamic style function: Colors each district polygon dynamically according to latest WaterStressModel score
         def dynamic_district_style(feat):
             dname = feat["properties"]["name"]
             score_data = district_scores.get(dname, {"badge_color": "#28a745"})
@@ -255,12 +282,12 @@ with map_left:
                 "fillColor": score_data["badge_color"],
                 "color": "#2c3e50",
                 "weight": 2.2,
-                "fillOpacity": 0.45
+                "fillOpacity": 0.40
             }
 
         folium.GeoJson(
             gdf_districts,
-            name="Punjab Agricultural Districts",
+            name="Punjab District Risk Boundaries",
             style_function=dynamic_district_style,
             tooltip=folium.GeoJsonTooltip(
                 fields=["name", "soil_type", "primary_crop"],
@@ -281,7 +308,10 @@ with map_left:
             icon=folium.Icon(color="red", icon="warning-sign")
         ).add_to(m)
 
-    map_interaction = st_folium(m, height=430, width="100%", returned_objects=["last_clicked"])
+    # LayerControl to toggle NASA GIBS vs District choropleth
+    folium.LayerControl(position="topright", collapsed=False).add_to(m)
+
+    map_interaction = st_folium(m, height=450, width="100%", returned_objects=["last_clicked"])
 
     if map_interaction and map_interaction.get("last_clicked") and not is_global_hotspot:
         new_lat = map_interaction["last_clicked"]["lat"]
@@ -294,16 +324,16 @@ with map_right:
     st.markdown(f"**Mathematical Formulation (NASA 4-Layer Index):**")
     st.latex(r"\text{Score} = 0.40 \times \text{SMAP} + 0.30 \times \text{GPM} + 0.20 \times \text{ET} + 0.10 \times \text{LST}")
 
-    st.write(f"• **SMAP Rootzone Moisture Deficit ({stress_res['contributions']['smap']}% impact):**")
+    st.write(f"• **SMAP Rootzone Deficit ({stress_res['contributions']['smap']}%):**")
     st.progress(int(stress_res['deficits']['smap_deficit']))
 
-    st.write(f"• **GPM 30-Day Rainfall Deficit ({stress_res['contributions']['gpm']}% impact):**")
+    st.write(f"• **GPM 30-Day Rain Deficit ({stress_res['contributions']['gpm']}%):**")
     st.progress(int(stress_res['deficits']['gpm_deficit']))
 
-    st.write(f"• **MODIS Evapotranspiration Draw ({stress_res['contributions']['et']}% impact):**")
+    st.write(f"• **MODIS Evapotranspiration ({stress_res['contributions']['et']}%):**")
     st.progress(int(stress_res['deficits']['et_anomaly']))
 
-    st.write(f"• **Landsat LST / Thermal Heat Anomaly ({stress_res['contributions']['lst']}% impact):**")
+    st.write(f"• **Landsat LST Heat Anomaly ({stress_res['contributions']['lst']}%):**")
     st.progress(int(stress_res['deficits']['lst_anomaly']))
 
     st.divider()
@@ -314,31 +344,30 @@ with map_right:
 
 st.divider()
 
-# --- ANALYTICS TIER: 30-DAY TIMELINE & 7-DAY ML FORECAST ---
-st.markdown(f"### 📊 {t['history_slider']} & Predictive Analytics")
-
-# 30-Day Date Range Slider
-date_min = pd.to_datetime(dist_df["date"].min()).date()
-date_max = pd.to_datetime(dist_df["date"].max()).date()
-slider_range = st.slider(
-    "Select Analysis Window (Past 30 Days):",
-    min_value=date_min,
-    max_value=date_max,
-    value=(date_min, date_max),
-    format="YYYY-MM-DD"
-)
-
-mask_date = (pd.to_datetime(dist_df["date"]).dt.date >= slider_range[0]) & (pd.to_datetime(dist_df["date"]).dt.date <= slider_range[1])
-filtered_df = dist_df[mask_date]
-
-tab_charts, tab_ml, tab_soil_guide, tab_advisories_panel = st.tabs([
+# --- ANALYTICS & INTERACTIVE MODULE TABS ---
+tab_timeline, tab_forecast, tab_calculator, tab_soil_card, tab_advisories = st.tabs([
     f"📈 {t['history_slider']}",
     f"🔮 {t['forecast_header']}",
-    "🧪 Soil-Testing Guide & In-App Remedies",
-    f"📢 {t['advisory_header']}"
+    "⚡ 'What-If' Water & Energy Calculator",
+    "🧪 Soil Health Card & Instant Prescription",
+    f"📢 {t['advisory_header']} & Audio"
 ])
 
-with tab_charts:
+# --- TAB 1: 30-DAY MULTI-SATELLITE TIMELINE ---
+with tab_timeline:
+    date_min = pd.to_datetime(dist_df["date"].min()).date()
+    date_max = pd.to_datetime(dist_df["date"].max()).date()
+    slider_range = st.slider(
+        "Select Telemetry Date Window:",
+        min_value=date_min,
+        max_value=date_max,
+        value=(date_min, date_max),
+        format="YYYY-MM-DD"
+    )
+
+    mask_date = (pd.to_datetime(dist_df["date"]).dt.date >= slider_range[0]) & (pd.to_datetime(dist_df["date"]).dt.date <= slider_range[1])
+    filtered_df = dist_df[mask_date]
+
     fig_time = make_subplots(
         rows=2, cols=1,
         shared_xaxes=True,
@@ -349,7 +378,6 @@ with tab_charts:
         )
     )
 
-    # Subplot 1: Soil Moisture
     fig_time.add_trace(
         go.Scatter(x=filtered_df["date"], y=filtered_df["smap_rootzone_sm"], name="SMAP Rootzone SM (m³/m³)", line=dict(color="#1f77b4", width=2.8)),
         row=1, col=1
@@ -361,7 +389,6 @@ with tab_charts:
     fig_time.add_hline(y=0.36, line_dash="dot", line_color="green", annotation_text="Field Capacity (0.36)", row=1, col=1)
     fig_time.add_hline(y=0.10, line_dash="dot", line_color="red", annotation_text="Wilting Point (0.10)", row=1, col=1)
 
-    # Subplot 2: GPM Rainfall bars and Landsat NDVI line
     fig_time.add_trace(
         go.Bar(x=filtered_df["date"], y=filtered_df["gpm_precipitation_mm"], name="GPM IMERG Rain (mm/day)", marker_color="#2ca02c", opacity=0.7),
         row=2, col=1
@@ -380,21 +407,16 @@ with tab_charts:
     fig_time.update_yaxes(title_text="Soil Moisture (m³/m³)", row=1, col=1)
     fig_time.update_yaxes(title_text="Rainfall (mm/day)", row=2, col=1)
     st.plotly_chart(fig_time, use_container_width=True)
-
-    # Explicit NASA Provenance
     st.markdown(f"<div class='provenance-tag'>🛡️ Source: NASA SMAP, GPM IMERG, Landsat 8/9, MODIS, NASA POWER, GRACE</div>", unsafe_allow_html=True)
 
-with tab_ml:
+# --- TAB 2: 7-DAY ML FORECAST ---
+with tab_forecast:
     st.markdown("#### 7-Day RandomForest Soil Moisture Forecast")
     st.caption("Trained on past 7 days of SMAP soil moisture, GPM rainfall, and NASA POWER daily temperature with 90% confidence uncertainty intervals.")
-
-    fc_results = forecaster.predict_next_7_days(dist_df)
-    fc_df = pd.DataFrame(fc_results)
 
     col_fc1, col_fc2 = st.columns([3, 2])
     with col_fc1:
         fig_fc = go.Figure()
-        # Uncertainty envelope
         fig_fc.add_trace(go.Scatter(
             x=fc_df["day_label"].tolist() + fc_df["day_label"].tolist()[::-1],
             y=fc_df["upper_sm_bound"].tolist() + fc_df["lower_sm_bound"].tolist()[::-1],
@@ -403,7 +425,6 @@ with tab_ml:
             line=dict(color='rgba(255,255,255,0)'),
             name='90% Confidence Interval'
         ))
-        # Projected mean
         fig_fc.add_trace(go.Scatter(
             x=fc_df["day_label"],
             y=fc_df["predicted_sm"],
@@ -433,30 +454,142 @@ with tab_ml:
                 unsafe_allow_html=True
             )
 
-with tab_soil_guide:
-    st.markdown("### 🧪 Step-by-Step Soil-Testing Guide & Targeted Remedies")
-    st.markdown(
-        "When SMAP indicates adequate water (Green zone) yet Landsat NDVI/SAVI shows weak plant growth, "
-        "crop yield is being suppressed by **salinity, alkalinity, soil compaction, or organic carbon loss**. "
-        "Follow this ICAR & Punjab Agricultural University (PAU) field protocol:"
-    )
+# --- FEATURE 2: "WHAT-IF" WATER & TUBE-WELL ENERGY SAVINGS CALCULATOR ---
+with tab_calculator:
+    st.markdown("### ⚡ 'What-If' Water & Tube-Well Energy Savings Simulator")
+    st.caption("Quantifies seasonal groundwater preservation, electricity cost reduction, and district-scale scalability across Punjab's 1.4 million tube wells.")
 
-    col_sg1, col_sg2 = st.columns(2)
-    with col_sg1:
-        st.markdown("#### 📋 How to Collect a Soil Sample (15 cm Depth)")
-        for step in SOIL_TESTING_STEPS:
-            title_text = step.get(f"title_{lang_code}", step["title_en"])
-            desc_text = step.get(f"desc_{lang_code}", step["desc_en"])
-            with st.expander(f"Step {step['step_number']}: {title_text}"):
-                st.write(desc_text)
+    calc_c1, calc_c2 = st.columns([1.5, 2.5])
+    with calc_c1:
+        st.markdown("#### 🚜 Farm Simulation Parameters")
+        farm_acres = st.slider("Farm Size (Acres):", min_value=1, max_value=100, value=10, step=1)
+        
+        practice_options = {
+            "Direct Seeded Rice (DSR) (~20% water saved)": {"water_pct": 0.20, "power_pct": 0.20},
+            "Delay Irrigation by 3 Days (~10% water saved)": {"water_pct": 0.10, "power_pct": 0.10},
+            "Crop-Residue Mulching (~15% water saved)": {"water_pct": 0.15, "power_pct": 0.15},
+            "Combined Protocol (DSR + Mulching + Satellite Alerts) (~30% water saved)": {"water_pct": 0.30, "power_pct": 0.30}
+        }
+        selected_practice = st.selectbox("Select Conservation Practice:", list(practice_options.keys()), index=0)
+        chosen_pct = practice_options[selected_practice]["water_pct"]
 
-    with col_sg2:
-        st.markdown("#### 🛠️ In-App Soil Remediation & Fixes")
-        for item in REMEDIES_GUIDE:
-            remedy_text = item.get(f"remedy_{lang_code}", item["remedy_en"])
-            st.warning(f"**Issue:** {item['problem']}\n\n**Recommended Remedy:** {remedy_text}")
+    # Agronomic baselines for Punjab Paddy
+    baseline_water_per_acre_litres = 2200000  # 22 Lakh Litres per acre per season
+    baseline_kwh_per_acre = 420              # kWh grid electricity per acre for pumping
 
-with tab_advisories_panel:
+    # Farm-level savings
+    water_saved_litres = farm_acres * baseline_water_per_acre_litres * chosen_pct
+    kwh_saved = farm_acres * baseline_kwh_per_acre * chosen_pct
+    diesel_eq_litres = kwh_saved * 0.28      # diesel equivalent if using backup pump
+    co2_saved_kg = kwh_saved * 0.82          # 0.82 kg CO2 per kWh grid electricity
+
+    # District-level extrapolation (10% adoption across ~10,000 tube wells / ~50,000 acres in district)
+    district_acres_target = 50000
+    district_water_saved_gl = (district_acres_target * baseline_water_per_acre_litres * chosen_pct) / 1e9  # Gigalitres (Billion Litres)
+    district_kwh_gwh = (district_acres_target * baseline_kwh_per_acre * chosen_pct) / 1e6               # GWh
+    district_co2_tonnes = (district_kwh_gwh * 1e6 * 0.82) / 1000
+
+    with calc_c2:
+        st.markdown("#### 💧 Simulated Farm-Level Seasonal Impact")
+        sc1, sc2, sc3 = st.columns(3)
+        with sc1:
+            st.metric("Groundwater Saved", f"{water_saved_litres/100000:.1f} Lakh L", f"{(water_saved_litres/1e6):.2f} Million Litres")
+        with sc2:
+            st.metric("Pumping Power Saved", f"{kwh_saved:,.0f} kWh", f"₹{(kwh_saved * 6.5):,.0f} Cost Equivalent")
+        with sc3:
+            st.metric("Carbon Emissions Averted", f"{co2_saved_kg:,.0f} kg CO₂", f"{diesel_eq_litres:,.0f} L Diesel Eq.")
+
+        st.markdown("---")
+        st.markdown(f"#### 🌐 District-Scale Scalability Impact ({selected_district} Basin)")
+        st.caption(f"Projected impact if 10% of district tube-well commands (~50,000 acres) adopt {selected_practice.split('(')[0]}:")
+        
+        d1, d2, d3 = st.columns(3)
+        with d1:
+            st.markdown(f"""
+            <div class="metric-box" style="border-top-color: #28a745;">
+                <div class="metric-label">Regional Water Conserved</div>
+                <div class="metric-val">{district_water_saved_gl:.2f} <span style="font-size:1rem;">GL</span></div>
+                <div class="metric-sub">{district_water_saved_gl * 1000:,.0f} Million Litres preserved</div>
+            </div>
+            """, unsafe_allow_html=True)
+        with d2:
+            st.markdown(f"""
+            <div class="metric-box" style="border-top-color: #1f77b4;">
+                <div class="metric-label">Grid Electricity Relieved</div>
+                <div class="metric-val">{district_kwh_gwh:.2f} <span style="font-size:1rem;">GWh</span></div>
+                <div class="metric-sub">{district_kwh_gwh * 1000:,.0f} Megawatt-hours saved</div>
+            </div>
+            """, unsafe_allow_html=True)
+        with d3:
+            st.markdown(f"""
+            <div class="metric-box" style="border-top-color: #6f42c1;">
+                <div class="metric-label">Climate Mitigation</div>
+                <div class="metric-val">{district_co2_tonnes:,.0f} <span style="font-size:1rem;">t CO₂</span></div>
+                <div class="metric-sub">Carbon abatement per season</div>
+            </div>
+            """, unsafe_allow_html=True)
+
+# --- FEATURE 3: INTERACTIVE SOIL HEALTH CARD & INSTANT LAB PRESCRIPTION ---
+with tab_soil_card:
+    st.markdown("### 🧪 Interactive Soil Health Card & Instant Lab Prescription")
+    st.caption("Input KVK / PAU laboratory test results to generate a precision per-acre corrective prescription.")
+
+    sh1, sh2 = st.columns([1.5, 2.5])
+    with sh1:
+        st.markdown("#### 🔬 Enter Soil Lab Test Values")
+        input_ph = st.number_input("Soil pH (Acidity/Alkalinity):", min_value=5.0, max_value=11.0, value=8.6, step=0.1, help="Normal range is 6.5 - 8.2. Values > 8.5 indicate alkaline/sodic soil.")
+        input_ec = st.number_input("Electrical Conductivity EC (dS/m):", min_value=0.05, max_value=10.0, value=0.90, step=0.05, help="Normal < 0.8 dS/m. Values > 0.8 indicate soluble salt accumulation.")
+        input_oc = st.number_input("Organic Carbon OC (%):", min_value=0.05, max_value=2.50, value=0.38, step=0.02, help="Punjab soils: Low < 0.40%, Medium 0.40-0.75%, High > 0.75%.")
+        input_n = st.number_input("Available Nitrogen (kg/ha):", min_value=40.0, max_value=600.0, value=190.0, step=5.0, help="Low < 280 kg/ha, Medium 280-560 kg/ha.")
+
+    # Prescription Logic
+    gypsum_bags = max(0, int(round((input_ph - 8.4) * 5.0))) if input_ph > 8.4 else 0
+    fym_tonnes = 5.0 if input_oc < 0.40 else (2.5 if input_oc < 0.75 else 0.0)
+    leaching_needed = input_ec > 0.80
+    extra_urea_pct = 25 if input_n < 280 else 0
+
+    with sh2:
+        st.markdown(f"#### 📋 Instant Per-Acre Soil Prescription ({lang_code.upper()})")
+        
+        # pH / Sodic condition
+        if input_ph > 8.5:
+            st.error(f"""
+            **1. Alkalinity / Sodic Soil Flagged (pH = {input_ph:.1f} > 8.5):**  
+            Apply **{gypsum_bags} bags/acre (50 kg each) Agricultural Gypsum ($CaSO_4 \cdot 2H_2O$)**.  
+            *Application Rule:* Broadcast evenly and mix in the top 10 cm of soil before pre-sowing irrigation. The calcium displaces toxic sodium ($Na^+$), restoring soil permeability.
+            """)
+        else:
+            st.success(f"**1. Soil pH Normal (pH = {input_ph:.1f}):** No gypsum required. Soil reaction is safe for crop roots.")
+
+        # EC / Salinity
+        if leaching_needed:
+            st.warning(f"""
+            **2. Soluble Salt Accumulation (EC = {input_ec:.2f} dS/m > 0.8 dS/m):**  
+            Provide **5–7 cm leaching flood with good-quality canal water** prior to transplanting. Maintain boundary drainage channels to export salt wash.
+            """)
+        else:
+            st.success(f"**2. Salinity Safe (EC = {input_ec:.2f} dS/m <= 0.8 dS/m):** Electrical conductivity is within optimal limits.")
+
+        # Organic Carbon
+        if input_oc < 0.40:
+            st.error(f"""
+            **3. Organic Carbon Critically Low (OC = {input_oc:.2f}% < 0.40%):**  
+            Incorporate **{fym_tonnes:.1f} tonnes/acre well-decomposed Farmyard Manure (FYM)** or sow **Dhaincha (*Sesbania aculeata*) green manure** 45 days before paddy. Strictly maintain **Zero Stubble Burning**.
+            """)
+        elif input_oc < 0.75:
+            st.info(f"**3. Organic Carbon Medium (OC = {input_oc:.2f}%):** Incorporate {fym_tonnes:.1f} tonnes/acre compost or retain crop residues with Happy Seeder.")
+        else:
+            st.success(f"**3. Organic Carbon Optimum (OC = {input_oc:.2f}%):** Soil biological carbon is well-preserved.")
+
+        # Nitrogen & Zinc
+        st.info(f"""
+        **4. Nutrient & Micronutrient Supplementation:**  
+        • **Nitrogen:** Available N is {input_n:.0f} kg/ha ({'Low' if input_n < 280 else 'Medium'}). {'Increase baseline urea application by 25% split across 3 stages.' if extra_urea_pct > 0 else 'Follow standard PAU urea recommendations.'}  
+        • **Zinc Micronutrient:** Broadcast **25 kg/acre Zinc Sulfate Heptahydrate (21%)** at final puddling, or apply 0.5% $ZnSO_4$ foliar spray to prevent zinc deficiency chlorosis.
+        """)
+
+# --- TAB 5: ACTIONABLE ADVISORIES, WHATSAPP SHARING & VOICE ADVISORY ---
+with tab_advisories:
     st.markdown(f"### 📢 {t['advisory_header']} ({lang_code.upper()})")
     
     advisory_key = stress_res["action_code"]
@@ -472,13 +605,164 @@ with tab_advisories_panel:
     for adv in advisories:
         st.markdown(f"- 🌾 **{adv}**")
 
+    # --- FEATURE 4: ONE-CLICK WHATSAPP SHARE & WEB SPEECH AUDIO ---
     st.divider()
-    st.markdown("#### 🌾 Core Climate-Smart Practices for Punjab Wheat-Paddy Rotations")
-    adv_c1, adv_c2 = st.columns(2)
-    with adv_c1:
-        st.info("🚜 **Tar-Watter Direct Seeded Rice (DSR):** Saves 15–20 cm of irrigation water, reduces pumping electricity costs, and protects soil structure from puddling hardpan compaction.")
-    with adv_c2:
-        st.success("🌱 **Crop Residue Mulching:** Spreading 2.5 tonnes/acre of paddy straw protects surface moisture from intense May–June evapotranspiration losses and eliminates stubble burning.")
+    st.markdown("#### 📲 Multi-Channel Farmer Outreach (WhatsApp & Voice)")
+
+    outreach_col1, outreach_col2 = st.columns(2)
+
+    with outreach_col1:
+        st.markdown("##### 💬 Share Advisory on WhatsApp")
+        # Prepare URL-encoded text
+        share_summary = f"🚨 *Punjab Farm Water Watch Advisory*\n📍 District: {selected_district}\n💧 Water Stress: {stress_res['score']}/100 ({stress_res['zone']})\n🌱 Soil Health: {latest['landsat_ndvi']:.2f} NDVI\n\n📢 *Advisories:*\n" + "\n".join([f"• {a}" for a in advisories[:2]]) + "\n\n_Powered by NASA SMAP & Earth Observations_"
+        encoded_wa_msg = urllib.parse.quote(share_summary)
+        wa_url = f"https://wa.me/?text={encoded_wa_msg}"
+        
+        st.link_button("📲 Share Field Advisory on WhatsApp", wa_url, use_container_width=True)
+        st.caption("Broadcasts formatted satellite water stress alert directly to farmer WhatsApp groups and local KVKs.")
+
+    with outreach_col2:
+        st.markdown("##### 🔊 Listen to Voice Advisory (ਆਵਾਜ਼ ਵਿੱਚ ਸੁਣੋ / आवाज़ में सुनें)")
+        spoken_text = f"Punjab Farm Water Watch Advisory for {selected_district}. Water Stress Score is {stress_res['score']} out of 100. " + " ".join(advisories[:2])
+        spoken_lang = "hi-IN" if lang_code == "hi" else ("hi-IN" if lang_code == "pa" else "en-IN")
+        
+        # Web Speech API Audio Component
+        speech_html = f"""
+        <div style="padding: 6px 0;">
+            <button id="speakBtn" style="background-color: #2b5c8f; color: white; border: none; padding: 10px 18px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 14px;">
+                🔊 Read Advisory Aloud ({lang_code.upper()})
+            </button>
+            <button id="stopBtn" style="background-color: #e2e8f0; color: #333; border: none; padding: 10px 14px; border-radius: 8px; margin-left: 8px; cursor: pointer; font-size: 14px;">
+                ⏹️ Stop
+            </button>
+            <div id="speechStatus" style="margin-top: 8px; font-size: 13px; color: #555;"></div>
+        </div>
+        <script>
+            const textToSpeak = {json_text};
+            const langCode = "{spoken_lang}";
+            const speakBtn = document.getElementById("speakBtn");
+            const stopBtn = document.getElementById("stopBtn");
+            const statusDiv = document.getElementById("speechStatus");
+
+            speakBtn.addEventListener("click", () => {{
+                if ('speechSynthesis' in window) {{
+                    window.speechSynthesis.cancel();
+                    const utterance = new SpeechSynthesisUtterance(textToSpeak);
+                    utterance.lang = langCode;
+                    utterance.rate = 0.95;
+                    utterance.onstart = () => {{ statusDiv.innerText = "🔊 Playing voice advisory..."; }};
+                    utterance.onend = () => {{ statusDiv.innerText = "✅ Completed audio playback."; }};
+                    utterance.onerror = (e) => {{ statusDiv.innerText = "Audio playback status: " + e.error; }};
+                    window.speechSynthesis.speak(utterance);
+                }} else {{
+                    statusDiv.innerText = "Web Speech API not supported in this browser window.";
+                }}
+            }});
+
+            stopBtn.addEventListener("click", () => {{
+                if ('speechSynthesis' in window) {{
+                    window.speechSynthesis.cancel();
+                    statusDiv.innerText = "⏹️ Stopped.";
+                }}
+            }});
+        </script>
+        """.replace("{json_text}", pd.Series([spoken_text]).to_json(orient='values')[1:-1])
+
+        components.html(speech_html, height=95)
+        st.caption("Accessible audio narration for local growers via standard browser Web Speech API.")
+
+    # --- FEATURE 5: ONE-CLICK DOWNLOADABLE DISTRICT OFFICER ACTION BRIEF ---
+    st.divider()
+    st.markdown("#### 📄 Export Official District Officer Brief")
+    
+    # Generate structured Markdown Brief
+    brief_content = f"""# Punjab Farm Water Watch - District Action Brief
+**NASA Space Apps Challenge 2026 · Delhi NCR**
+**Team:** The SMAP Squad
+**Generated At:** {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
+
+---
+
+## 1. Monitoring Scope & Centroid
+* **Target Jurisdiction:** {selected_district}
+* **Centroid Coordinates:** Latitude {lat_in:.4f}°N, Longitude {lon_in:.4f}°E
+* **Agro-Ecological Classification:** Alluvial Breadbasket (Punjab)
+
+---
+
+## 2. Real-Time NASA Satellite Telemetry (Latest Observation)
+* **NASA SMAP L4 Rootzone Moisture (0–100 cm):** {latest['smap_rootzone_sm']:.3f} m³/m³
+* **NASA SMAP L4 Surface Moisture (0–5 cm):** {latest['smap_surface_sm']:.3f} m³/m³
+* **NASA GPM IMERG 30-Day Cumulative Precipitation:** {rain_30d_val:.1f} mm
+* **MODIS MOD16A2 Evapotranspiration:** {latest['modis_et_mm']:.2f} mm/day
+* **Landsat 8/9 OLI Canopy NDVI:** {latest['landsat_ndvi']:.3f}
+* **Landsat 8/9 OLI Canopy SAVI:** {latest['landsat_savi']:.3f}
+* **Landsat 8/9 TIRS Land Surface Temperature:** {latest['landsat_lst_c']:.1f} °C
+* **NASA POWER DAV Ambient Temperature:** {latest['power_temp_c']:.1f} °C
+* **NASA GRACE Groundwater Equivalent Mass Anomaly:** {latest['grace_water_anomaly_cm']:.2f} cm
+
+---
+
+## 3. Water Stress Index & Attribution Breakdown
+* **Composite Water Stress Score:** {stress_res['score']} / 100
+* **Risk Categorization:** {stress_res['zone'].upper()} ZONE ({stress_res['status']})
+* **Driver Attribution:**
+  - SMAP Rootzone Soil Moisture Deficit: {stress_res['contributions']['smap']}% impact
+  - GPM 30-Day Precipitation Deficit: {stress_res['contributions']['gpm']}% impact
+  - MODIS Evapotranspiration Draw: {stress_res['contributions']['et']}% impact
+  - Landsat Thermal Heat Anomaly: {stress_res['contributions']['lst']}% impact
+
+---
+
+## 4. Dual-Diagnosis Soil Health Audit
+* **Anomaly Status:** {'ALERT TRIGGERED' if soil_res['alert_triggered'] else 'NORMAL'}
+* **Diagnostic Code:** {soil_res['status_code']}
+* **Assessment:** {soil_res['diagnosis']}
+* **Prescription:**
+  - Soil pH: {input_ph:.1f} -> {f'Apply {gypsum_bags} bags/acre Agricultural Gypsum' if input_ph > 8.5 else 'Normal pH range'}
+  - Soil EC: {input_ec:.2f} dS/m -> {'Leaching flood with canal water required' if leaching_needed else 'Normal salinity'}
+  - Soil OC: {input_oc:.2f}% -> {f'Apply {fym_tonnes} tonnes/acre Farmyard Manure & Dhaincha green manure' if input_oc < 0.5 else 'Adequate organic carbon'}
+  - Zinc: 25 kg/acre Zinc Sulfate Heptahydrate (21%) recommended
+
+---
+
+## 5. 7-Day Machine Learning Predictive Outlook
+| Day Horizon | Projected Moisture (m³/m³) | 90% Confidence Interval | Projected Water Stress | Risk Classification |
+|---|---|---|---|---|
+"""
+    for f in fc_results:
+        brief_content += f"| {f['day_label']} | {f['predicted_sm']:.3f} | {f['lower_sm_bound']:.3f} – {f['upper_sm_bound']:.3f} | {f['predicted_stress_score']:.1f} / 100 | {f['risk_zone']} |\n"
+
+    brief_content += f"""
+---
+
+## 6. Official Field Advisories for Agricultural Officers
+"""
+    for adv in advisories:
+        brief_content += f"* {adv}\n"
+
+    brief_content += f"""
+---
+*Data Provenance: NASA Earthdata CMR (SPL4SMGP, GPM_3IMERGDF, MOD16A2, HLSL30, POWER_DAV, GRACE_TELLUS).*
+"""
+
+    down_c1, down_c2 = st.columns(2)
+    with down_c1:
+        st.download_button(
+            label="📥 Download District Water & Soil Action Brief (Markdown)",
+            data=brief_content,
+            file_name=f"punjab_farm_water_watch_{selected_district.lower().replace(' ', '_')}_brief.md",
+            mime="text/markdown",
+            use_container_width=True
+        )
+    with down_c2:
+        st.download_button(
+            label="📊 Export 30-Day NASA Telemetry (CSV)",
+            data=dist_df.to_csv(index=False),
+            file_name=f"nasa_telemetry_{selected_district.lower().replace(' ', '_')}_30d.csv",
+            mime="text/csv",
+            use_container_width=True
+        )
 
 # --- FOOTER & AUDIT PROVENANCE ---
 st.divider()

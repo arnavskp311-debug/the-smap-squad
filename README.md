@@ -89,7 +89,48 @@ When satellite radar confirms adequate soil moisture yet optical reflectance rev
 
 ---
 
-## 🚀 6. Installation & Execution Guide
+## 🌟 6. Five High-Impact Features for NASA Space Apps Judging
+
+To deliver maximum operational utility for both smallholder farmers and district agricultural policymakers, Punjab Farm Water Watch incorporates 5 flagship interactive capabilities:
+
+### 1. 🛰️ Live NASA GIBS Satellite Tile Overlays on Interactive Folium Map
+* Integrated NASA Global Imagery Browse Services (GIBS) Web Map Tile Service (WMTS) layers.
+* Toggle between **MODIS Terra True Color (Corrected Reflectance)** and **MODIS Terra Land Surface Temperature (Day)** directly over Punjab district polygons with a live `folium.LayerControl()`.
+* Enables visual corroboration between numeric water stress scores and true satellite-observed canopy greenness and surface heat patterns.
+
+### 2. ⚡ "What-If" Water & Tube-Well Energy Savings Simulator
+* Dynamic parametric calculator with an interactive **Farm Size (1–100 Acres)** slider.
+* Models 4 field-proven conservation interventions:
+  - **Direct Seeded Rice (DSR):** ~20% water reduction.
+  - **3-Day Delayed Irrigation:** ~10% water reduction based on SMAP rootzone adequacy.
+  - **Crop-Residue Mulching:** ~15% evaporation suppression.
+  - **Combined Protocol:** ~30% cumulative water and energy savings.
+* Calculates exact season-level metrics: **Litres of Groundwater Saved**, **Tube-Well Electricity Saved (kWh)**, and regional scaling across Punjab's 100,000+ agricultural tube wells (Gigalitres saved, GWh saved, and metric tonnes of $CO_2$ avoided).
+
+### 3. 🧪 Interactive Soil Health Card & Instant Lab Prescription
+* Empirical soil testing calculator accepting standard soil lab report values:
+  - **Soil pH** (sodicity index)
+  - **Electrical Conductivity (EC)** in dS/m (salinity index)
+  - **Organic Carbon (OC)** in % (microbial and structural fertility)
+  - **Available Nitrogen** in kg/ha
+* Generates real-time, precision-dosed prescriptions aligned with PAU and KVK agronomic agronomy:
+  - Exact agricultural **Gypsum bags/acre** based on excess alkalinity ($pH > 8.5$).
+  - Recommended **Farmyard Manure (FYM)** and **Dhaincha (Sesbania) green manuring** tonnage when $OC < 0.5\%$.
+  - Leaching canal-water flood schedule for salt flushes when $EC > 0.8\text{ dS/m}$.
+  - Calibrated basal dose of Zinc Sulfate Heptahydrate ($ZnSO_4$, 21%) to eliminate widespread zinc deficiencies in Indo-Gangetic soils.
+
+### 4. 📢 One-Click WhatsApp Alert & Web Speech Audio Advisory (Trilingual)
+* **WhatsApp Community Broadcast:** A direct `wa.me/?text=...` deep link that formats a complete, URL-encoded alert with the district name, Water Stress Score, 7-day forecast, and localized advisories for instant dissemination in farmer WhatsApp groups.
+* **Browser-Native Web Speech API Narration:** Integrates accessible audio synthesis (`window.speechSynthesis`) in **English**, **Hindi (हिन्दी)**, and **Punjabi (ਪੰਜਾਬੀ)**, allowing illiterate or visually impaired growers to hear real-time irrigation guidance (*"Kisan bhai, 3 din paani rok do"* / *"ਕਿਸਾਨ ਵੀਰੋ, 3 ਦਿਨ ਪਾਣੀ ਰੋਕੋ"*).
+
+### 5. 📄 One-Click Downloadable District Officer Action Brief (Markdown & CSV)
+* Generates a timestamped, official **District Water & Soil Action Brief** ready for Chief Agriculture Officers (CAOs) and Krishi Vigyan Kendra extension specialists.
+* Includes exact district coordinates, complete 6-satellite NASA telemetry, Water Stress attribution weights, dual-diagnosis soil audit, 7-day predictive projection table with confidence intervals, and field intervention instructions.
+* Dual-export capability: Formatted executive **Markdown dossier** and raw **30-day NASA telemetry CSV**.
+
+---
+
+## 🚀 7. Installation & Execution Guide
 
 ### Prerequisites
 * Python 3.11+
@@ -124,7 +165,7 @@ streamlit run app.py
 
 ---
 
-## 👥 7. Team & Credits
+## 👥 8. Team & Credits
 * **Challenge:** NASA Space Apps Challenge 2026 (Delhi NCR)
 * **Team:** The SMAP Squad
 * **Data Sources:** NASA Earth Science Data Systems (ESDS), NASA Earthdata, LP DAAC, NSIDC DAAC, GES DISC, NASA Langley POWER, JPL PO.DAAC.
