@@ -57,10 +57,10 @@ body {
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    gap: 5px;
-    width: 40px;
-    height: 40px;
-    background: rgba(255, 255, 255, 0.06);
+    gap: 4px;
+    width: 42px;
+    height: 42px;
+    background: rgba(255, 255, 255, 0.08);
     border: 1px solid var(--border-color);
     border-radius: 8px;
     cursor: pointer;
@@ -68,20 +68,35 @@ body {
     transition: all 0.25s ease;
     user-select: none;
     flex-shrink: 0;
+    z-index: 100;
+}
+
+[data-theme="light"] .hamburger-btn {
+    background: #F1F5F9;
+    border-color: #CBD5E1;
 }
 
 .hamburger-btn:hover {
-    background: rgba(255, 255, 255, 0.14);
+    background: rgba(255, 255, 255, 0.16);
     border-color: var(--accent-amber);
-    transform: scale(1.04);
+    transform: scale(1.05);
+}
+
+[data-theme="light"] .hamburger-btn:hover {
+    background: #E2E8F0;
+    border-color: #0284C7;
 }
 
 .hamburger-line {
-    width: 20px;
-    height: 2px;
+    width: 22px;
+    height: 2.8px;
     background-color: var(--text-main);
     border-radius: 2px;
     transition: all 0.25s ease;
+}
+
+[data-theme="light"] .hamburger-line {
+    background-color: #0F172A;
 }
 
 .hamburger-btn.is-active .hamburger-line:nth-child(1) {
@@ -188,6 +203,46 @@ select.region-select {
     font-weight: 600;
     outline: none;
     cursor: pointer;
+}
+
+.hotspot-cascading-control {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(255, 255, 255, 0.04);
+    padding: 3px 6px;
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+}
+
+[data-theme="light"] .hotspot-cascading-control {
+    background: #F8FAFC;
+    border-color: #CBD5E1;
+}
+
+.hotspot-select {
+    border-color: var(--accent-amber) !important;
+    background: rgba(245, 158, 11, 0.12) !important;
+    color: #FDE68A !important;
+    font-weight: 700 !important;
+}
+
+[data-theme="light"] .hotspot-select {
+    background: #FEF3C7 !important;
+    color: #92400E !important;
+    border-color: #D97706 !important;
+}
+
+.district-select {
+    border-color: var(--accent-cyan) !important;
+    background: rgba(14, 165, 233, 0.1) !important;
+    color: #BAE6FD !important;
+}
+
+[data-theme="light"] .district-select {
+    background: #E0F2FE !important;
+    color: #0369A1 !important;
+    border-color: #0284C7 !important;
 }
 
 .nasa-live-pill {
@@ -2802,7 +2857,6 @@ body.auth-locked .container {
     transition: filter 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-body.auth-locked #hamburgerBtn,
 body.auth-locked #navDrawer,
 body.auth-locked #drawerOverlay {
     display: none !important;

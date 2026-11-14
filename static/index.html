@@ -26,61 +26,6 @@
             <button id="drawerCloseBtn" class="drawer-close-btn" aria-label="Close Navigation Menu">✕</button>
         </div>
 
-        <!-- Drawer Region Switcher -->
-        <div class="drawer-section">
-            <div class="drawer-section-label">Active Region</div>
-            <select id="drawerDistrictSelect" class="region-select drawer-select">
-                <optgroup label="Punjab Districts (All 22 Districts)">
-                    <option value="Bathinda" selected>Punjab - Bathinda</option>
-                    <option value="Amritsar">Punjab - Amritsar</option>
-                    <option value="Barnala">Punjab - Barnala</option>
-                    <option value="Faridkot">Punjab - Faridkot</option>
-                    <option value="Fatehgarh Sahib">Punjab - Fatehgarh Sahib</option>
-                    <option value="Fazilka">Punjab - Fazilka</option>
-                    <option value="Ferozepur">Punjab - Ferozepur</option>
-                    <option value="Gurdaspur">Punjab - Gurdaspur</option>
-                    <option value="Hoshiarpur">Punjab - Hoshiarpur</option>
-                    <option value="Jalandhar">Punjab - Jalandhar</option>
-                    <option value="Kapurthala">Punjab - Kapurthala</option>
-                    <option value="Ludhiana">Punjab - Ludhiana</option>
-                    <option value="Mansa">Punjab - Mansa</option>
-                    <option value="Moga">Punjab - Moga</option>
-                    <option value="Pathankot">Punjab - Pathankot</option>
-                    <option value="Patiala">Punjab - Patiala</option>
-                    <option value="Rupnagar">Punjab - Rupnagar</option>
-                    <option value="S.A.S. Nagar">Punjab - S.A.S. Nagar (Mohali)</option>
-                    <option value="Sangrur">Punjab - Sangrur</option>
-                    <option value="Shahid Bhagat Singh Nagar">Punjab - SBS Nagar</option>
-                    <option value="Sri Muktsar Sahib">Punjab - Sri Muktsar Sahib</option>
-                    <option value="Tarn Taran">Punjab - Tarn Taran</option>
-                </optgroup>
-                <optgroup label="Global - USA Central Valley (California)">
-                    <option value="Central Valley - Fresno County (USA)">Fresno County (California, USA)</option>
-                    <option value="Central Valley - Kern County (USA)">Kern County / Bakersfield (USA)</option>
-                    <option value="Central Valley - Tulare County (USA)">Tulare County (California, USA)</option>
-                    <option value="Central Valley - San Joaquin (USA)">San Joaquin County (USA)</option>
-                    <option value="Central Valley - Sacramento (USA)">Sacramento County (USA)</option>
-                </optgroup>
-                <optgroup label="Global - Egypt Nile Delta">
-                    <option value="Nile Delta - Kafr El-Sheikh (Egypt)">Kafr El-Sheikh (Nile Delta, Egypt)</option>
-                    <option value="Nile Delta - Beheira (Egypt)">Beheira Governorate (Egypt)</option>
-                    <option value="Nile Delta - Dakahlia (Egypt)">Dakahlia Governorate (Egypt)</option>
-                    <option value="Nile Delta - Gharbia (Egypt)">Gharbia Governorate (Egypt)</option>
-                </optgroup>
-                <optgroup label="Global - Australia Murray-Darling">
-                    <option value="Murray-Darling - Riverina (Australia)">Riverina (Murray-Darling, Australia)</option>
-                    <option value="Murray-Darling - Sunraysia (Australia)">Sunraysia (Murray-Darling, Australia)</option>
-                    <option value="Murray-Darling - Murrumbidgee (Australia)">Murrumbidgee (Australia)</option>
-                    <option value="Murray-Darling - Goulburn Valley (Australia)">Goulburn Valley (Australia)</option>
-                </optgroup>
-                <optgroup label="Global Hotspot Basins">
-                    <option value="Central Valley (California, USA)">Global - Central Valley (USA)</option>
-                    <option value="Nile Delta (Egypt)">Global - Nile Delta (Egypt)</option>
-                    <option value="Murray-Darling Basin (Australia)">Global - Murray-Darling (Australia)</option>
-                </optgroup>
-            </select>
-        </div>
-
         <!-- Drawer Farmer Profile Card -->
         <div class="drawer-section">
             <div class="drawer-profile-card" id="drawerProfileCard">
@@ -188,56 +133,19 @@
                 </div>
             </div>
             <div class="nav-controls">
-                <select id="districtSelect" class="region-select">
-                    <optgroup label="Punjab Districts (All 22 Districts)">
-                        <option value="Bathinda" selected>Punjab - Bathinda</option>
-                        <option value="Amritsar">Punjab - Amritsar</option>
-                        <option value="Barnala">Punjab - Barnala</option>
-                        <option value="Faridkot">Punjab - Faridkot</option>
-                        <option value="Fatehgarh Sahib">Punjab - Fatehgarh Sahib</option>
-                        <option value="Fazilka">Punjab - Fazilka</option>
-                        <option value="Ferozepur">Punjab - Ferozepur</option>
-                        <option value="Gurdaspur">Punjab - Gurdaspur</option>
-                        <option value="Hoshiarpur">Punjab - Hoshiarpur</option>
-                        <option value="Jalandhar">Punjab - Jalandhar</option>
-                        <option value="Kapurthala">Punjab - Kapurthala</option>
-                        <option value="Ludhiana">Punjab - Ludhiana</option>
-                        <option value="Mansa">Punjab - Mansa</option>
-                        <option value="Moga">Punjab - Moga</option>
-                        <option value="Pathankot">Punjab - Pathankot</option>
-                        <option value="Patiala">Punjab - Patiala</option>
-                        <option value="Rupnagar">Punjab - Rupnagar</option>
-                        <option value="S.A.S. Nagar">Punjab - S.A.S. Nagar (Mohali)</option>
-                        <option value="Sangrur">Punjab - Sangrur</option>
-                        <option value="Shahid Bhagat Singh Nagar">Punjab - SBS Nagar</option>
-                        <option value="Sri Muktsar Sahib">Punjab - Sri Muktsar Sahib</option>
-                        <option value="Tarn Taran">Punjab - Tarn Taran</option>
-                    </optgroup>
-                    <optgroup label="Global - USA Central Valley (California)">
-                        <option value="Central Valley - Fresno County (USA)">Fresno County (California, USA)</option>
-                        <option value="Central Valley - Kern County (USA)">Kern County / Bakersfield (USA)</option>
-                        <option value="Central Valley - Tulare County (USA)">Tulare County (California, USA)</option>
-                        <option value="Central Valley - San Joaquin (USA)">San Joaquin County (USA)</option>
-                        <option value="Central Valley - Sacramento (USA)">Sacramento County (USA)</option>
-                    </optgroup>
-                    <optgroup label="Global - Egypt Nile Delta">
-                        <option value="Nile Delta - Kafr El-Sheikh (Egypt)">Kafr El-Sheikh (Nile Delta, Egypt)</option>
-                        <option value="Nile Delta - Beheira (Egypt)">Beheira Governorate (Egypt)</option>
-                        <option value="Nile Delta - Dakahlia (Egypt)">Dakahlia Governorate (Egypt)</option>
-                        <option value="Nile Delta - Gharbia (Egypt)">Gharbia Governorate (Egypt)</option>
-                    </optgroup>
-                    <optgroup label="Global - Australia Murray-Darling">
-                        <option value="Murray-Darling - Riverina (Australia)">Riverina (Murray-Darling, Australia)</option>
-                        <option value="Murray-Darling - Sunraysia (Australia)">Sunraysia (Murray-Darling, Australia)</option>
-                        <option value="Murray-Darling - Murrumbidgee (Australia)">Murrumbidgee (Australia)</option>
-                        <option value="Murray-Darling - Goulburn Valley (Australia)">Goulburn Valley (Australia)</option>
-                    </optgroup>
-                    <optgroup label="Global Hotspot Basins">
-                        <option value="Central Valley (California, USA)">Global - Central Valley (USA)</option>
-                        <option value="Nile Delta (Egypt)">Global - Nile Delta (Egypt)</option>
-                        <option value="Murray-Darling Basin (Australia)">Global - Murray-Darling (Australia)</option>
-                    </optgroup>
-                </select>
+                <!-- 5 Global Hotspots with Dynamic Expanding Districts -->
+                <div class="hotspot-cascading-control">
+                    <select id="hotspotSelect" class="region-select hotspot-select" title="Select Global Aquifer Hotspot" aria-label="Global Aquifer Hotspot">
+                        <option value="Punjab" selected>🌾 Punjab (India)</option>
+                        <option value="Central Valley">🏜️ Central Valley (USA)</option>
+                        <option value="Nile Delta">🌊 Nile Delta (Egypt)</option>
+                        <option value="Murray-Darling">🚜 Murray-Darling (Australia)</option>
+                        <option value="Indo-Gangetic">🏔️ Indo-Gangetic Basin (South Asia)</option>
+                    </select>
+                    <select id="districtSelect" class="region-select district-select" title="Select District / County in Hotspot" aria-label="District or County in Hotspot">
+                        <!-- Dynamically populated based on chosen Hotspot -->
+                    </select>
+                </div>
 
                 <div class="nasa-live-pill" id="nasaPill" title="NASA API Authenticated &amp; Connected (nkcn...HpdH)">
                     <div class="pulsing-dot"></div>

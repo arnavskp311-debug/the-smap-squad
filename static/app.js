@@ -24,6 +24,7 @@ document.addEventListener("DOMContentLoaded", () => {
     initMap();
     initNasaStatus();
     initAuth();
+    populateHotspotDistricts("Punjab", currentDistrict || "Bathinda");
     setupEventListeners();
     loadDistrictData(currentDistrict);
 });
@@ -90,23 +91,79 @@ function initDrawer() {
             window.scrollTo({ top: 0, behavior: "smooth" });
         });
     });
+}
 
-    // Sync Drawer District Selector with Main District Selector
-    const mainSelect = document.getElementById("districtSelect");
-    const drawerSelect = document.getElementById("drawerDistrictSelect");
-    if (mainSelect && drawerSelect) {
-        drawerSelect.innerHTML = mainSelect.innerHTML;
-        drawerSelect.value = mainSelect.value;
+// 5 Global Hotspots & Expanding Sub-Districts System
+const HOTSPOT_DISTRICTS = {
+    "Punjab": [
+        { value: "Bathinda", label: "Punjab - Bathinda" },
+        { value: "Amritsar", label: "Punjab - Amritsar" },
+        { value: "Barnala", label: "Punjab - Barnala" },
+        { value: "Faridkot", label: "Punjab - Faridkot" },
+        { value: "Fatehgarh Sahib", label: "Punjab - Fatehgarh Sahib" },
+        { value: "Fazilka", label: "Punjab - Fazilka" },
+        { value: "Ferozepur", label: "Punjab - Ferozepur" },
+        { value: "Gurdaspur", label: "Punjab - Gurdaspur" },
+        { value: "Hoshiarpur", label: "Punjab - Hoshiarpur" },
+        { value: "Jalandhar", label: "Punjab - Jalandhar" },
+        { value: "Kapurthala", label: "Punjab - Kapurthala" },
+        { value: "Ludhiana", label: "Punjab - Ludhiana" },
+        { value: "Mansa", label: "Punjab - Mansa" },
+        { value: "Moga", label: "Punjab - Moga" },
+        { value: "Pathankot", label: "Punjab - Pathankot" },
+        { value: "Patiala", label: "Punjab - Patiala" },
+        { value: "Rupnagar", label: "Punjab - Rupnagar" },
+        { value: "S.A.S. Nagar", label: "Punjab - S.A.S. Nagar (Mohali)" },
+        { value: "Sangrur", label: "Punjab - Sangrur" },
+        { value: "Shahid Bhagat Singh Nagar", label: "Punjab - SBS Nagar" },
+        { value: "Sri Muktsar Sahib", label: "Punjab - Sri Muktsar Sahib" },
+        { value: "Tarn Taran", label: "Punjab - Tarn Taran" }
+    ],
+    "Central Valley": [
+        { value: "Central Valley - Fresno County (USA)", label: "Fresno County (USA - Red Zone)" },
+        { value: "Central Valley - Kern County (USA)", label: "Kern County / Bakersfield (USA - Red Zone)" },
+        { value: "Central Valley - Tulare County (USA)", label: "Tulare County (USA - Red Zone)" },
+        { value: "Central Valley - San Joaquin (USA)", label: "San Joaquin County (USA - Yellow Zone)" },
+        { value: "Central Valley - Sacramento (USA)", label: "Sacramento County (USA - Green Zone)" },
+        { value: "Central Valley (California, USA)", label: "Central Valley Regional Basin Overview" }
+    ],
+    "Nile Delta": [
+        { value: "Nile Delta - Kafr El-Sheikh (Egypt)", label: "Kafr El-Sheikh (Egypt - Red Zone)" },
+        { value: "Nile Delta - Beheira (Egypt)", label: "Beheira Governorate (Egypt - Red Zone)" },
+        { value: "Nile Delta - Dakahlia (Egypt)", label: "Dakahlia Governorate (Egypt - Yellow Zone)" },
+        { value: "Nile Delta - Gharbia (Egypt)", label: "Gharbia Governorate (Egypt - Green Zone)" },
+        { value: "Nile Delta (Egypt)", label: "Nile Delta Regional Basin Overview" }
+    ],
+    "Murray-Darling": [
+        { value: "Murray-Darling - Riverina (Australia)", label: "Riverina (Australia - Red Zone)" },
+        { value: "Murray-Darling - Sunraysia (Australia)", label: "Sunraysia (Australia - Red Zone)" },
+        { value: "Murray-Darling - Murrumbidgee (Australia)", label: "Murrumbidgee (Australia - Yellow Zone)" },
+        { value: "Murray-Darling - Goulburn Valley (Australia)", label: "Goulburn Valley (Australia - Green Zone)" },
+        { value: "Murray-Darling Basin (Australia)", label: "Murray-Darling Regional Basin Overview" }
+    ],
+    "Indo-Gangetic": [
+        { value: "Bathinda", label: "Upper Indus Basin - Punjab" },
+        { value: "Sangrur", label: "Central Malwa Depletion Zone" },
+        { value: "Patiala", label: "Ghaggar River Aquifer Sub-basin" }
+    ]
+};
 
-        drawerSelect.addEventListener("change", (e) => {
-            mainSelect.value = e.target.value;
-            loadDistrictData(e.target.value);
-            closeDrawer();
-        });
-
-        mainSelect.addEventListener("change", (e) => {
-            drawerSelect.value = e.target.value;
-        });
+function populateHotspotDistricts(hotspotKey, selectedDistrict = null) {
+    const districtSelect = document.getElementById("districtSelect");
+    if (!districtSelect) return;
+    const list = HOTSPOT_DISTRICTS[hotspotKey] || HOTSPOT_DISTRICTS["Punjab"];
+    districtSelect.innerHTML = "";
+    list.forEach(item => {
+        const opt = document.createElement("option");
+        opt.value = item.value;
+        opt.textContent = item.label;
+        if (selectedDistrict && opt.value === selectedDistrict) {
+            opt.selected = true;
+        }
+        districtSelect.appendChild(opt);
+    });
+    if (!selectedDistrict && districtSelect.options.length > 0) {
+        districtSelect.selectedIndex = 0;
     }
 }
 
@@ -349,37 +406,46 @@ function initMap() {
 
 // Select district from map or UI
 function selectDistrict(name) {
-    const select = document.getElementById("districtSelect");
-    const drawerSelect = document.getElementById("drawerDistrictSelect");
-    let found = false;
-    for (let i = 0; i < select.options.length; i++) {
-        if (select.options[i].value === name) {
-            select.selectedIndex = i;
-            found = true;
+    const hotspotSelect = document.getElementById("hotspotSelect");
+    const districtSelect = document.getElementById("districtSelect");
+
+    // Identify which hotspot basin owns this district
+    let targetHotspot = "Punjab";
+    for (const [hKey, distList] of Object.entries(HOTSPOT_DISTRICTS)) {
+        if (distList.some(d => d.value === name)) {
+            targetHotspot = hKey;
             break;
         }
     }
-    if (!found) {
-        const optGroup = select.querySelector('optgroup[label="Punjab Districts"]') || select;
-        const newOpt = document.createElement("option");
-        newOpt.value = name;
-        newOpt.text = `Punjab - ${name}`;
-        newOpt.selected = true;
-        optGroup.appendChild(newOpt);
+
+    if (hotspotSelect) {
+        hotspotSelect.value = targetHotspot;
     }
-    if (drawerSelect) {
-        drawerSelect.innerHTML = select.innerHTML;
-        drawerSelect.value = name;
-    }
+    populateHotspotDistricts(targetHotspot, name);
     loadDistrictData(name);
 }
 
 // Event Listeners
 function setupEventListeners() {
-    // District Select
-    document.getElementById("districtSelect").addEventListener("change", (e) => {
-        loadDistrictData(e.target.value);
-    });
+    // Hotspot Basin Select & Dynamic District Expansion
+    const hotspotSelect = document.getElementById("hotspotSelect");
+    const districtSelect = document.getElementById("districtSelect");
+
+    if (hotspotSelect) {
+        hotspotSelect.addEventListener("change", (e) => {
+            const hkey = e.target.value;
+            populateHotspotDistricts(hkey);
+            if (districtSelect && districtSelect.value) {
+                loadDistrictData(districtSelect.value);
+            }
+        });
+    }
+
+    if (districtSelect) {
+        districtSelect.addEventListener("change", (e) => {
+            loadDistrictData(e.target.value);
+        });
+    }
 
     // Language Toggle
     document.querySelectorAll(".lang-btn").forEach(btn => {
