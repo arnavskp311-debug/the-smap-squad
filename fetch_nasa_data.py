@@ -91,6 +91,31 @@ class NASADataFetcher:
         os.makedirs(self.log_dir, exist_ok=True)
         self.auth_active = False
         self.query_logs = []
+        self.nasa_api_key = os.getenv("NASA_API_KEY", "DEMO_KEY")
+
+    def fetch_nasa_eonet_events(self, days=30):
+        """
+        Queries NASA EONET (Earth Observatory Natural Event Tracker) for active severe storms,
+        wildfires, or drought events. Uses NASA API / EONET endpoint with higher resilience.
+        """
+        eonet_url = f"https://eonet.gsfc.nasa.gov/api/v3/events?status=open&days={days}&limit=20"
+        logger.info(f"Querying NASA EONET Event API (API Key Configured: {bool(self.nasa_api_key)})...")
+        try:
+            resp = requests.get(eonet_url, timeout=8)
+            if resp.status_code == 200:
+                data = resp.json()
+                events = data.get("events", [])
+                out_path = os.path.join(self.output_dir, "nasa_eonet_events.json")
+                with open(out_path, "w", encoding="utf-8") as f:
+                    json.dump({"events": events, "fetched_at": datetime.now().isoformat(), "count": len(events)}, f, indent=2)
+                logger.info(f"✅ NASA EONET returned {len(events)} active global events. Cached to {out_path}")
+                return events
+            else:
+                logger.warning(f"EONET returned HTTP {resp.status_code}. Using fallback.")
+                return []
+        except Exception as ex:
+            logger.warning(f"EONET fetch: {ex}")
+            return []
 
     def authenticate_earthdata(self):
         """Attempts NASA Earthdata login using earthaccess credentials or environment."""
@@ -429,6 +454,9 @@ def run_pipeline(bbox=DEFAULT_PUNJAB_BBOX, download_sample=False):
     # Query all 6 NASA collections
     for key in NASA_DATASETS:
         fetcher.query_earthdata_granules(key, start, today, download_sample=download_sample)
+
+    # Fetch live NASA EONET alerts
+    fetcher.fetch_nasa_eonet_events()
 
     # Perform raster clipping with xarray and rasterio
     fetcher.clip_raster_to_districts()

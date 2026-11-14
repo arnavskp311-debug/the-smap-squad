@@ -89,44 +89,31 @@ When satellite radar confirms adequate soil moisture yet optical reflectance rev
 
 ---
 
-## 🌟 6. Five High-Impact Features for NASA Space Apps Judging
+## 🌟 6. Flagship Dark NASA Mission-Control UI & Five High-Impact Features
 
-To deliver maximum operational utility for both smallholder farmers and district agricultural policymakers, Punjab Farm Water Watch incorporates 5 flagship interactive capabilities:
+Punjab Farm Water Watch features a **flagship dark NASA mission-control interface** (deep teal `#081822` / `#0A1C28` background, glowing green `NASA Earthdata Live` status pill, crisp white forecast and alert cards, warm amber `#F59E0B` highlights, and high-contrast typography):
 
-### 1. 🛰️ Live NASA GIBS Satellite Tile Overlays on Interactive Folium Map
-* Integrated NASA Global Imagery Browse Services (GIBS) Web Map Tile Service (WMTS) layers.
-* Toggle between **MODIS Terra True Color (Corrected Reflectance)** and **MODIS Terra Land Surface Temperature (Day)** directly over Punjab district polygons with a live `folium.LayerControl()`.
-* Enables visual corroboration between numeric water stress scores and true satellite-observed canopy greenness and surface heat patterns.
+### 1. 🛰️ Live NASA GIBS Satellite Tile Overlays & Interactive Folium Map
+* Integrated NASA Global Imagery Browse Services (GIBS) Web Map Tile Service (WMTS) layers (`MODIS Terra True Color` and `MODIS Terra Land Surface Temperature Day`).
+* Features a prominent **Bathinda pin** and dynamic district choropleths colored by `WaterStressModel` scores (`Safe 0–30` Green, `Moderate 31–60` Yellow, `Critical 61–100` Red) with an embedded **Map Legend**.
+* Coupled with stacked **Water Stress Score** gauge arc (showing `76/100 Critical`) and **Soil Quality Status** dual-diagnosis card.
 
-### 2. ⚡ "What-If" Water & Tube-Well Energy Savings Simulator
-* Dynamic parametric calculator with an interactive **Farm Size (1–100 Acres)** slider.
-* Models 4 field-proven conservation interventions:
-  - **Direct Seeded Rice (DSR):** ~20% water reduction.
-  - **3-Day Delayed Irrigation:** ~10% water reduction based on SMAP rootzone adequacy.
-  - **Crop-Residue Mulching:** ~15% evaporation suppression.
-  - **Combined Protocol:** ~30% cumulative water and energy savings.
-* Calculates exact season-level metrics: **Litres of Groundwater Saved**, **Tube-Well Electricity Saved (kWh)**, and regional scaling across Punjab's 100,000+ agricultural tube wells (Gigalitres saved, GWh saved, and metric tonnes of $CO_2$ avoided).
+### 2. ⚡ "What-If" Water & Tube-Well Energy Savings Simulator (Left Sidebar)
+* Parametric slider for **Farm Size (1–100 Acres)** and **Conservation Practice** selector (`DSR / Mulching`, `Delay Irrigation by 3 Days`, `Crop-Residue Mulching`, or `Combined Protocol`).
+* Dynamic KPI display featuring **1.8M Litres Saved** (in vibrant neon mint `#2DD4BF`) and **kWh Saved: 1,420 kWh** at 10 acres, with subsoil and electricity consumption formulas.
 
-### 3. 🧪 Interactive Soil Health Card & Instant Lab Prescription
-* Empirical soil testing calculator accepting standard soil lab report values:
-  - **Soil pH** (sodicity index)
-  - **Electrical Conductivity (EC)** in dS/m (salinity index)
-  - **Organic Carbon (OC)** in % (microbial and structural fertility)
-  - **Available Nitrogen** in kg/ha
-* Generates real-time, precision-dosed prescriptions aligned with PAU and KVK agronomic agronomy:
-  - Exact agricultural **Gypsum bags/acre** based on excess alkalinity ($pH > 8.5$).
-  - Recommended **Farmyard Manure (FYM)** and **Dhaincha (Sesbania) green manuring** tonnage when $OC < 0.5\%$.
-  - Leaching canal-water flood schedule for salt flushes when $EC > 0.8\text{ dS/m}$.
-  - Calibrated basal dose of Zinc Sulfate Heptahydrate ($ZnSO_4$, 21%) to eliminate widespread zinc deficiencies in Indo-Gangetic soils.
+### 3. 📈 Crisp White "Soil Moisture & Water Forecast" Card
+* Dedicated high-contrast white card showcasing past 30 days of **NASA SMAP L4 soil moisture** alongside a **7-day Random Forest forecast**.
+* Features a light-blue vertical shaded band over the forecast window (Nov 14 – Nov 21) with clear historical and projected trendlines.
 
-### 4. 📢 One-Click WhatsApp Alert & Web Speech Audio Advisory (Trilingual)
-* **WhatsApp Community Broadcast:** A direct `wa.me/?text=...` deep link that formats a complete, URL-encoded alert with the district name, Water Stress Score, 7-day forecast, and localized advisories for instant dissemination in farmer WhatsApp groups.
-* **Browser-Native Web Speech API Narration:** Integrates accessible audio synthesis (`window.speechSynthesis`) in **English**, **Hindi (हिन्दी)**, and **Punjabi (ਪੰਜਾਬੀ)**, allowing illiterate or visually impaired growers to hear real-time irrigation guidance (*"Kisan bhai, 3 din paani rok do"* / *"ਕਿਸਾਨ ਵੀਰੋ, 3 ਦਿਨ ਪਾਣੀ ਰੋਕੋ"*).
+### 4. 🧪 Interactive Soil Health Card & Instant Lab Prescription
+* Empirical soil testing calculator with inputs for **pH (8.6)**, **EC (0.9 dS/m)**, and **Organic Carbon (0.38%)**.
+* Generates an instant prescription box with **Agricultural Gypsum bags/acre**, **Compost tonnes/acre**, and **Zinc Sulfate dosage**.
 
-### 5. 📄 One-Click Downloadable District Officer Action Brief (Markdown & CSV)
-* Generates a timestamped, official **District Water & Soil Action Brief** ready for Chief Agriculture Officers (CAOs) and Krishi Vigyan Kendra extension specialists.
-* Includes exact district coordinates, complete 6-satellite NASA telemetry, Water Stress attribution weights, dual-diagnosis soil audit, 7-day predictive projection table with confidence intervals, and field intervention instructions.
-* Dual-export capability: Formatted executive **Markdown dossier** and raw **30-day NASA telemetry CSV**.
+### 5. 📢 Farmer Advisory & Alert Card with WhatsApp & Web Speech Voice Alerts
+* High-impact alert card with localized advice (*"Kisan bhai, 3 din paani rok do"*, *"Switch to Direct Seeded Rice (DSR) & Mulching"* in English, Hindi, and Punjabi).
+* Includes a one-click **"Share on WhatsApp"** (`wa.me`) community broadcast button and a **"Listen Voice Alert"** button powered by browser-native Web Speech API (`window.speechSynthesis`).
+* **Download District Officer Report:** One-click download button exporting an official Markdown dossier and 30-day NASA telemetry CSV.
 
 ---
 

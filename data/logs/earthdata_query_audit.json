@@ -8,7 +8,7 @@
     32.5
   ],
   "nasa_power_api_active": true,
-  "executed_at": "2026-11-14T09:14:32.396059",
+  "executed_at": "2026-11-14T09:48:15.331788",
   "audit_logs": [
     {
       "dataset_key": "SMAP_L4",
@@ -29,24 +29,24 @@
         {
           "granule_id": "NASA_SPL4SMGP_2026-10-15_BBOX_73.8_29.5_V07.nc",
           "size_mb": 18.4,
-          "cloud_cover": 16.9,
+          "cloud_cover": 8.3,
           "start_time": "2026-10-15T00:00:00Z"
         },
         {
           "granule_id": "NASA_SPL4SMGP_2026-10-16_BBOX_73.8_29.5_V07.nc",
           "size_mb": 18.4,
-          "cloud_cover": 13.8,
+          "cloud_cover": 9.4,
           "start_time": "2026-10-16T00:00:00Z"
         },
         {
           "granule_id": "NASA_SPL4SMGP_2026-10-17_BBOX_73.8_29.5_V07.nc",
           "size_mb": 18.4,
-          "cloud_cover": 10.1,
+          "cloud_cover": 10.4,
           "start_time": "2026-10-17T00:00:00Z"
         }
       ],
       "downloaded_sample": null,
-      "queried_at": "2026-11-14T09:14:29.858709"
+      "queried_at": "2026-11-14T09:48:11.645059"
     },
     {
       "dataset_key": "GPM_IMERG",
@@ -67,24 +67,24 @@
         {
           "granule_id": "NASA_GPM_3IMERGDF_2026-10-15_BBOX_73.8_29.5_V07.nc",
           "size_mb": 18.4,
-          "cloud_cover": 5.7,
+          "cloud_cover": 10.5,
           "start_time": "2026-10-15T00:00:00Z"
         },
         {
           "granule_id": "NASA_GPM_3IMERGDF_2026-10-16_BBOX_73.8_29.5_V07.nc",
           "size_mb": 18.4,
-          "cloud_cover": 10.7,
+          "cloud_cover": 3.2,
           "start_time": "2026-10-16T00:00:00Z"
         },
         {
           "granule_id": "NASA_GPM_3IMERGDF_2026-10-17_BBOX_73.8_29.5_V07.nc",
           "size_mb": 18.4,
-          "cloud_cover": 6.9,
+          "cloud_cover": 3.2,
           "start_time": "2026-10-17T00:00:00Z"
         }
       ],
       "downloaded_sample": null,
-      "queried_at": "2026-11-14T09:14:29.859237"
+      "queried_at": "2026-11-14T09:48:11.645645"
     },
     {
       "dataset_key": "MODIS_ET",
@@ -111,18 +111,18 @@
         {
           "granule_id": "NASA_MOD16A2_2026-10-16_BBOX_73.8_29.5_V07.nc",
           "size_mb": 18.4,
-          "cloud_cover": 15.3,
+          "cloud_cover": 12.5,
           "start_time": "2026-10-16T00:00:00Z"
         },
         {
           "granule_id": "NASA_MOD16A2_2026-10-17_BBOX_73.8_29.5_V07.nc",
           "size_mb": 18.4,
-          "cloud_cover": 2.5,
+          "cloud_cover": 10.7,
           "start_time": "2026-10-17T00:00:00Z"
         }
       ],
       "downloaded_sample": null,
-      "queried_at": "2026-11-14T09:14:29.860313"
+      "queried_at": "2026-11-14T09:48:11.645645"
     },
     {
       "dataset_key": "LANDSAT_HLS",
@@ -143,24 +143,24 @@
         {
           "granule_id": "NASA_HLSL30_2026-10-15_BBOX_73.8_29.5_V07.nc",
           "size_mb": 18.4,
-          "cloud_cover": 5.4,
+          "cloud_cover": 12.7,
           "start_time": "2026-10-15T00:00:00Z"
         },
         {
           "granule_id": "NASA_HLSL30_2026-10-16_BBOX_73.8_29.5_V07.nc",
           "size_mb": 18.4,
-          "cloud_cover": 17.0,
+          "cloud_cover": 16.2,
           "start_time": "2026-10-16T00:00:00Z"
         },
         {
           "granule_id": "NASA_HLSL30_2026-10-17_BBOX_73.8_29.5_V07.nc",
           "size_mb": 18.4,
-          "cloud_cover": 5.0,
+          "cloud_cover": 13.2,
           "start_time": "2026-10-17T00:00:00Z"
         }
       ],
       "downloaded_sample": null,
-      "queried_at": "2026-11-14T09:14:29.861248"
+      "queried_at": "2026-11-14T09:48:11.646236"
     },
     {
       "dataset_key": "NASA_POWER",
@@ -187,18 +187,18 @@
         {
           "granule_id": "NASA_POWER_DAV_2026-10-16_BBOX_73.8_29.5_V07.nc",
           "size_mb": 18.4,
-          "cloud_cover": 8.4,
+          "cloud_cover": 6.2,
           "start_time": "2026-10-16T00:00:00Z"
         },
         {
           "granule_id": "NASA_POWER_DAV_2026-10-17_BBOX_73.8_29.5_V07.nc",
           "size_mb": 18.4,
-          "cloud_cover": 12.9,
+          "cloud_cover": 11.6,
           "start_time": "2026-10-17T00:00:00Z"
         }
       ],
       "downloaded_sample": null,
-      "queried_at": "2026-11-14T09:14:29.861754"
+      "queried_at": "2026-11-14T09:48:11.646236"
     },
     {
       "dataset_key": "NASA_GRACE",
@@ -219,24 +219,24 @@
         {
           "granule_id": "NASA_GRACE_TELLUS_2026-10-15_BBOX_73.8_29.5_V07.nc",
           "size_mb": 18.4,
-          "cloud_cover": 5.0,
+          "cloud_cover": 5.5,
           "start_time": "2026-10-15T00:00:00Z"
         },
         {
           "granule_id": "NASA_GRACE_TELLUS_2026-10-16_BBOX_73.8_29.5_V07.nc",
           "size_mb": 18.4,
-          "cloud_cover": 6.1,
+          "cloud_cover": 5.7,
           "start_time": "2026-10-16T00:00:00Z"
         },
         {
           "granule_id": "NASA_GRACE_TELLUS_2026-10-17_BBOX_73.8_29.5_V07.nc",
           "size_mb": 18.4,
-          "cloud_cover": 16.0,
+          "cloud_cover": 17.2,
           "start_time": "2026-10-17T00:00:00Z"
         }
       ],
       "downloaded_sample": null,
-      "queried_at": "2026-11-14T09:14:29.862772"
+      "queried_at": "2026-11-14T09:48:11.646832"
     }
   ]
 }
