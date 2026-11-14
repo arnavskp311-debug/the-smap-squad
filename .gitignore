@@ -25,3 +25,7 @@ desktop.ini
 # Temporary / intermediate data caches
 *.tmp
 *.log
+
+# Antigravity Agent metadata
+.agents/
+skills-lock.json
