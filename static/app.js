@@ -472,6 +472,10 @@ function renderTelemetry(data) {
     }
 
     // 4. Advisory & WhatsApp
+    const advBox = document.querySelector(".advisory-box");
+    if (advBox) {
+        advBox.style.borderTopColor = data.stress.zone === "Red" ? "var(--critical-red)" : (data.stress.zone === "Yellow" ? "var(--accent-amber)" : "var(--safe-green)");
+    }
     const advLine1 = document.getElementById("advLine1");
     const advLine2 = document.getElementById("advLine2");
     advLine1.innerText = `• ${data.advisory.line1}`;

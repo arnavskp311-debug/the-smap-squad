@@ -564,21 +564,42 @@ select.region-select {
 .badge-warning { background: var(--accent-amber); color: #000; }
 .badge-safe { background: var(--safe-green); color: #FFF; }
 
-/* Advisory White Card */
+/* Farmer Advisory Action Card */
 .advisory-box {
-    background: #FFFFFF;
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
     border-radius: 8px;
     border-top: 4px solid var(--critical-red);
-    padding: 14px;
-    color: #1E293B;
+    padding: 14px 16px;
+    color: var(--text-main);
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25);
+    transition: background-color 0.25s ease, border-color 0.25s ease;
+}
+
+.advisory-title {
+    font-weight: 700;
+    font-size: 0.92rem;
+    margin-bottom: 8px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: var(--text-main);
+}
+
+.advisory-bullet {
+    font-size: 0.84rem;
+    font-weight: 600;
+    margin-bottom: 4px;
+    color: var(--text-main);
+    line-height: 1.45;
 }
 
 .btn-whatsapp {
-    background: #22C55E;
-    color: #FFF;
+    background: #16A34A;
+    color: #FFFFFF !important;
     border: none;
     border-radius: 6px;
-    padding: 8px 12px;
+    padding: 9px 12px;
     font-size: 0.84rem;
     font-weight: 700;
     cursor: pointer;
@@ -588,14 +609,20 @@ select.region-select {
     justify-content: center;
     gap: 6px;
     width: 100%;
+    transition: background 0.2s, transform 0.15s;
+}
+
+.btn-whatsapp:hover {
+    background: #15803D;
+    transform: translateY(-1px);
 }
 
 .btn-voice {
-    background: #E2E8F0;
-    color: #1E293B;
-    border: none;
+    background: rgba(255, 255, 255, 0.08);
+    color: var(--text-main);
+    border: 1px solid rgba(255, 255, 255, 0.16);
     border-radius: 6px;
-    padding: 8px 12px;
+    padding: 9px 12px;
     font-size: 0.84rem;
     font-weight: 700;
     cursor: pointer;
@@ -604,6 +631,12 @@ select.region-select {
     justify-content: center;
     gap: 6px;
     width: 100%;
+    transition: background 0.2s, transform 0.15s;
+}
+
+.btn-voice:hover {
+    background: rgba(255, 255, 255, 0.14);
+    transform: translateY(-1px);
 }
 
 /* Simulator elements */
@@ -987,7 +1020,8 @@ select.region-select {
 }
 
 [data-theme="light"] .dark-card,
-[data-theme="light"] .white-card {
+[data-theme="light"] .white-card,
+[data-theme="light"] .advisory-box {
     background-color: #FFFFFF !important;
     border-color: #E2E8F0 !important;
     color: #0F172A !important;
@@ -995,8 +1029,23 @@ select.region-select {
 }
 
 [data-theme="light"] .card-title,
-[data-theme="light"] .white-card-title {
+[data-theme="light"] .white-card-title,
+[data-theme="light"] .advisory-title {
     color: #0F172A !important;
+}
+
+[data-theme="light"] .advisory-bullet {
+    color: #334155 !important;
+}
+
+[data-theme="light"] .btn-voice {
+    background: #F1F5F9;
+    border-color: #CBD5E1;
+    color: #1E293B;
+}
+
+[data-theme="light"] .btn-voice:hover {
+    background: #E2E8F0;
 }
 
 [data-theme="light"] select.region-select,
