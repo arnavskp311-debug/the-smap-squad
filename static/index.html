@@ -174,8 +174,8 @@
                             <span class="badge" id="stressBadge">Loading...</span>
                         </div>
                         <div style="text-align: center; margin: 8px 0;">
-                            <div style="font-size: 2.8rem; font-weight: 800; color: #FFFFFF;" id="stressScoreVal">--</div>
-                            <div style="font-size: 0.78rem; color: #94A3B8;">Composite Water Stress Index (0–100)</div>
+                            <div style="font-size: 2.8rem; font-weight: 800; color: var(--text-main);" id="stressScoreVal">--</div>
+                            <div style="font-size: 0.78rem; color: var(--text-muted);">Composite Water Stress Index (0–100)</div>
                         </div>
                     </div>
 
@@ -185,10 +185,10 @@
                             <span>Soil Quality Status</span>
                             <span class="badge" id="soilBadge">Optimal</span>
                         </div>
-                        <div style="font-size: 0.88rem; font-weight: 700; color: #FFF; margin-bottom: 6px;" id="soilStatusText">
+                        <div style="font-size: 0.88rem; font-weight: 700; color: var(--text-main); margin-bottom: 6px;" id="soilStatusText">
                             Checking dual-diagnosis...
                         </div>
-                        <div style="font-size: 0.76rem; color: #94A3B8;">SMAP vs Landsat NDVI/SAVI Correlation</div>
+                        <div style="font-size: 0.76rem; color: var(--text-muted);">SMAP vs Landsat NDVI/SAVI Correlation</div>
                     </div>
 
                     <!-- Farmer Advisory Card -->
@@ -404,10 +404,10 @@
             <div style="display: grid; grid-template-columns: 1.1fr 1.3fr; gap: 16px; margin-bottom: 16px;">
                 <div class="dark-card">
                     <div class="card-title">What-If Water &amp; Energy Calculator</div>
-                    <label style="font-size: 0.82rem; color: #94A3B8; font-weight: 600;">Farm Size: <span id="farmSizeLabel">10</span> Acres</label>
+                    <label style="font-size: 0.82rem; color: var(--text-muted); font-weight: 600;">Farm Size: <span id="farmSizeLabel">10</span> Acres</label>
                     <input type="range" id="farmSizeSlider" min="1" max="100" value="10" style="width: 100%; margin: 8px 0 14px 0;">
 
-                    <label style="font-size: 0.82rem; color: #94A3B8; font-weight: 600;">Conservation Practice</label>
+                    <label style="font-size: 0.82rem; color: var(--text-muted); font-weight: 600;">Conservation Practice</label>
                     <select id="practiceSelect" class="region-select" style="width: 100%; margin-top: 6px;">
                         <option value="DSR (Direct Seeded Rice) / Mulching">DSR (Direct Seeded Rice) / Mulching (~20% saved)</option>
                         <option value="Delay Irrigation by 3 Days">Delay Irrigation by 3 Days (~10% saved)</option>
@@ -417,8 +417,8 @@
 
                     <div class="savings-box">
                         <div class="savings-val" id="calcLitresSaved">1.8M</div>
-                        <div style="font-size: 0.85rem; color: #94A3B8;">Litres Saved</div>
-                        <div style="margin-top: 8px; font-size: 0.80rem; color: #E2E8F0; background: #1E293B; display: inline-block; padding: 4px 12px; border-radius: 12px;" id="calcKwhSaved">
+                        <div style="font-size: 0.85rem; color: var(--text-muted);">Litres Saved</div>
+                        <div class="kwh-badge" id="calcKwhSaved">
                             ⚡ Electricity Saved: 1,420 kWh
                         </div>
                     </div>
@@ -426,7 +426,7 @@
 
                 <div class="dark-card">
                     <div class="card-title">🌾 Crop Diversification &amp; Groundwater Budget</div>
-                    <label style="font-size: 0.82rem; color: #94A3B8; font-weight: 600;">Select Alternative Crop:</label>
+                    <label style="font-size: 0.82rem; color: var(--text-muted); font-weight: 600;">Select Alternative Crop:</label>
                     <select id="cropChoiceSelect" class="region-select" style="width: 100%; margin: 6px 0 12px 0;">
                         <option value="Direct Seeded Rice / DSR (~20% less water)">Direct Seeded Rice / DSR (~20% less water)</option>
                         <option value="Maize / Kharif Pulses (~60% less water)">Maize / Kharif Pulses (~60% less water)</option>
@@ -434,20 +434,20 @@
                         <option value="Traditional Paddy (Baseline)">Traditional Paddy (Baseline)</option>
                     </select>
 
-                    <div style="background: #09202C; border: 1px solid #163C52; border-radius: 8px; padding: 14px;">
+                    <div class="surface-card-dark">
                         <div style="display:flex; justify-content:space-between; margin-bottom: 6px; font-size: 0.84rem;">
-                            <span style="color: #94A3B8;">Crop Water Demand:</span>
-                            <span id="cropDemandVal" style="font-weight: 700; color: #FFF;">7.2M Litres</span>
+                            <span style="color: var(--text-muted);">Crop Water Demand:</span>
+                            <span id="cropDemandVal" style="font-weight: 700; color: var(--text-main);">7.2M Litres</span>
                         </div>
                         <div style="display:flex; justify-content:space-between; margin-bottom: 6px; font-size: 0.84rem;">
-                            <span style="color: #94A3B8;">Groundwater Preserved:</span>
-                            <span id="cropSavedVal" style="font-weight: 700; color: #2DD4BF;">1.8M Litres (20%)</span>
+                            <span style="color: var(--text-muted);">Groundwater Preserved:</span>
+                            <span id="cropSavedVal" style="font-weight: 700; color: var(--accent-mint);">1.8M Litres (20%)</span>
                         </div>
                         <div style="display:flex; justify-content:space-between; font-size: 0.84rem;">
-                            <span style="color: #94A3B8;">Tube-Well Power Saved:</span>
-                            <span id="cropPowerVal" style="font-weight: 700; color: #F59E0B;">1,420 kWh</span>
+                            <span style="color: var(--text-muted);">Tube-Well Power Saved:</span>
+                            <span id="cropPowerVal" style="font-weight: 700; color: var(--accent-amber);">1,420 kWh</span>
                         </div>
-                        <div style="margin-top: 10px; font-size: 0.78rem; color: #CBD5E1; border-top: 1px solid #163C52; padding-top: 6px;" id="cropRecommendation">
+                        <div style="margin-top: 10px; font-size: 0.78rem; color: var(--text-muted); border-top: 1px solid var(--border-color); padding-top: 6px;" id="cropRecommendation">
                             💡 Recommended for medium-textured soils.
                         </div>
                     </div>
@@ -462,19 +462,19 @@
                     <div class="card-title">Soil Health Card Parameters</div>
                     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
                         <div>
-                            <label style="font-size:0.75rem; color:#94A3B8; font-weight:600;">Soil pH</label>
+                            <label style="font-size:0.75rem; color:var(--text-muted); font-weight:600;">Soil pH</label>
                             <input type="number" id="soilPh" value="8.6" step="0.1" class="region-select" style="width:100%;">
                         </div>
                         <div>
-                            <label style="font-size:0.75rem; color:#94A3B8; font-weight:600;">EC (dS/m)</label>
+                            <label style="font-size:0.75rem; color:var(--text-muted); font-weight:600;">EC (dS/m)</label>
                             <input type="number" id="soilEc" value="0.9" step="0.1" class="region-select" style="width:100%;">
                         </div>
                         <div>
-                            <label style="font-size:0.75rem; color:#F59E0B; font-weight:600;">Organic Carbon (%)</label>
+                            <label style="font-size:0.75rem; color:var(--accent-amber); font-weight:600;">Organic Carbon (%)</label>
                             <input type="number" id="soilOc" value="0.38" step="0.01" class="region-select" style="width:100%;">
                         </div>
                         <div>
-                            <label style="font-size:0.75rem; color:#94A3B8; font-weight:600;">Nitrogen (kg/ha)</label>
+                            <label style="font-size:0.75rem; color:var(--text-muted); font-weight:600;">Nitrogen (kg/ha)</label>
                             <input type="number" id="soilN" value="190" step="10" class="region-select" style="width:100%;">
                         </div>
                     </div>
@@ -482,12 +482,12 @@
 
                 <div class="dark-card">
                     <div class="card-title">PAU / KVK Lab Prescription</div>
-                    <div style="background: #09202C; border: 1px solid #163C52; border-radius: 8px; padding: 14px;" id="prescriptionBox">
-                        <div style="color: #38BDF8; font-weight: 700; margin-bottom: 8px; font-size: 0.88rem;">Recommended Treatment:</div>
-                        <div id="rxItem1" style="font-size: 0.84rem; margin-bottom: 4px;">• 2 Bags Gypsum/Acre</div>
-                        <div id="rxItem2" style="font-size: 0.84rem; margin-bottom: 4px;">• 4t Compost/Acre</div>
-                        <div id="rxItem3" style="font-size: 0.84rem; margin-bottom: 8px;">• Zinc Dose (25 kg/ha ZnSO4)</div>
-                        <div id="rxStatus" style="font-size: 0.78rem; font-weight: 700; color: #F87171; border-top: 1px solid #163C52; padding-top: 6px;">
+                    <div class="surface-card-dark" id="prescriptionBox">
+                        <div style="color: var(--accent-teal); font-weight: 700; margin-bottom: 8px; font-size: 0.88rem;">Recommended Treatment:</div>
+                        <div id="rxItem1" style="font-size: 0.84rem; margin-bottom: 4px; color: var(--text-main);">• 2 Bags Gypsum/Acre</div>
+                        <div id="rxItem2" style="font-size: 0.84rem; margin-bottom: 4px; color: var(--text-main);">• 4t Compost/Acre</div>
+                        <div id="rxItem3" style="font-size: 0.84rem; margin-bottom: 8px; color: var(--text-main);">• Zinc Dose (25 kg/ha ZnSO4)</div>
+                        <div id="rxStatus" style="font-size: 0.78rem; font-weight: 700; color: var(--critical-red); border-top: 1px solid var(--border-color); padding-top: 6px;">
                             Alkaline / Low Carbon Soil — Immediate Soil Conditioning Required
                         </div>
                     </div>
@@ -502,7 +502,7 @@
                     <span>📋 District Officer Executive Brief</span>
                     <a id="btnDownloadReport" href="/api/report/Bathinda" target="_blank" class="btn-download">📥 Download Markdown Dossier</a>
                 </div>
-                <div style="background: #09202C; border: 1px solid #163C52; border-radius: 8px; padding: 16px; font-size: 0.84rem; line-height: 1.6;" id="reportPreview">
+                <div class="report-preview-box" id="reportPreview">
                     Loading district telemetry report preview...
                 </div>
             </div>
@@ -565,7 +565,7 @@
                             Spearheaded end-to-end full-stack systems architecture, FastAPI backend development, NASA Earthdata pipelines, real-time spatial analytics, and team coordination.
                         </div>
                         <div class="tech-tags">
-                            <span class="tech-tag" style="background:#451A03; color:#F59E0B; border-color:#B45309;">Team Leader</span>
+                            <span class="tech-tag tech-tag-leader">Team Leader</span>
                             <span class="tech-tag">Full-Stack Coder</span>
                             <span class="tech-tag">FastAPI</span>
                             <span class="tech-tag">Python 3.11</span>
@@ -892,7 +892,7 @@
                             Spearheaded end-to-end full-stack systems architecture, FastAPI backend development, NASA Earthdata pipelines, real-time spatial analytics, and team coordination.
                         </div>
                         <div class="tech-tags">
-                            <span class="tech-tag" style="background:#451A03; color:#F59E0B; border-color:#B45309;">Team Leader</span>
+                            <span class="tech-tag tech-tag-leader">Team Leader</span>
                             <span class="tech-tag">Full-Stack Coder</span>
                             <span class="tech-tag">FastAPI</span>
                             <span class="tech-tag">Python 3.11</span>
