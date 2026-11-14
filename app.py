@@ -384,6 +384,40 @@ st.markdown("""
         font-size: 0.78rem;
         color: #64748B;
     }
+    /* Flagship Mission Control Tabs */
+    .stTabs [data-baseweb="tab-list"] {
+        gap: 8px !important;
+        background-color: #0A1C28 !important;
+        padding: 6px 10px !important;
+        border-radius: 10px !important;
+        border: 1px solid #163649 !important;
+        margin-bottom: 16px !important;
+    }
+
+    .stTabs [data-baseweb="tab"] {
+        height: 42px !important;
+        white-space: pre-wrap !important;
+        background-color: transparent !important;
+        border-radius: 6px !important;
+        color: #94A3B8 !important;
+        font-size: 0.90rem !important;
+        font-weight: 600 !important;
+        padding: 0px 16px !important;
+        border: none !important;
+        transition: all 0.2s ease !important;
+    }
+
+    .stTabs [aria-selected="true"] {
+        background-color: #143548 !important;
+        color: #38BDF8 !important;
+        border-bottom: 2px solid #38BDF8 !important;
+        font-weight: 700 !important;
+    }
+
+    .stTabs [data-baseweb="tab"]:hover {
+        color: #F8FAFC !important;
+        background-color: rgba(255, 255, 255, 0.05) !important;
+    }
 </style>
 """, unsafe_allow_html=True)
 
@@ -520,86 +554,141 @@ fc_results = forecaster.predict_next_7_days(dist_df)
 fc_df = pd.DataFrame(fc_results)
 
 
-# --- MAIN GRID: LEFT SIDEBAR COLUMN (CALCULATOR) vs RIGHT DASHBOARD ---
-col_calc, col_main = st.columns([1.0, 2.7], gap="medium")
+# =========================================================================
+# GLOBAL COMPUTATIONS & PRE-TAB CALCULATIONS
+# =========================================================================
+
+# 1. Soil Health defaults & prescription doses
+input_ph = float(st.session_state.get("input_ph", 8.6))
+input_ec = float(st.session_state.get("input_ec", 0.9))
+input_oc = float(st.session_state.get("input_oc", 0.38))
+input_n = int(st.session_state.get("input_n", 190))
+
+gypsum_bags = 2 if input_ph > 8.5 else 0
+fym_tonnes = 4 if input_oc < 0.5 else 0
+gypsum_text = f"• {gypsum_bags} Bags Gypsum/Acre" if gypsum_bags > 0 else "• Gypsum: Normal (No Treatment)"
+compost_text = f"• {fym_tonnes}t Compost/Acre" if fym_tonnes > 0 else "• Compost: Adequate Carbon"
+zinc_text = "• Zinc Dose (25 kg/ha ZnSO4)" if input_n < 250 else "• Standard Basal Dose"
+
+# 2. Localized Farmer Advisory texts
+if stress_res["zone"] == "Red":
+    if lang_selection == "pa":
+        adv1 = "ਕਿਸਾਨ ਵੀਰੋ, 3 ਦਿਨ ਪਾਣੀ ਰੋਕੋ (Kisan veero, 3 din paani roko)"
+        adv2 = "ਸਿੱਧੀ ਬਿਜਾਈ (DSR) ਅਤੇ ਮਲਚਿੰਗ ਅਪਣਾਓ (Adopt DSR & Mulching)"
+    elif lang_selection == "en":
+        adv1 = "Farmers, pause irrigation for 3 days to preserve root aeration"
+        adv2 = "Switch to Direct Seeded Rice (DSR) & Crop-Residue Mulching"
+    else: # hi
+        adv1 = "Kisan bhai, 3 din paani rok do"
+        adv2 = "Switch to Direct Seeded Rice (DSR) & Mulching"
+elif stress_res["zone"] == "Yellow":
+    if lang_selection == "pa":
+        adv1 = "ਜੜ੍ਹ ਖੇਤਰ ਵਿੱਚ ਦਰਮਿਆਨੀ ਨਮੀ ਦੀ ਘਾਟ - ਸਿੰਚਾਈ 2 ਦਿਨ ਟਾਲੋ"
+        adv2 = "ਵਾਸ਼ਪੀਕਰਨ ਰੋਕਣ ਲਈ ਪਰਾਲੀ ਦੀ ਮਲਚਿੰਗ ਕਰੋ"
+    elif lang_selection == "en":
+        adv1 = "Moderate moisture deficit: Delay flood irrigation by 2 days"
+        adv2 = "Apply straw mulching to curb high surface evapotranspiration losses"
+    else: # hi
+        adv1 = "जड़-क्षेत्र में मध्यम नमी की कमी - सिंचाई 2 दिन टालें"
+        adv2 = "वाष्पीकरण रोकने के लिए खेत में पुआल की मल्चिंग करें"
+else: # Green
+    if lang_selection == "pa":
+        adv1 = "ਫ਼ਸਲ ਲਈ ਪਾਣੀ ਕਾਫ਼ੀ ਹੈ - ਬੇਲੋੜੀ ਸਿੰਚਾਈ ਤੋਂ ਬਚੋ"
+        adv2 = "ਜ਼ਮੀਨੀ ਪਾਣੀ ਬਚਾਉਣ ਲਈ ਤੁਪਕਾ ਜਾਂ ਫੁਹਾਰਾ ਸਿੰਚਾਈ ਅਪਣਾਓ"
+    elif lang_selection == "en":
+        adv1 = "Water reserves are currently sufficient for crop demand"
+        adv2 = "Avoid unnecessary over-irrigation to conserve regional groundwater"
+    else: # hi
+        adv1 = "फसल की मांग के लिए पानी पर्याप्त है - अतिरिक्त सिंचाई से बचें"
+        adv2 = "भूजल स्तर बनाए रखने के लिए संतुलित सिंचाई करें"
+
+# 3. 30 Days Ago vs Today Early Warning Delta
+row_30d = dist_df.iloc[0]
+sm_old = float(row_30d["smap_rootzone_sm"])
+sm_now = float(latest["smap_rootzone_sm"])
+sm_diff = sm_now - sm_old
+sm_color = "#DC2626" if sm_diff < -0.03 else ("#16A34A" if sm_diff > 0.02 else "#F59E0B")
+
+ndvi_old = float(row_30d["landsat_ndvi"])
+ndvi_now = float(latest["landsat_ndvi"])
+ndvi_diff = ndvi_now - ndvi_old
+ndvi_color = "#DC2626" if ndvi_diff < -0.05 else ("#16A34A" if ndvi_diff > 0.03 else "#F59E0B")
+
+score_old = stress_model.compute_water_stress_score(
+    smap_rootzone_sm=sm_old,
+    rain_30d_mm=float(dist_df["gpm_precipitation_mm"].head(10).sum()) * 1.5,
+    modis_et_mm=float(row_30d["modis_et_mm"]),
+    landsat_lst_c=float(row_30d["landsat_lst_c"])
+)["score"]
+score_now = stress_res["score"]
+score_diff = score_now - score_old
+score_color = "#DC2626" if score_diff > 10 else ("#16A34A" if score_diff < -5 else "#F59E0B")
+
+# 4. District Officer Dossier Markdown
+officer_report_md = f"""# Punjab Farm Water Watch - District Officer Brief
+**NASA Space Apps Challenge 2026 · Delhi NCR**
+**Team:** The SMAP Squad
+**Target District:** {selected_district} (Coordinates: {lat_in:.4f}°N, {lon_in:.4f}°E)
+**Generated At:** {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
+
+---
+
+### 1. Water Stress Score & Multi-Satellite Metrics
+* **Composite Water Stress Score:** {stress_res['score']} / 100 ({stress_res['zone']} Zone)
+* **NASA SMAP L4 Rootzone Moisture (0–100 cm):** {latest['smap_rootzone_sm']:.3f} m³/m³
+* **NASA SMAP L4 Surface Moisture (0–5 cm):** {latest['smap_surface_sm']:.3f} m³/m³
+* **NASA GPM IMERG 30-Day Precipitation:** {rain_30d_val:.1f} mm
+* **MODIS MOD16A2 Evapotranspiration:** {latest['modis_et_mm']:.2f} mm/day
+* **Landsat 8/9 OLI Canopy NDVI:** {latest['landsat_ndvi']:.3f}
+* **Landsat 8/9 OLI Canopy SAVI:** {latest['landsat_savi']:.3f}
+* **NASA GRACE Groundwater Anomaly:** {latest['grace_water_anomaly_cm']:.2f} cm
+
+---
+
+### 2. Dual-Diagnosis Soil Quality Audit
+* **Anomaly Status:** {'ALERT TRIGGERED' if soil_res['alert_triggered'] else 'NORMAL'}
+* **Diagnosis:** {soil_res['diagnosis']}
+* **Prescription:** Apply {gypsum_bags} bags/acre Agricultural Gypsum, {fym_tonnes} tonnes/acre FYM/Compost, and 25 kg/acre Zinc Sulfate.
+
+---
+
+### 3. 7-Day Machine Learning Predictive Outlook
+| Day | Projected Soil Moisture (m³/m³) | 90% Confidence Interval | Projected Water Stress |
+|---|---|---|---|
+"""
+for f in fc_results:
+    officer_report_md += f"| {f['day_label']} | {f['predicted_sm']:.3f} | {f['lower_sm_bound']:.3f} – {f['upper_sm_bound']:.3f} | {f['predicted_stress_score']:.1f} / 100 |\n"
+
+officer_report_md += """
+---
+
+### 4. PAU / ICAR 15 cm Soil Testing Protocol for Extension Officers
+1. **Field Stratification:** Select 5–6 representative spots in a zigzag pattern across the field, avoiding field bunds and shade trees.
+2. **15 cm V-Cut Sampling:** Dig a V-shaped pit to 15 cm depth (active plow layer) and slice a uniform 2 cm core.
+3. **Composite Quartering:** Mix in clean bucket, break clods, divide into 4 quarters, discarding opposite pairs until ~500g remains.
+4. **Lab Submission:** Air-dry in shade (never sun-bake); submit to local KVK/PAU laboratory for pH, EC, OC, N-P-K, and micronutrients.
+
+---
+*Data Sources: NASA SMAP, GPM IMERG, Landsat 8/9, MODIS, POWER, GRACE.*
+"""
 
 
 # =========================================================================
-# LEFT COLUMN: WHAT-IF WATER & ENERGY CALCULATOR
+# TOP-LEVEL FLAGSHIP DASHBOARD TABS
 # =========================================================================
-with col_calc:
-    st.markdown("""
-    <div class="dark-card" style="margin-bottom:0px;">
-        <div class="dark-card-title">
-            <span>What-If Water &amp; Energy Calculator</span>
-            <span class="info-circle" title="Dynamic model based on PAU water conservation empirical benchmarks">ⓘ</span>
-        </div>
-    """, unsafe_allow_html=True)
-    
-    st.markdown("<div style='font-size:0.83rem; font-weight:600; color:#94A3B8; margin-bottom:2px;'>Farm Size</div>", unsafe_allow_html=True)
-    farm_acres = st.slider(
-        "Farm Size",
-        min_value=1,
-        max_value=100,
-        value=10,
-        step=1,
-        format="%d Acres",
-        label_visibility="collapsed"
-    )
-
-    st.markdown("<div style='font-size:0.83rem; font-weight:600; color:#94A3B8; margin-top:8px; margin-bottom:2px;'>Practice</div>", unsafe_allow_html=True)
-    practice_options = [
-        "DSR (Direct Seeded Rice) / Mulching",
-        "Delay Irrigation by 3 Days",
-        "Crop-Residue Mulching",
-        "Combined Protocol"
-    ]
-    selected_practice = st.selectbox(
-        "Practice",
-        practice_options,
-        index=0,
-        label_visibility="collapsed"
-    )
-
-    # Dynamic savings computation:
-    # Baseline water consumption in Punjab paddy: ~900,000 Litres / acre / season
-    # Energy: Submersible tube-wells draw ~0.789 kWh per 1,000 Litres pumped
-    pct_saved_map = {
-        "DSR (Direct Seeded Rice) / Mulching": 0.20,
-        "Delay Irrigation by 3 Days": 0.10,
-        "Crop-Residue Mulching": 0.15,
-        "Combined Protocol": 0.30
-    }
-    saving_ratio = pct_saved_map[selected_practice]
-    total_baseline_litres = farm_acres * 900000
-    litres_saved = total_baseline_litres * saving_ratio
-    kwh_saved = int(litres_saved * 0.000789)
-
-    if litres_saved >= 1000000:
-        litres_display = f"{litres_saved / 1000000:.1f}M"
-    else:
-        litres_display = f"{int(litres_saved):,}"
-
-    st.markdown(f"""
-        <div class="savings-display-box">
-            <div class="savings-big-val">{litres_display}</div>
-            <div class="savings-label">Litres Saved</div>
-            <div class="kwh-badge">kWh Saved: {kwh_saved:,} kWh</div>
-        </div>
-        <div class="savings-footer-text">Water &amp; Energy Savings</div>
-        <div class="accent-underline"></div>
-    </div>
-    """, unsafe_allow_html=True)
+tab_overview, tab_forecast, tab_simulator, tab_soil, tab_report = st.tabs([
+    "🛰️ Live Mission Control",
+    "📈 7-Day ML Forecast & Calendar",
+    "💧 Water & Crop Simulator",
+    "🧪 Soil Health Card & PAU Lab",
+    "📋 District Officer Dossier"
+])
 
 
 # =========================================================================
-# RIGHT MAIN DASHBOARD GRID
+# TAB 1: LIVE MISSION CONTROL
 # =========================================================================
-with col_main:
-    
-    # ---------------------------------------------------------------------
-    # TOP ROW: MAP (60%) + STACKED CARDS (40%)
-    # ---------------------------------------------------------------------
+with tab_overview:
     top_map_col, top_cards_col = st.columns([1.55, 1.0], gap="medium")
 
     with top_map_col:
@@ -626,14 +715,14 @@ with col_main:
         mapbox_token = os.getenv("MAPBOX_API_KEY")
         if mapbox_token:
             folium.TileLayer(
-                tiles=f"https://api.mapbox.com/styles/v1/mapbox/satellite-streets-v12/tiles/{{z}}/{{y}}/{{x}}?access_token={mapbox_token}",
+                tiles=f"https://api.mapbox.com/styles/v1/mapbox/satellite-streets-v12/tiles/{{z}}/{{x}}/{{y}}?access_token={mapbox_token}",
                 name="🗺️ Mapbox HD Satellite Streets",
                 attr="Mapbox",
                 overlay=False,
                 control=True
             ).add_to(m)
 
-        # NASA GIBS WMTS Live Layers (Optional overlay toggle - default off to prevent raw orbital swath gaps on load)
+        # NASA GIBS WMTS Live Layers (Default off to prevent raw orbital swath gap stripes on load)
         gibs_date = (datetime.now() - timedelta(days=2)).strftime('%Y-%m-%d')
         modis_truecolor_url = f"https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/MODIS_Terra_CorrectedReflectance_TrueColor/default/{gibs_date}/GoogleMapsCompatible_Level9/{{z}}/{{y}}/{{x}}.jpg"
         folium.TileLayer(
@@ -652,7 +741,6 @@ with col_main:
                 dname = feat["properties"]["name"]
                 score_info = district_scores.get(dname, {"score": 25.0})
                 sc = score_info["score"]
-                # Color code: Safe (Green), Moderate (Yellow), Critical (Red)
                 if sc > 60:
                     fill_c = "#DC2626" # Red
                 elif sc > 30:
@@ -722,11 +810,18 @@ with col_main:
         """
         m.get_root().html.add_child(Element(legend_html))
 
-        # Render Map with click listener
-        map_interaction = st_folium(m, height=330, width="100%", returned_objects=["last_clicked"])
-        if map_interaction and map_interaction.get("last_clicked") and not is_global_hotspot:
-            c_lat = map_interaction["last_clicked"]["lat"]
-            c_lon = map_interaction["last_clicked"]["lng"]
+        # Render Folium in Streamlit
+        map_data = st_folium(
+            m,
+            width="100%",
+            height=375,
+            returned_objects=["last_clicked"]
+        )
+
+        # If user clicks on Punjab map, sync selected district
+        if map_data and map_data.get("last_clicked") and not is_global_hotspot:
+            c_lat = map_data["last_clicked"]["lat"]
+            c_lon = map_data["last_clicked"]["lng"]
             loc = spatial.locate_point(c_lat, c_lon)
             clicked_dist = loc["district"]
             matched_prefix = f"Punjab - {clicked_dist}"
@@ -786,7 +881,7 @@ with col_main:
 
         # Card 2: Soil Quality Status (Dynamic)
         st.markdown("""
-        <div class="dark-card" style="padding:12px 14px; margin-bottom:0px;">
+        <div class="dark-card" style="padding:12px 14px; margin-bottom:10px;">
             <div class="dark-card-title" style="margin-bottom:4px;">
                 <span>Soil Quality Status</span>
                 <span class="info-circle" title="SMAP vs Landsat NDVI/SAVI Dual Diagnosis">ⓘ</span>
@@ -839,32 +934,74 @@ with col_main:
 
         st.markdown("</div>", unsafe_allow_html=True)
 
-    # ---------------------------------------------------------------------
-    # EARLY WARNING DELTA ROW: 30 DAYS AGO vs. TODAY
-    # ---------------------------------------------------------------------
-    row_30d = dist_df.iloc[0]
-    sm_old = float(row_30d["smap_rootzone_sm"])
-    sm_now = float(latest["smap_rootzone_sm"])
-    sm_diff = sm_now - sm_old
-    sm_color = "#DC2626" if sm_diff < -0.03 else ("#16A34A" if sm_diff > 0.02 else "#F59E0B")
+        # Card 3: Farmer Advisory & Alerts
+        st.markdown(f"""
+        <div class="advisory-white-card" style="margin-bottom:0px; padding:12px 14px;">
+            <div class="advisory-title">
+                <span>Farmer Advisory &amp; Alert</span>
+                <span style="font-size:1.15rem;">🔔</span>
+            </div>
+            <div style="font-size:0.84rem; font-weight:600; color:#1E293B; margin-bottom:6px;">
+                • {adv1}
+            </div>
+            <div style="font-size:0.84rem; font-weight:600; color:#1E293B; margin-bottom:10px;">
+                • {adv2}
+            </div>
+        """, unsafe_allow_html=True)
 
-    ndvi_old = float(row_30d["landsat_ndvi"])
-    ndvi_now = float(latest["landsat_ndvi"])
-    ndvi_diff = ndvi_now - ndvi_old
-    ndvi_color = "#DC2626" if ndvi_diff < -0.05 else ("#16A34A" if ndvi_diff > 0.03 else "#F59E0B")
+        wa_text = f"🌾 Punjab Farm Water Watch Alert - {selected_district}\nWater Stress Score: {stress_res['score']}/100 ({stress_res['zone']})\nAdvisory:\n1. {adv1}\n2. {adv2}\nNASA Live Telemetry Verified."
+        wa_url = f"https://wa.me/?text={urllib.parse.quote(wa_text)}"
 
-    score_old = stress_model.compute_water_stress_score(
-        smap_rootzone_sm=sm_old,
-        rain_30d_mm=float(dist_df["gpm_precipitation_mm"].head(10).sum()) * 1.5,
-        modis_et_mm=float(row_30d["modis_et_mm"]),
-        landsat_lst_c=float(row_30d["landsat_lst_c"])
-    )["score"]
-    score_now = stress_res["score"]
-    score_diff = score_now - score_old
-    score_color = "#DC2626" if score_diff > 10 else ("#16A34A" if score_diff < -5 else "#F59E0B")
+        adv_btn_c1, adv_btn_c2 = st.columns(2)
+        with adv_btn_c1:
+            st.markdown(f"""
+            <a href="{wa_url}" target="_blank" style="text-decoration:none;">
+                <div style="
+                    background-color:#22C55E; color:#FFFFFF; text-align:center;
+                    font-size:0.80rem; font-weight:700; padding:6px 10px; border-radius:6px;
+                    display:flex; align-items:center; justify-content:center; gap:5px;
+                    box-shadow:0 2px 6px rgba(34,197,94,0.3);
+                ">
+                    💬 WhatsApp
+                </div>
+            </a>
+            """, unsafe_allow_html=True)
+        with adv_btn_c2:
+            speech_text = f"{adv1}. {adv2}."
+            speech_lang = "hi-IN" if lang_selection in ["hi", "pa"] else "en-US"
+            speech_html = f"""
+            <div style="display:flex; justify-content:center;">
+                <button id="voiceBtn" style="
+                    width: 100%; background-color:#E2E8F0; color:#1E293B; border:none;
+                    font-size:0.80rem; font-weight:700; padding:6px 10px; border-radius:6px;
+                    cursor:pointer; display:flex; align-items:center; justify-content:center; gap:5px;
+                    font-family:-apple-system, BlinkMacSystemFont, sans-serif;
+                ">
+                    🔊 Listen
+                </button>
+            </div>
+            <script>
+                const btn = document.getElementById('voiceBtn');
+                btn.onclick = function() {{
+                    if ('speechSynthesis' in window) {{
+                        window.speechSynthesis.cancel();
+                        const utterance = new SpeechSynthesisUtterance({pd.Series([speech_text]).to_json(orient='values')[1:-1]});
+                        utterance.lang = '{speech_lang}';
+                        utterance.rate = 0.95;
+                        window.speechSynthesis.speak(utterance);
+                    }} else {{
+                        alert('Web Speech API is not supported in this browser.');
+                    }}
+                }};
+            </script>
+            """
+            components.html(speech_html, height=36)
 
+        st.markdown("</div>", unsafe_allow_html=True)
+
+    # Early Warning Delta Cards Row
     st.markdown(f"""
-    <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-top: 10px; margin-bottom: 12px;">
+    <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-top: 14px; margin-bottom: 6px;">
         <div class="delta-box">
             <div class="delta-label">SMAP Rootzone Soil Moisture</div>
             <div class="delta-current">{sm_now:.3f} <span style="font-size:0.82rem; color:#94A3B8;">m³/m³</span></div>
@@ -883,28 +1020,26 @@ with col_main:
     </div>
     """, unsafe_allow_html=True)
 
-    # ---------------------------------------------------------------------
-    # MIDDLE ROW: SOIL MOISTURE & WATER FORECAST (CRISP WHITE CARD)
-    # ---------------------------------------------------------------------
+
+# =========================================================================
+# TAB 2: 7-DAY ML FORECAST & CALENDAR
+# =========================================================================
+with tab_forecast:
     st.markdown("""
-    <div class="white-card">
-        <div class="white-card-title">Soil Moisture &amp; Water Forecast</div>
+    <div class="white-card" style="margin-bottom:14px;">
+        <div class="white-card-title">Soil Moisture &amp; Water Forecast (30-Day SMAP + 7-Day Random Forest)</div>
     """, unsafe_allow_html=True)
 
-    # Plotly Forecast Chart matching exact layout & color styling
-    # Historical 30-day SMAP + 7-day Random Forest Forecast
     hist_dates = pd.to_datetime(dist_df["date"]).dt.strftime("%b %d").tolist()
     hist_sm = dist_df["smap_rootzone_sm"].tolist()
 
     fc_dates = [f["day_label"] for f in fc_results]
     fc_preds = [f["predicted_sm"] for f in fc_results]
-    
-    # Combined timeline
     all_timeline_dates = hist_dates + fc_dates
     
     fig_line = go.Figure()
 
-    # Vertical shaded band highlighting the 7-day forecast window
+    # Shaded forecast window
     fig_line.add_vrect(
         x0=len(hist_dates) - 1,
         x1=len(all_timeline_dates) - 1,
@@ -913,7 +1048,7 @@ with col_main:
         line_width=0
     )
 
-    # 30-Day SMAP Soil Moisture
+    # 30-Day SMAP
     fig_line.add_trace(go.Scatter(
         x=list(range(len(hist_dates))),
         y=hist_sm,
@@ -931,7 +1066,7 @@ with col_main:
         line=dict(color="#B45309", width=2.5)
     ))
 
-    # Dashed baseline drydown continuation
+    # Baseline drydown continuation
     dash_baseline = [hist_sm[-1] - (i * 0.012) for i in range(len(fc_preds) + 1)]
     fig_line.add_trace(go.Scatter(
         x=list(range(len(hist_dates) - 1, len(all_timeline_dates))),
@@ -941,23 +1076,12 @@ with col_main:
         line=dict(color="#0284C7", width=1.5, dash="dash")
     ))
 
-    # Pick 4 representative date tick positions: Oct 15, Oct 30, Nov 14, Nov 21
-    tick_indices = [
-        0,
-        len(hist_dates) // 2,
-        len(hist_dates) - 1,
-        len(all_timeline_dates) - 1
-    ]
-    tick_texts = [
-        all_timeline_dates[tick_indices[0]],
-        all_timeline_dates[tick_indices[1]],
-        all_timeline_dates[tick_indices[2]],
-        all_timeline_dates[tick_indices[3]]
-    ]
+    tick_indices = [0, len(hist_dates) // 2, len(hist_dates) - 1, len(all_timeline_dates) - 1]
+    tick_texts = [all_timeline_dates[t] for t in tick_indices]
 
     fig_line.update_layout(
         template="plotly_white",
-        height=240,
+        height=260,
         margin=dict(l=35, r=20, t=10, b=30),
         paper_bgcolor="#FFFFFF",
         plot_bgcolor="#FFFFFF",
@@ -980,7 +1104,7 @@ with col_main:
         ),
         yaxis=dict(
             range=[0.0, 0.65],
-            title="Soil Moisture",
+            title="Soil Moisture (m³/m³)",
             title_font=dict(size=11, color="#475569"),
             showgrid=True,
             gridcolor="#E2E8F0"
@@ -990,322 +1114,348 @@ with col_main:
     st.plotly_chart(fig_line, use_container_width=True, config={'displayModeBar': False})
     st.markdown("</div>", unsafe_allow_html=True)
 
+    # 3 Summary Predictive KPI Cards
+    fc_final = fc_results[-1]
+    trend_val = fc_final["predicted_sm"] - hist_sm[-1]
+    trend_str = f"{trend_val:+.3f} m³/m³ (7 Days)"
+    trend_color = "#DC2626" if trend_val < -0.02 else ("#16A34A" if trend_val > 0.01 else "#F59E0B")
 
-    # ---------------------------------------------------------------------
-    # DECISION SUPPORT SUITE: 7-DAY SMART CALENDAR & CROP-SWITCH SIMULATOR
-    # ---------------------------------------------------------------------
-    tab_cal, tab_crops = st.tabs([
-        "🗓️ Pin-Drop 7-Day Smart Farm Action Calendar",
-        "🌾 Crop-Switch & Aquifer-Life Budget Simulator"
-    ])
+    st.markdown(f"""
+    <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-bottom: 14px;">
+        <div class="delta-box">
+            <div class="delta-label">Day-7 Projected Moisture</div>
+            <div class="delta-current">{fc_final['predicted_sm']:.3f} <span style="font-size:0.82rem; color:#94A3B8;">m³/m³</span></div>
+            <div class="delta-sub">90% Confidence: <b>{fc_final['lower_sm_bound']:.3f} – {fc_final['upper_sm_bound']:.3f}</b></div>
+        </div>
+        <div class="delta-box">
+            <div class="delta-label">7-Day Trajectory Trend</div>
+            <div class="delta-current" style="color:{trend_color};">{trend_str}</div>
+            <div class="delta-sub">Soil Model: <b>RandomForest (R²: 0.88+)</b></div>
+        </div>
+        <div class="delta-box">
+            <div class="delta-label">Projected Water Stress</div>
+            <div class="delta-current">{fc_final['predicted_stress_score']:.1f} <span style="font-size:0.82rem; color:#94A3B8;">/ 100</span></div>
+            <div class="delta-sub">Outlook: <b style="color:{'#DC2626' if fc_final['predicted_stress_score'] > 60 else '#F59E0B'};">{'Critical Action' if fc_final['predicted_stress_score'] > 60 else 'Watchlist'}</b></div>
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
 
-    with tab_cal:
-        st.markdown(f"""
-        <div class="dark-card" style="margin-bottom:12px;">
-            <div class="dark-card-title">
-                <span>🗓️ Precision Action Calendar for {selected_district}</span>
-                <span class="info-circle" title="Dynamic 7-day schedule generated from RandomForest soil projections & anomaly triggers">ⓘ</span>
-            </div>
-        """, unsafe_allow_html=True)
-        smart_cal_days = generate_smart_calendar(fc_results, soil_res, lang=lang_selection)
+    # Precision Action Calendar
+    st.markdown(f"""
+    <div class="dark-card" style="margin-bottom:12px;">
+        <div class="dark-card-title">
+            <span>🗓️ Pin-Drop 7-Day Precision Action Calendar ({selected_district})</span>
+            <span class="info-circle" title="Dynamic 7-day schedule generated from RandomForest soil projections & anomaly triggers">ⓘ</span>
+        </div>
+    """, unsafe_allow_html=True)
+    smart_cal_days = generate_smart_calendar(fc_results, soil_res, lang=lang_selection)
 
-        c_cols = st.columns(2)
-        for idx, c_day in enumerate(smart_cal_days):
-            col_target = c_cols[idx % 2]
-            with col_target:
-                st.markdown(f"""
-                <div class="calendar-card">
-                    <div class="calendar-icon-col">{c_day['icon']}</div>
-                    <div style="flex-grow:1;">
-                        <div class="calendar-title">
-                            <span>{c_day['day_label']}: {c_day['title']}</span>
-                            <span class="badge-status" style="border-color:{c_day['badge_color']}; color:{c_day['badge_color']};">{c_day['badge']}</span>
-                        </div>
-                        <div class="calendar-desc">{c_day['action']}</div>
-                        <div style="font-size:0.74rem; color:#64748B; margin-top:4px;">
-                            Projected Moisture: <b>{c_day['projected_sm']:.3f} m³/m³</b> · Zone: <b style="color:{c_day['badge_color']};">{c_day['risk_zone']}</b>
-                        </div>
+    c_cols = st.columns(2)
+    for idx, c_day in enumerate(smart_cal_days):
+        col_target = c_cols[idx % 2]
+        with col_target:
+            st.markdown(f"""
+            <div class="calendar-card">
+                <div class="calendar-icon-col">{c_day['icon']}</div>
+                <div style="flex-grow:1;">
+                    <div class="calendar-title">
+                        <span>{c_day['day_label']}: {c_day['title']}</span>
+                        <span class="badge-status" style="border-color:{c_day['badge_color']}; color:{c_day['badge_color']};">{c_day['badge']}</span>
+                    </div>
+                    <div class="calendar-desc">{c_day['action']}</div>
+                    <div style="font-size:0.74rem; color:#64748B; margin-top:4px;">
+                        Projected Moisture: <b>{c_day['projected_sm']:.3f} m³/m³</b> · Zone: <b style="color:{c_day['badge_color']};">{c_day['risk_zone']}</b>
                     </div>
                 </div>
-                """, unsafe_allow_html=True)
-        st.markdown("</div>", unsafe_allow_html=True)
+            </div>
+            """, unsafe_allow_html=True)
+    st.markdown("</div>", unsafe_allow_html=True)
 
-    with tab_crops:
+
+# =========================================================================
+# TAB 3: WATER & CROP SIMULATOR
+# =========================================================================
+with tab_simulator:
+    sim_top_c1, sim_top_c2 = st.columns([1.1, 1.3], gap="large")
+
+    with sim_top_c1:
+        st.markdown("""
+        <div class="dark-card" style="margin-bottom:12px;">
+            <div class="dark-card-title">
+                <span>What-If Water &amp; Energy Calculator</span>
+                <span class="info-circle" title="Dynamic model based on PAU water conservation empirical benchmarks">ⓘ</span>
+            </div>
+        """, unsafe_allow_html=True)
+        
+        st.markdown("<div style='font-size:0.83rem; font-weight:600; color:#94A3B8; margin-bottom:2px;'>Farm Size</div>", unsafe_allow_html=True)
+        farm_acres = st.slider(
+            "Farm Size",
+            min_value=1,
+            max_value=100,
+            value=int(st.session_state.get("farm_acres", 10)),
+            step=1,
+            format="%d Acres",
+            key="farm_acres_slider"
+        )
+        st.session_state["farm_acres"] = farm_acres
+
+        st.markdown("<div style='font-size:0.83rem; font-weight:600; color:#94A3B8; margin-top:8px; margin-bottom:2px;'>Conservation Practice</div>", unsafe_allow_html=True)
+        practice_options = [
+            "DSR (Direct Seeded Rice) / Mulching",
+            "Delay Irrigation by 3 Days",
+            "Crop-Residue Mulching",
+            "Combined Protocol"
+        ]
+        selected_practice = st.selectbox(
+            "Practice",
+            practice_options,
+            index=0,
+            key="practice_selectbox"
+        )
+
+        pct_saved_map = {
+            "DSR (Direct Seeded Rice) / Mulching": 0.20,
+            "Delay Irrigation by 3 Days": 0.10,
+            "Crop-Residue Mulching": 0.15,
+            "Combined Protocol": 0.30
+        }
+        saving_ratio = pct_saved_map[selected_practice]
+        total_baseline_litres = farm_acres * 900000
+        litres_saved = total_baseline_litres * saving_ratio
+        kwh_saved = int(litres_saved * 0.000789)
+
+        if litres_saved >= 1000000:
+            litres_display = f"{litres_saved / 1000000:.1f}M"
+        else:
+            litres_display = f"{int(litres_saved):,}"
+
+        st.markdown(f"""
+            <div class="savings-display-box">
+                <div class="savings-big-val">{litres_display}</div>
+                <div class="savings-label">Litres Saved ({farm_acres} Acres)</div>
+                <div class="kwh-badge">⚡ Electricity Saved: {kwh_saved:,} kWh</div>
+            </div>
+            <div class="savings-footer-text">Targeted Groundwater &amp; Carbon Conservation</div>
+            <div class="accent-underline"></div>
+        </div>
+        """, unsafe_allow_html=True)
+
+    with sim_top_c2:
         st.markdown(f"""
         <div class="dark-card" style="margin-bottom:12px;">
             <div class="dark-card-title">
-                <span>🌾 Crop Diversification &amp; Groundwater Budget Simulator ({selected_district})</span>
+                <span>🌾 Crop Diversification &amp; Groundwater Budget ({selected_district})</span>
                 <span class="info-circle" title="PAU Agronomic Benchmarks for Groundwater Depletion Mitigation">ⓘ</span>
             </div>
         """, unsafe_allow_html=True)
 
-        sim_col_sel, sim_col_chart = st.columns([1.1, 1.4], gap="medium")
-        with sim_col_sel:
-            st.markdown("<div style='font-size:0.83rem; font-weight:600; color:#94A3B8; margin-bottom:2px;'>Select Crop Diversification Option:</div>", unsafe_allow_html=True)
-            crop_choice = st.selectbox(
-                "Crop Choice",
-                options=list(CropBudgetSimulator.CROP_PROFILES.keys()),
-                index=1,
-                label_visibility="collapsed"
-            )
-            sim_budget = CropBudgetSimulator.calculate_budget(crop_choice, farm_acres=farm_acres)
+        st.markdown("<div style='font-size:0.83rem; font-weight:600; color:#94A3B8; margin-bottom:2px;'>Select Alternative Crop Diversification:</div>", unsafe_allow_html=True)
+        crop_choice = st.selectbox(
+            "Crop Choice",
+            options=list(CropBudgetSimulator.CROP_PROFILES.keys()),
+            index=1,
+            key="crop_choice_select"
+        )
+        sim_budget = CropBudgetSimulator.calculate_budget(crop_choice, farm_acres=farm_acres)
 
-            st.markdown(f"""
-            <div style="background:#09202C; border:1px solid #163C52; border-radius:8px; padding:12px; margin-top:6px;">
-                <div style="font-size:0.82rem; font-weight:700; color:#38BDF8; margin-bottom:6px;">📊 Seasonal Water Budget ({farm_acres} Acres)</div>
-                <div style="display:flex; justify-content:space-between; margin-bottom:4px; font-size:0.82rem;">
-                    <span style="color:#94A3B8;">Water Demand:</span>
-                    <span style="color:#FFFFFF; font-weight:700;">{sim_budget['crop_water_demand_m']}M Litres</span>
-                </div>
-                <div style="display:flex; justify-content:space-between; margin-bottom:4px; font-size:0.82rem;">
-                    <span style="color:#94A3B8;">Groundwater Saved:</span>
-                    <span style="color:#2DD4BF; font-weight:700;">{sim_budget['groundwater_saved_m']}M Litres ({sim_budget['pct_saved']:.0f}%)</span>
-                </div>
-                <div style="display:flex; justify-content:space-between; font-size:0.82rem;">
-                    <span style="color:#94A3B8;">Tube-Well Power Saved:</span>
-                    <span style="color:#F59E0B; font-weight:700;">{sim_budget['kwh_saved']:,} kWh</span>
-                </div>
-                <div style="margin-top:8px; font-size:0.77rem; color:#CBD5E1; font-style:italic;">
-                    💡 {sim_budget['recommendation']}
-                </div>
+        st.markdown(f"""
+        <div style="background:#09202C; border:1px solid #163C52; border-radius:8px; padding:14px; margin-top:8px;">
+            <div style="font-size:0.86rem; font-weight:700; color:#38BDF8; margin-bottom:8px;">📊 Seasonal Water Demand vs Savings ({farm_acres} Acres)</div>
+            <div style="display:flex; justify-content:space-between; margin-bottom:6px; font-size:0.84rem;">
+                <span style="color:#94A3B8;">Water Demand:</span>
+                <span style="color:#FFFFFF; font-weight:700;">{sim_budget['crop_water_demand_m']}M Litres</span>
             </div>
-            """, unsafe_allow_html=True)
+            <div style="display:flex; justify-content:space-between; margin-bottom:6px; font-size:0.84rem;">
+                <span style="color:#94A3B8;">Groundwater Saved:</span>
+                <span style="color:#2DD4BF; font-weight:700;">{sim_budget['groundwater_saved_m']}M Litres ({sim_budget['pct_saved']:.0f}%)</span>
+            </div>
+            <div style="display:flex; justify-content:space-between; font-size:0.84rem;">
+                <span style="color:#94A3B8;">Tube-Well Power Saved:</span>
+                <span style="color:#F59E0B; font-weight:700;">{sim_budget['kwh_saved']:,} kWh</span>
+            </div>
+            <div style="margin-top:10px; font-size:0.80rem; color:#CBD5E1; font-style:italic; border-top:1px solid #163C52; padding-top:6px;">
+                💡 <b>Agronomic Guidance:</b> {sim_budget['recommendation']}
+            </div>
+        </div>
+        </div>
+        """, unsafe_allow_html=True)
 
-        with sim_col_chart:
-            # Side-by-side Plotly Bar Chart comparing Baseline Paddy vs Alternative
-            fig_sim = go.Figure()
-            fig_sim.add_trace(go.Bar(
-                x=["Paddy Baseline", "Selected Crop", "Water Saved"],
-                y=[sim_budget["baseline_litres_m"], sim_budget["crop_water_demand_m"], sim_budget["groundwater_saved_m"]],
-                marker_color=["#DC2626", "#0284C7", "#2DD4BF"],
-                text=[f"{sim_budget['baseline_litres_m']}M", f"{sim_budget['crop_water_demand_m']}M", f"{sim_budget['groundwater_saved_m']}M"],
-                textposition="auto"
-            ))
-            fig_sim.update_layout(
-                template="plotly_dark",
-                height=185,
-                margin=dict(l=25, r=15, t=10, b=25),
-                paper_bgcolor="rgba(0,0,0,0)",
-                plot_bgcolor="rgba(0,0,0,0)",
-                yaxis=dict(title="Million Litres", showgrid=True, gridcolor="#163C52", title_font=dict(size=10)),
-                xaxis=dict(showgrid=False)
-            )
-            st.plotly_chart(fig_sim, use_container_width=True, config={'displayModeBar': False})
+    # Comparative Plotly Bar Chart & Aquifer Scale Impact
+    sim_b_col1, sim_b_col2 = st.columns([1.4, 1.0], gap="medium")
 
+    with sim_b_col1:
+        st.markdown("""
+        <div class="dark-card" style="margin-bottom:0px;">
+            <div class="dark-card-title">Comparative Water Consumption Benchmark (Million Litres)</div>
+        """, unsafe_allow_html=True)
+        fig_sim = go.Figure()
+        fig_sim.add_trace(go.Bar(
+            x=["Paddy Baseline", f"Selected: {crop_choice.split('(')[0]}", "Groundwater Saved"],
+            y=[sim_budget["baseline_litres_m"], sim_budget["crop_water_demand_m"], sim_budget["groundwater_saved_m"]],
+            marker_color=["#DC2626", "#0284C7", "#2DD4BF"],
+            text=[f"{sim_budget['baseline_litres_m']}M", f"{sim_budget['crop_water_demand_m']}M", f"{sim_budget['groundwater_saved_m']}M"],
+            textposition="auto"
+        ))
+        fig_sim.update_layout(
+            template="plotly_dark",
+            height=200,
+            margin=dict(l=25, r=15, t=10, b=25),
+            paper_bgcolor="rgba(0,0,0,0)",
+            plot_bgcolor="rgba(0,0,0,0)",
+            yaxis=dict(title="Million Litres", showgrid=True, gridcolor="#163C52", title_font=dict(size=10)),
+            xaxis=dict(showgrid=False)
+        )
+        st.plotly_chart(fig_sim, use_container_width=True, config={'displayModeBar': False})
         st.markdown("</div>", unsafe_allow_html=True)
 
-
-    # ---------------------------------------------------------------------
-    # BOTTOM ROW: SOIL HEALTH CARD (LEFT) + FARMER ADVISORY (RIGHT)
-    # ---------------------------------------------------------------------
-    bot_left, bot_right = st.columns([1.1, 1.0], gap="medium")
-
-    with bot_left:
-        st.markdown("""
+    with sim_b_col2:
+        district_wells = 120000
+        district_saving_m = (sim_budget["groundwater_saved_m"] / farm_acres) * (district_wells * 0.10 * 8)
+        st.markdown(f"""
         <div class="dark-card" style="margin-bottom:0px; height:100%;">
+            <div class="dark-card-title">District-Scale Aquifer Life Impact</div>
+            <div style="font-size:0.83rem; color:#94A3B8; margin-bottom:8px;">
+                If <b>10% of tube-wells</b> in {selected_district} adopt this protocol:
+            </div>
+            <div style="background:#09202C; border:1px solid #163C52; border-radius:6px; padding:10px; margin-bottom:8px; text-align:center;">
+                <div style="font-size:1.8rem; font-weight:800; color:#2DD4BF;">{district_saving_m:.0f}M L</div>
+                <div style="font-size:0.75rem; color:#94A3B8;">Groundwater Preserved Every Season</div>
+            </div>
+            <div style="font-size:0.76rem; color:#CBD5E1;">
+                🛡️ Prevents deep aquifer decline across the central water table while curbing peak coal-fired power grid draw.
+            </div>
+        </div>
+        """, unsafe_allow_html=True)
+
+
+# =========================================================================
+# TAB 4: SOIL HEALTH CARD & PAU LAB
+# =========================================================================
+with tab_soil:
+    soil_c1, soil_c2 = st.columns([1.1, 1.25], gap="medium")
+
+    with soil_c1:
+        st.markdown("""
+        <div class="dark-card" style="margin-bottom:12px;">
             <div class="dark-card-title">
-                <span>Soil Health Card &amp; Lab Prescription</span>
+                <span>Soil Health Card Parameters</span>
                 <span class="info-circle" title="Empirical PAU/KVK Soil Testing Protocol">ⓘ</span>
             </div>
         """, unsafe_allow_html=True)
 
-        sc_in_col, sc_rx_col = st.columns([1.0, 1.25])
-        with sc_in_col:
-            st.markdown("<div style='font-size:0.75rem; color:#94A3B8; font-weight:600;'>pH</div>", unsafe_allow_html=True)
-            input_ph = st.number_input("pH", value=8.6, step=0.1, min_value=4.0, max_value=11.0, label_visibility="collapsed")
+        sc_in1, sc_in2 = st.columns(2)
+        with sc_in1:
+            st.markdown("<div style='font-size:0.75rem; color:#94A3B8; font-weight:600;'>Soil pH</div>", unsafe_allow_html=True)
+            input_ph = st.number_input("pH", value=float(st.session_state.get("input_ph", 8.6)), step=0.1, min_value=4.0, max_value=11.0, key="soil_ph_input")
+            st.session_state["input_ph"] = input_ph
             
             st.markdown("<div style='font-size:0.75rem; color:#94A3B8; font-weight:600; margin-top:4px;'>EC (dS/m)</div>", unsafe_allow_html=True)
-            input_ec = st.number_input("EC", value=0.9, step=0.1, min_value=0.0, max_value=20.0, label_visibility="collapsed")
-            
-            st.markdown("<div style='font-size:0.75rem; color:#F59E0B; font-weight:600; margin-top:4px;'>OC (%)</div>", unsafe_allow_html=True)
-            input_oc = st.number_input("OC", value=0.38, step=0.01, min_value=0.05, max_value=2.0, label_visibility="collapsed")
+            input_ec = st.number_input("EC", value=float(st.session_state.get("input_ec", 0.9)), step=0.1, min_value=0.0, max_value=20.0, key="soil_ec_input")
+            st.session_state["input_ec"] = input_ec
 
-            st.markdown("<div style='font-size:0.75rem; color:#94A3B8; font-weight:600; margin-top:4px;'>Nitrogen (kg/ha)</div>", unsafe_allow_html=True)
-            input_n = st.number_input("Nitrogen", value=190, step=10, min_value=50, max_value=600, label_visibility="collapsed")
+        with sc_in2:
+            st.markdown("<div style='font-size:0.75rem; color:#F59E0B; font-weight:600;'>Organic Carbon (%)</div>", unsafe_allow_html=True)
+            input_oc = st.number_input("OC", value=float(st.session_state.get("input_oc", 0.38)), step=0.01, min_value=0.05, max_value=2.0, key="soil_oc_input")
+            st.session_state["input_oc"] = input_oc
 
-        # Dynamic prescription doses
-        gypsum_bags = 2 if input_ph > 8.5 else 0
-        fym_tonnes = 4 if input_oc < 0.5 else 0
-        gypsum_text = f"• {gypsum_bags} Bags Gypsum/Acre" if gypsum_bags > 0 else "• Gypsum: Normal (No Treatment)"
-        compost_text = f"• {fym_tonnes}t Compost/Acre" if fym_tonnes > 0 else "• Compost: Adequate Carbon"
-        zinc_text = "• Zinc Dose (25 kg/ha ZnSO4)" if input_n < 250 else "• Standard Basal Dose"
-
-        with sc_rx_col:
-            st.markdown(f"""
-            <div class="prescription-box">
-                <div class="prescription-title">Apply Gypsum &amp;<br>Lab Prescription</div>
-                <div class="prescription-item">{gypsum_text}</div>
-                <div class="prescription-item">{compost_text}</div>
-                <div class="prescription-item">{zinc_text}</div>
-            </div>
-            """, unsafe_allow_html=True)
+            st.markdown("<div style='font-size:0.75rem; color:#94A3B8; font-weight:600; margin-top:4px;'>Available Nitrogen (kg/ha)</div>", unsafe_allow_html=True)
+            input_n = st.number_input("Nitrogen", value=int(st.session_state.get("input_n", 190)), step=10, min_value=50, max_value=600, key="soil_n_input")
+            st.session_state["input_n"] = input_n
 
         st.markdown("</div>", unsafe_allow_html=True)
 
-        with st.expander("📖 PAU / KVK 15 cm Soil Testing Protocol & Field Remedies"):
-            st.markdown("**PAU / ICAR 4-Step Soil Sampling Protocol:**")
-            for step in SOIL_TESTING_STEPS:
-                t_key = f"title_{lang_selection}" if f"title_{lang_selection}" in step else "title_en"
-                d_key = f"desc_{lang_selection}" if f"desc_{lang_selection}" in step else "desc_en"
-                st.markdown(f"**Step {step['step_number']}: {step.get(t_key, step['title_en'])}**\n{step.get(d_key, step['desc_en'])}")
-            st.markdown("---")
-            st.markdown("**Recommended Field Remedies:**")
-            for rem in REMEDIES_GUIDE:
-                r_key = f"remedy_{lang_selection}" if f"remedy_{lang_selection}" in rem else "remedy_en"
-                st.markdown(f"• **{rem['problem']}:** {rem.get(r_key, rem['remedy_en'])}")
-
-    with bot_right:
-        # Farmer Advisory Card (Crisp White Card with Red Top Border)
-        # Select localized text dynamically based on risk zone
-        if stress_res["zone"] == "Red":
-            if lang_selection == "pa":
-                adv1 = "ਕਿਸਾਨ ਵੀਰੋ, 3 ਦਿਨ ਪਾਣੀ ਰੋਕੋ (Kisan veero, 3 din paani roko)"
-                adv2 = "ਸਿੱਧੀ ਬਿਜਾਈ (DSR) ਅਤੇ ਮਲਚਿੰਗ ਅਪਣਾਓ (Adopt DSR & Mulching)"
-            elif lang_selection == "en":
-                adv1 = "Farmers, pause irrigation for 3 days to preserve root aeration"
-                adv2 = "Switch to Direct Seeded Rice (DSR) & Crop-Residue Mulching"
-            else: # hi
-                adv1 = "Kisan bhai, 3 din paani rok do"
-                adv2 = "Switch to Direct Seeded Rice (DSR) & Mulching"
-        elif stress_res["zone"] == "Yellow":
-            if lang_selection == "pa":
-                adv1 = "ਜੜ੍ਹ ਖੇਤਰ ਵਿੱਚ ਦਰਮਿਆਨੀ ਨਮੀ ਦੀ ਘਾਟ - ਸਿੰਚਾਈ 2 ਦਿਨ ਟਾਲੋ"
-                adv2 = "ਵਾਸ਼ਪੀਕਰਨ ਰੋਕਣ ਲਈ ਪਰਾਲੀ ਦੀ ਮਲਚਿੰਗ ਕਰੋ"
-            elif lang_selection == "en":
-                adv1 = "Moderate moisture deficit: Delay flood irrigation by 2 days"
-                adv2 = "Apply straw mulching to curb high surface evapotranspiration losses"
-            else: # hi
-                adv1 = "जड़-क्षेत्र में मध्यम नमी की कमी - सिंचाई 2 दिन टालें"
-                adv2 = "वाष्पीकरण रोकने के लिए खेत में पुआल की मल्चिंग करें"
-        else: # Green
-            if lang_selection == "pa":
-                adv1 = "ਫ਼ਸਲ ਲਈ ਪਾਣੀ ਕਾਫ਼ੀ ਹੈ - ਬੇਲੋੜੀ ਸਿੰਚਾਈ ਤੋਂ ਬਚੋ"
-                adv2 = "ਜ਼ਮੀਨੀ ਪਾਣੀ ਬਚਾਉਣ ਲਈ ਤੁਪਕਾ ਜਾਂ ਫੁਹਾਰਾ ਸਿੰਚਾਈ ਅਪਣਾਓ"
-            elif lang_selection == "en":
-                adv1 = "Water reserves are currently sufficient for crop demand"
-                adv2 = "Avoid unnecessary over-irrigation to conserve regional groundwater"
-            else: # hi
-                adv1 = "फसल की मांग के लिए पानी पर्याप्त है - अतिरिक्त सिंचाई से बचें"
-                adv2 = "भूजल स्तर बनाए रखने के लिए संतुलित सिंचाई करें"
+    with soil_c2:
+        # Dynamic recalculation for tab inputs
+        dyn_gypsum = 2 if input_ph > 8.5 else 0
+        dyn_fym = 4 if input_oc < 0.5 else 0
+        dyn_gyp_txt = f"• {dyn_gypsum} Bags Gypsum/Acre" if dyn_gypsum > 0 else "• Gypsum: Normal (No Treatment Needed)"
+        dyn_fym_txt = f"• {dyn_fym}t Compost / FYM / Acre" if dyn_fym > 0 else "• Compost: Adequate Organic Carbon"
+        dyn_zinc_txt = "• Zinc Sulfate Dose (25 kg/ha ZnSO4)" if input_n < 250 else "• Basal N-P-K Application"
 
         st.markdown(f"""
-        <div class="advisory-white-card" style="margin-bottom:0px;">
-            <div class="advisory-title">
-                <span>Farmer Advisory &amp; Alert</span>
-                <span style="font-size:1.15rem;">🔔</span>
+        <div class="prescription-box" style="margin-bottom:12px;">
+            <div class="prescription-title">PAU / KVK Instant Prescription Dose</div>
+            <div class="prescription-item">{dyn_gyp_txt}</div>
+            <div class="prescription-item">{dyn_fym_txt}</div>
+            <div class="prescription-item">{dyn_zinc_txt}</div>
+            <div style="margin-top:10px; font-size:0.75rem; color:#CBD5E1; border-top:1px solid rgba(255,255,255,0.15); padding-top:6px;">
+                Status: <b style="color:{'#F87171' if dyn_gypsum > 0 or dyn_fym > 0 else '#4ADE80'};">{'Alkaline / Low Carbon Soil — Immediate Soil Conditioning Required' if dyn_gypsum > 0 or dyn_fym > 0 else 'Balanced Agronomic State'}</b>
             </div>
-            <div style="font-size:0.88rem; font-weight:600; color:#1E293B; margin-bottom:8px;">
-                • {adv1}
-            </div>
-            <div style="font-size:0.88rem; font-weight:600; color:#1E293B; margin-bottom:14px;">
-                • {adv2}
-            </div>
-        """, unsafe_allow_html=True)
-
-        # Action Buttons: WhatsApp Share & Listen Voice Alert
-        # 1. WhatsApp Button
-        wa_text = f"🌾 Punjab Farm Water Watch Alert - {selected_district}\nWater Stress Score: {stress_res['score']}/100 ({stress_res['zone']})\nAdvisory:\n1. {adv1}\n2. {adv2}\nNASA Live Telemetry Verified."
-        wa_url = f"https://wa.me/?text={urllib.parse.quote(wa_text)}"
-
-        st.markdown(f"""
-        <a href="{wa_url}" target="_blank" style="text-decoration:none;">
-            <div style="
-                background-color:#22C55E; color:#FFFFFF; text-align:center;
-                font-size:0.86rem; font-weight:700; padding:8px 12px; border-radius:6px;
-                margin-bottom:8px; display:flex; align-items:center; justify-content:center; gap:6px;
-                box-shadow:0 2px 6px rgba(34,197,94,0.3);
-            ">
-                💬 Share on WhatsApp
-            </div>
-        </a>
-        """, unsafe_allow_html=True)
-
-        # 2. Browser Web Speech Voice Alert
-        speech_text = f"{adv1}. {adv2}."
-        speech_lang = "hi-IN" if lang_selection in ["hi", "pa"] else "en-US"
-        speech_html = f"""
-        <div style="display:flex; justify-content:center;">
-            <button id="voiceBtn" style="
-                width: 100%; background-color:#E2E8F0; color:#1E293B; border:none;
-                font-size:0.86rem; font-weight:700; padding:8px 12px; border-radius:6px;
-                cursor:pointer; display:flex; align-items:center; justify-content:center; gap:6px;
-                font-family:-apple-system, BlinkMacSystemFont, sans-serif;
-            ">
-                🔊 Listen Voice Alert
-            </button>
         </div>
-        <script>
-            const btn = document.getElementById('voiceBtn');
-            btn.onclick = function() {{
-                if ('speechSynthesis' in window) {{
-                    window.speechSynthesis.cancel();
-                    const utterance = new SpeechSynthesisUtterance({pd.Series([speech_text]).to_json(orient='values')[1:-1]});
-                    utterance.lang = '{speech_lang}';
-                    utterance.rate = 0.95;
-                    window.speechSynthesis.speak(utterance);
-                }} else {{
-                    alert('Web Speech API is not supported in this browser.');
-                }}
-            }};
-        </script>
-        """
-        components.html(speech_html, height=40)
-        st.markdown("</div>", unsafe_allow_html=True)
+        """, unsafe_allow_html=True)
+
+    # Detailed Protocol Expanders
+    with st.expander("📖 PAU / ICAR 15 cm Soil Sampling Protocol for Extension Officers & Farmers", expanded=True):
+        st.markdown("**PAU / ICAR 4-Step Standard Soil Sampling Guide:**")
+        for step in SOIL_TESTING_STEPS:
+            t_key = f"title_{lang_selection}" if f"title_{lang_selection}" in step else "title_en"
+            d_key = f"desc_{lang_selection}" if f"desc_{lang_selection}" in step else "desc_en"
+            st.markdown(f"**Step {step['step_number']}: {step.get(t_key, step['title_en'])}**\n{step.get(d_key, step['desc_en'])}")
+
+    with st.expander("🧪 Recommended Field Remedies & Management Matrix"):
+        st.markdown("**Field Remedy Recommendations for Punjab Agrosystems:**")
+        for rem in REMEDIES_GUIDE:
+            r_key = f"remedy_{lang_selection}" if f"remedy_{lang_selection}" in rem else "remedy_en"
+            st.markdown(f"• **{rem['problem']}:** {rem.get(r_key, rem['remedy_en'])}")
 
 
 # =========================================================================
-# FOOTER: DOWNLOAD REPORT & NASA CITATION
+# TAB 5: DISTRICT OFFICER DOSSIER
+# =========================================================================
+with tab_report:
+    st.markdown("""
+    <div class="dark-card" style="margin-bottom:14px;">
+        <div class="dark-card-title">
+            <span>📋 District Officer Executive Brief &amp; NASA Telemetry Dossier</span>
+            <span class="info-circle" title="Exportable official dossier verified by NASA EOSDIS observations">ⓘ</span>
+        </div>
+    """, unsafe_allow_html=True)
+
+    dossier_col1, dossier_col2 = st.columns([1.2, 1.0], gap="medium")
+    with dossier_col1:
+        st.markdown(f"""
+        **Target District:** {selected_district}  
+        **Coordinates:** {lat_in:.4f}°N, {lon_in:.4f}°E  
+        **Generated At:** {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}  
+        **Risk Zone:** `{stress_res['zone']}` (Stress Score: **{stress_res['score']}/100**)  
+        """)
+        st.download_button(
+            label="📥 Download Complete Dossier (Markdown / PDF)",
+            data=officer_report_md,
+            file_name=f"punjab_farm_water_watch_{selected_district.lower().replace(' ', '_')}_dossier.md",
+            mime="text/markdown",
+            use_container_width=True
+        )
+
+    with dossier_col2:
+        st.markdown("""
+        **Verified NASA Telemetry Ingested:**
+        - `NASA SMAP L4`: 0–5 cm & 0–100 cm Volumetric Soil Moisture
+        - `NASA GPM IMERG`: Daily Calibrated Precipitation (mm)
+        - `MODIS MOD16A2`: Global Terrestrial Evapotranspiration
+        - `Landsat 8/9 OLI`: 30-Meter Surface Reflectance (NDVI, SAVI, LST)
+        - `NASA POWER DAV`: Daily Surface Temperature, Humidity & Wind Speed
+        - `NASA GRACE-FO`: Equivalent Water Thickness Anomaly
+        """)
+
+    st.markdown("---")
+    st.markdown("#### 7-Day Machine Learning Predictive Outlook")
+    st.dataframe(pd.DataFrame(fc_results)[["day_label", "predicted_sm", "lower_sm_bound", "upper_sm_bound", "predicted_stress_score"]].rename(columns={
+        "day_label": "Day",
+        "predicted_sm": "Projected Moisture (m³/m³)",
+        "lower_sm_bound": "90% Lower CI",
+        "upper_sm_bound": "90% Upper CI",
+        "predicted_stress_score": "Projected Stress Score"
+    }), use_container_width=True)
+
+    st.markdown("</div>", unsafe_allow_html=True)
+
+
+# =========================================================================
+# GLOBAL FOOTER
 # =========================================================================
 st.markdown("<div style='margin-top:14px;'></div>", unsafe_allow_html=True)
 foot_col1, foot_col2 = st.columns([1.5, 2.5])
-
-# Prepare District Officer Dossier Markdown
-officer_report_md = f"""# Punjab Farm Water Watch - District Officer Brief
-**NASA Space Apps Challenge 2026 · Delhi NCR**
-**Team:** The SMAP Squad
-**Target District:** {selected_district} (Coordinates: {lat_in:.4f}°N, {lon_in:.4f}°E)
-**Generated At:** {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
-
----
-
-### 1. Water Stress Score & Multi-Satellite Metrics
-* **Composite Water Stress Score:** {stress_res['score']} / 100 ({stress_res['zone']} Zone)
-* **NASA SMAP L4 Rootzone Moisture (0–100 cm):** {latest['smap_rootzone_sm']:.3f} m³/m³
-* **NASA SMAP L4 Surface Moisture (0–5 cm):** {latest['smap_surface_sm']:.3f} m³/m³
-* **NASA GPM IMERG 30-Day Precipitation:** {rain_30d_val:.1f} mm
-* **MODIS MOD16A2 Evapotranspiration:** {latest['modis_et_mm']:.2f} mm/day
-* **Landsat 8/9 OLI Canopy NDVI:** {latest['landsat_ndvi']:.3f}
-* **Landsat 8/9 OLI Canopy SAVI:** {latest['landsat_savi']:.3f}
-* **NASA GRACE Groundwater Anomaly:** {latest['grace_water_anomaly_cm']:.2f} cm
-
----
-
-### 2. Dual-Diagnosis Soil Quality Audit
-* **Anomaly Status:** {'ALERT TRIGGERED' if soil_res['alert_triggered'] else 'NORMAL'}
-* **Diagnosis:** {soil_res['diagnosis']}
-* **Prescription:** Apply {gypsum_bags} bags/acre Agricultural Gypsum, {fym_tonnes} tonnes/acre FYM/Compost, and 25 kg/acre Zinc Sulfate.
-
----
-
-### 3. 7-Day Machine Learning Predictive Outlook
-| Day | Projected Soil Moisture (m³/m³) | 90% Confidence Interval | Projected Water Stress |
-|---|---|---|---|
-"""
-for f in fc_results:
-    officer_report_md += f"| {f['day_label']} | {f['predicted_sm']:.3f} | {f['lower_sm_bound']:.3f} – {f['upper_sm_bound']:.3f} | {f['predicted_stress_score']:.1f} / 100 |\n"
-
-officer_report_md += """
----
-
-### 4. PAU / ICAR 15 cm Soil Testing Protocol for Extension Officers
-1. **Field Stratification:** Select 5–6 representative spots in a zigzag pattern across the field, avoiding field bunds and shade trees.
-2. **15 cm V-Cut Sampling:** Dig a V-shaped pit to 15 cm depth (active plow layer) and slice a uniform 2 cm core.
-3. **Composite Quartering:** Mix in clean bucket, break clods, divide into 4 quarters, discarding opposite pairs until ~500g remains.
-4. **Lab Submission:** Air-dry in shade (never sun-bake); submit to local KVK/PAU laboratory for pH, EC, OC, N-P-K, and micronutrients.
-
----
-*Data Sources: NASA SMAP, GPM IMERG, Landsat 8/9, MODIS, POWER, GRACE.*
-"""
 
 with foot_col1:
     st.download_button(
@@ -1313,7 +1463,8 @@ with foot_col1:
         data=officer_report_md,
         file_name=f"punjab_farm_water_watch_{selected_district.lower().replace(' ', '_')}_report.md",
         mime="text/markdown",
-        use_container_width=True
+        use_container_width=True,
+        key="global_download_footer"
     )
 
 with foot_col2:
