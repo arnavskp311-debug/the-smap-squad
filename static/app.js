@@ -187,37 +187,42 @@ function initMap() {
         center: [30.2110, 74.9455],
         zoom: 7,
         minZoom: 5,
-        maxZoom: 15
+        maxZoom: 18
     });
 
     // Base Layers
     // 1. Dark Matter (Esri World Dark Gray Canvas + City/Road Reference Labels - 100% Free, No Watermark)
     const darkMatterBase = L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}", {
         attribution: 'Tiles &copy; Esri, DeLorme, NAVTEQ',
-        maxZoom: 16
+        maxNativeZoom: 16,
+        maxZoom: 18
     });
     const darkMatterRef = L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Reference/MapServer/tile/{z}/{y}/{x}", {
         attribution: 'Tiles &copy; Esri',
-        maxZoom: 16
+        maxNativeZoom: 16,
+        maxZoom: 18
     });
     const darkMatter = L.layerGroup([darkMatterBase, darkMatterRef]);
 
     // 2. High-Res Satellite (Esri World Imagery)
     const esriSatellite = L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}", {
         attribution: 'Tiles &copy; Esri & NASA',
+        maxNativeZoom: 18,
         maxZoom: 18
     });
 
     // 3. NASA GIBS Live WMTS (MODIS TrueColor Daily)
     const nasaGibs = L.tileLayer("https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/MODIS_Terra_CorrectedReflectance_TrueColor/default/2024-05-01/GoogleMapsCompatible_Level9/{z}/{y}/{x}.jpg", {
         attribution: 'NASA GIBS / Worldview',
-        maxZoom: 9
+        maxNativeZoom: 9,
+        maxZoom: 18
     });
 
     // 4. NASA Black Marble (Earth at Night / VIIRS Night Lights)
     const nasaBlackMarble = L.tileLayer("https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/VIIRS_Black_Marble/default/2016-01-01/GoogleMapsCompatible_Level8/{z}/{y}/{x}.png", {
         attribution: 'NASA Earth Observatory / VIIRS',
-        maxZoom: 8
+        maxNativeZoom: 8,
+        maxZoom: 18
     });
 
     // Default active layer is Dark Matter

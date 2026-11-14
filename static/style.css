@@ -441,6 +441,7 @@ select.region-select {
 /* Map Container */
 #map {
     height: 385px;
+    background: #0b1120;
     border-radius: 10px;
     border: 1px solid var(--border-color);
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
