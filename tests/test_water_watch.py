@@ -193,12 +193,17 @@ def test_auth_system():
         irrigation_source="Canal Lift + Tubewell"
     )
     res = signup_user(req)
-    assert res["status"] == "success"
+    assert res["status"] in ("success", "pending_verification")
     assert res["user"]["name"] == "Amritsar Steward"
     assert res["user"]["water_saved_litres"] == int(8.0 * 180000)
     assert "PWW-2026-PB-" in res["user"]["member_id"]
 
-    # Test login with newly registered email succeeds
+    # Verify email using generated token
+    token = res["verification_link"].split("token=")[1]
+    from server import verify_user_email
+    verify_user_email(req.email, token)
+
+    # Test login with newly registered and verified email succeeds
     login_res2 = login_user(req)
     assert login_res2["status"] == "success"
     assert login_res2["user"]["email"] == "steward@punjab.gov.in"
