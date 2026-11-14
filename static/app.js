@@ -191,13 +191,16 @@ function initMap() {
     });
 
     // Base Layers
-    // 1. Dark Matter (CartoDB Dark Matter with Esri Dark Gray Base fallback)
-    const darkMatter = L.tileLayer("https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png", {
-        attribution: '&copy; CartoDB & OpenStreetMap',
-        subdomains: 'abcd',
-        maxZoom: 19,
-        errorTileUrl: 'https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}'
+    // 1. Dark Matter (Esri World Dark Gray Canvas + City/Road Reference Labels - 100% Free, No Watermark)
+    const darkMatterBase = L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}", {
+        attribution: 'Tiles &copy; Esri, DeLorme, NAVTEQ',
+        maxZoom: 16
     });
+    const darkMatterRef = L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Reference/MapServer/tile/{z}/{y}/{x}", {
+        attribution: 'Tiles &copy; Esri',
+        maxZoom: 16
+    });
+    const darkMatter = L.layerGroup([darkMatterBase, darkMatterRef]);
 
     // 2. High-Res Satellite (Esri World Imagery)
     const esriSatellite = L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}", {
