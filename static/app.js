@@ -65,12 +65,7 @@ function initDrawer() {
     document.querySelectorAll(".drawer-nav-btn").forEach(btn => {
         btn.addEventListener("click", () => {
             const target = btn.getAttribute("data-tab");
-            const topTabBtn = document.querySelector(`.tab-btn[data-tab="${target}"]`);
-            if (topTabBtn) {
-                topTabBtn.click();
-            }
-            document.querySelectorAll(".drawer-nav-btn").forEach(b => b.classList.remove("active"));
-            btn.classList.add("active");
+            switchTab(target);
             closeDrawer();
             window.scrollTo({ top: 0, behavior: "smooth" });
         });
@@ -93,19 +88,33 @@ function initDrawer() {
             drawerSelect.value = e.target.value;
         });
     }
+}
 
-    // Keep drawer active tab synced when top tab changes
-    document.querySelectorAll(".tab-btn").forEach(btn => {
-        btn.addEventListener("click", () => {
-            const target = btn.getAttribute("data-tab");
-            document.querySelectorAll(".drawer-nav-btn").forEach(b => {
-                if (b.getAttribute("data-tab") === target) {
-                    b.classList.add("active");
-                } else {
-                    b.classList.remove("active");
-                }
-            });
-        });
+// Global Tab Switcher Function
+function switchTab(target) {
+    document.querySelectorAll(".tab-content").forEach(c => c.classList.remove("active"));
+    const content = document.getElementById(target);
+    if (content) {
+        content.classList.add("active");
+        if (target === "tab-overview" && map) {
+            setTimeout(() => map.invalidateSize(), 150);
+        }
+        if (target === "tab-dashboard") {
+            setTimeout(() => {
+                [dashMoistureChart, dashRainChart, dashVigorChart, dashEtLstChart, dashStressDonutChart, dashBenchmarkChart, dashScenarioChart].forEach(c => {
+                    if (c) c.resize();
+                });
+            }, 100);
+        }
+    }
+
+    // Keep drawer active state synced
+    document.querySelectorAll(".drawer-nav-btn").forEach(b => {
+        if (b.getAttribute("data-tab") === target) {
+            b.classList.add("active");
+        } else {
+            b.classList.remove("active");
+        }
     });
 }
 
@@ -143,41 +152,13 @@ function applyTheme(theme) {
 
 // Tab navigation
 function initTabs() {
-    const tabButtons = document.querySelectorAll(".tab-btn");
-    tabButtons.forEach(btn => {
-        btn.addEventListener("click", () => {
-            tabButtons.forEach(b => b.classList.remove("active"));
-            document.querySelectorAll(".tab-content").forEach(c => c.classList.remove("active"));
-
-            btn.classList.add("active");
-            const target = btn.getAttribute("data-tab");
-            const content = document.getElementById(target);
-            if (content) {
-                content.classList.add("active");
-                if (target === "tab-overview" && map) {
-                    setTimeout(() => map.invalidateSize(), 150);
-                }
-                if (target === "tab-dashboard") {
-                    setTimeout(() => {
-                        [dashMoistureChart, dashRainChart, dashVigorChart, dashEtLstChart, dashStressDonutChart, dashBenchmarkChart, dashScenarioChart].forEach(c => {
-                            if (c) c.resize();
-                        });
-                    }, 100);
-                }
-            }
-        });
-    });
-
     // Support footer navigation links
     document.querySelectorAll(".footer-nav").forEach(link => {
         link.addEventListener("click", (e) => {
             e.preventDefault();
             const target = link.getAttribute("data-tab");
-            const btn = document.querySelector(`.tab-btn[data-tab="${target}"]`);
-            if (btn) {
-                btn.click();
-                window.scrollTo({ top: 0, behavior: "smooth" });
-            }
+            switchTab(target);
+            window.scrollTo({ top: 0, behavior: "smooth" });
         });
     });
 }
