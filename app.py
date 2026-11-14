@@ -607,20 +607,43 @@ with col_main:
         m = folium.Map(
             location=[lat_in, lon_in],
             zoom_start=7 if not is_global_hotspot else 6,
+            min_zoom=5,
+            max_zoom=14,
             tiles="CartoDB dark_matter",
             zoom_control=True
         )
 
-        # NASA GIBS WMTS Live Layers
+        # Base Tile Layers & Satellite
+        folium.TileLayer(
+            tiles="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
+            name="🌍 High-Res Satellite (Esri)",
+            attr="Esri World Imagery",
+            overlay=False,
+            control=True
+        ).add_to(m)
+
+        # Optional Mapbox HD Layer if key provided in .env
+        mapbox_token = os.getenv("MAPBOX_API_KEY")
+        if mapbox_token:
+            folium.TileLayer(
+                tiles=f"https://api.mapbox.com/styles/v1/mapbox/satellite-streets-v12/tiles/{{z}}/{{y}}/{{x}}?access_token={mapbox_token}",
+                name="🗺️ Mapbox HD Satellite Streets",
+                attr="Mapbox",
+                overlay=False,
+                control=True
+            ).add_to(m)
+
+        # NASA GIBS WMTS Live Layers (Optional overlay toggle - default off to prevent raw orbital swath gaps on load)
         gibs_date = (datetime.now() - timedelta(days=2)).strftime('%Y-%m-%d')
         modis_truecolor_url = f"https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/MODIS_Terra_CorrectedReflectance_TrueColor/default/{gibs_date}/GoogleMapsCompatible_Level9/{{z}}/{{y}}/{{x}}.jpg"
         folium.TileLayer(
             tiles=modis_truecolor_url,
-            name="🛰️ NASA GIBS Live Layer (MODIS)",
+            name="🛰️ NASA GIBS Live Swaths (MODIS)",
             attr="NASA Worldview / GIBS",
             overlay=True,
             control=True,
-            opacity=0.65
+            show=False,
+            opacity=0.70
         ).add_to(m)
 
         # Dynamic District Polygons
