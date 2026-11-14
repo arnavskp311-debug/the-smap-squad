@@ -338,14 +338,40 @@ class NASADataFetcher:
         start_date_str = dates[0].strftime("%Y-%m-%d")
         end_date_str = dates[-1].strftime("%Y-%m-%d")
 
-        # Profiles including both Punjab districts and global hotspots
+        # Profiles including ALL 22 Punjab districts and global hotspots
         profiles = {
-            # Punjab Agricultural Districts
-            "Bathinda": {"lat": 30.2110, "lon": 74.9455, "base_sm": 0.17, "base_rain": 0.6, "base_et": 4.8, "base_ndvi": 0.33, "grace_anomaly": -2.8, "temp": 34.2},
+            # Submontane & Kandi Region (High moisture, Green zone)
+            "Pathankot": {"lat": 32.2684, "lon": 75.6529, "base_sm": 0.35, "base_rain": 4.8, "base_et": 3.6, "base_ndvi": 0.74, "grace_anomaly": -0.5, "temp": 28.5},
+            "Hoshiarpur": {"lat": 31.5273, "lon": 75.9149, "base_sm": 0.32, "base_rain": 3.9, "base_et": 3.9, "base_ndvi": 0.69, "grace_anomaly": -0.8, "temp": 29.8},
+            "Rupnagar": {"lat": 30.9664, "lon": 76.5331, "base_sm": 0.31, "base_rain": 3.6, "base_et": 4.1, "base_ndvi": 0.66, "grace_anomaly": -1.0, "temp": 30.2},
+            "S.A.S. Nagar": {"lat": 30.6942, "lon": 76.7179, "base_sm": 0.30, "base_rain": 3.2, "base_et": 4.3, "base_ndvi": 0.63, "grace_anomaly": -1.2, "temp": 31.0},
+
+            # Doaba & Lower Shivalik Plains (Moderate, Yellow zone)
+            "Gurdaspur": {"lat": 32.0419, "lon": 75.4053, "base_sm": 0.28, "base_rain": 3.1, "base_et": 4.4, "base_ndvi": 0.62, "grace_anomaly": -1.3, "temp": 31.2},
+            "Shahid Bhagat Singh Nagar": {"lat": 31.1256, "lon": 76.1189, "base_sm": 0.26, "base_rain": 2.5, "base_et": 4.6, "base_ndvi": 0.58, "grace_anomaly": -1.5, "temp": 31.8},
+            "Jalandhar": {"lat": 31.3260, "lon": 75.5762, "base_sm": 0.25, "base_rain": 2.3, "base_et": 4.8, "base_ndvi": 0.56, "grace_anomaly": -1.8, "temp": 32.2},
+            "Kapurthala": {"lat": 31.3800, "lon": 75.3800, "base_sm": 0.26, "base_rain": 2.4, "base_et": 4.7, "base_ndvi": 0.58, "grace_anomaly": -1.7, "temp": 32.0},
+            "Fatehgarh Sahib": {"lat": 30.6480, "lon": 76.3980, "base_sm": 0.24, "base_rain": 1.9, "base_et": 4.8, "base_ndvi": 0.53, "grace_anomaly": -2.0, "temp": 32.8},
+
+            # Majha Region (Canal + Tubewell transition)
+            "Amritsar": {"lat": 31.6340, "lon": 74.8723, "base_sm": 0.27, "base_rain": 2.5, "base_et": 4.8, "base_ndvi": 0.64, "grace_anomaly": -1.7, "temp": 32.0},
+            "Tarn Taran": {"lat": 31.4520, "lon": 74.9270, "base_sm": 0.23, "base_rain": 1.8, "base_et": 4.9, "base_ndvi": 0.55, "grace_anomaly": -2.1, "temp": 32.6},
+
+            # Malwa Region - Central & Western (Heavy tubewell irrigation, severe stress)
             "Ludhiana": {"lat": 30.9010, "lon": 75.8573, "base_sm": 0.28, "base_rain": 2.2, "base_et": 5.1, "base_ndvi": 0.66, "grace_anomaly": -1.9, "temp": 32.5},
             "Patiala": {"lat": 30.3398, "lon": 76.3869, "base_sm": 0.23, "base_rain": 1.6, "base_et": 4.9, "base_ndvi": 0.54, "grace_anomaly": -2.2, "temp": 33.1},
-            "Amritsar": {"lat": 31.6340, "lon": 74.8723, "base_sm": 0.27, "base_rain": 2.5, "base_et": 4.8, "base_ndvi": 0.64, "grace_anomaly": -1.7, "temp": 32.0},
             "Sangrur": {"lat": 30.2458, "lon": 75.8421, "base_sm": 0.21, "base_rain": 1.1, "base_et": 5.0, "base_ndvi": 0.49, "grace_anomaly": -2.5, "temp": 33.8},
+            "Barnala": {"lat": 30.3819, "lon": 75.5467, "base_sm": 0.19, "base_rain": 0.9, "base_et": 5.1, "base_ndvi": 0.45, "grace_anomaly": -2.6, "temp": 34.0},
+            "Moga": {"lat": 30.8165, "lon": 75.1717, "base_sm": 0.20, "base_rain": 1.0, "base_et": 5.0, "base_ndvi": 0.48, "grace_anomaly": -2.4, "temp": 33.7},
+            "Faridkot": {"lat": 30.6769, "lon": 74.7583, "base_sm": 0.18, "base_rain": 0.8, "base_et": 5.0, "base_ndvi": 0.43, "grace_anomaly": -2.7, "temp": 34.1},
+            "Ferozepur": {"lat": 30.9237, "lon": 74.6122, "base_sm": 0.20, "base_rain": 1.1, "base_et": 4.9, "base_ndvi": 0.47, "grace_anomaly": -2.3, "temp": 33.6},
+
+            # Malwa South-Western Arid Belt (Critical Red Zone)
+            "Bathinda": {"lat": 30.2110, "lon": 74.9455, "base_sm": 0.17, "base_rain": 0.6, "base_et": 4.8, "base_ndvi": 0.33, "grace_anomaly": -2.8, "temp": 34.2},
+            "Mansa": {"lat": 29.9880, "lon": 75.3934, "base_sm": 0.15, "base_rain": 0.4, "base_et": 5.2, "base_ndvi": 0.31, "grace_anomaly": -3.0, "temp": 34.8},
+            "Sri Muktsar Sahib": {"lat": 30.4762, "lon": 74.5161, "base_sm": 0.16, "base_rain": 0.5, "base_et": 5.1, "base_ndvi": 0.35, "grace_anomaly": -2.8, "temp": 34.4},
+            "Fazilka": {"lat": 30.4037, "lon": 74.0254, "base_sm": 0.15, "base_rain": 0.4, "base_et": 5.2, "base_ndvi": 0.32, "grace_anomaly": -2.9, "temp": 34.7},
+
             # Global Groundwater Hotspots
             "Central Valley, California (Hotspot)": {"lat": 36.7783, "lon": -119.4179, "base_sm": 0.14, "base_rain": 0.2, "base_et": 6.2, "base_ndvi": 0.45, "grace_anomaly": -4.2, "temp": 28.5},
             "North Africa / Nile Basin (Hotspot)": {"lat": 26.8206, "lon": 30.8025, "base_sm": 0.11, "base_rain": 0.05, "base_et": 6.8, "base_ndvi": 0.28, "grace_anomaly": -3.5, "temp": 38.0},
