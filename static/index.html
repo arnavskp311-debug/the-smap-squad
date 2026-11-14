@@ -45,10 +45,16 @@
                     <button class="lang-btn" data-lang="hi">HI</button>
                     <button class="lang-btn" data-lang="pa">PA</button>
                 </div>
+
+                <!-- Dark / Light Mode Toggle Button -->
+                <button id="themeToggleBtn" class="theme-toggle-btn" title="Toggle Dark/Light Mode" aria-label="Toggle Dark/Light Mode">
+                    <span class="theme-icon" id="themeIcon">☀️</span>
+                    <span class="theme-label" id="themeText">Light</span>
+                </button>
             </div>
         </header>
 
-        <!-- 6 Flagship Mission Control Tabs -->
+        <!-- Flagship Mission Control Tabs -->
         <nav class="tab-bar">
             <button class="tab-btn active" data-tab="tab-overview">🛰️ Live Mission Control</button>
             <button class="tab-btn" data-tab="tab-forecast">📈 7-Day ML Forecast &amp; Calendar</button>
@@ -56,6 +62,7 @@
             <button class="tab-btn" data-tab="tab-soil">🧪 Soil Health Card &amp; PAU Lab</button>
             <button class="tab-btn" data-tab="tab-report">📋 District Officer Dossier</button>
             <button class="tab-btn" data-tab="tab-team" style="border-left: 1px solid #164E63; color:#F59E0B;">👥 Project &amp; Team Hub</button>
+            <button class="tab-btn" data-tab="tab-about" style="border-left: 1px solid #164E63; color:var(--accent-teal);">📖 About &amp; NASA Science</button>
         </nav>
 
         <!-- TAB 1: LIVE MISSION CONTROL -->
@@ -437,10 +444,344 @@
             </div>
         </section>
 
-        <!-- Global Footer -->
-        <footer>
-            <div>Team <b>The SMAP Squad</b> (<b>Arnav Sharma</b> [Lead &amp; Coder], <b>Chetan Kaushik</b> [Coder], <b>Aryan Sharma</b> [Researcher], <b>Amisha Ajana</b> [Designer]) · NASA Space Apps Challenge 2026 (Delhi NCR)</div>
-            <div>Data Sources: NASA SMAP, GPM IMERG, Landsat 8/9, MODIS, POWER, GRACE</div>
+        <!-- TAB 7: ABOUT & NASA SCIENCE (FULL README DETAILS) -->
+        <section id="tab-about" class="tab-content">
+            <!-- Hero Mission Box -->
+            <div class="about-hero">
+                <div class="about-hero-title">
+                    <span>🛰️</span>
+                    <span>About Punjab Farm Water Watch</span>
+                </div>
+                <div class="about-hero-sub">
+                    <b>Punjab Farm Water Watch</b> is an operational agro-hydrological diagnostic and early-warning platform developed for the <b>NASA Space Apps Challenge 2026 (Delhi NCR)</b>. Powered by six open NASA Earth Observation satellite constellations, it simultaneously monitors rootzone hydrological scarcity, flags hidden physical and chemical soil degradation, forecasts 7-day soil moisture drydown, and delivers trilingual agronomic advisories to preserve Punjab's critical food bowl and deep fossil aquifers.
+                </div>
+                <div class="about-badge-row">
+                    <span class="about-pill">NASA Space Apps 2026</span>
+                    <span class="about-pill">Team: The SMAP Squad</span>
+                    <span class="about-pill">NASA SMAP L4 (9km)</span>
+                    <span class="about-pill">GPM IMERG (Daily)</span>
+                    <span class="about-pill">Landsat 8/9 (30m)</span>
+                    <span class="about-pill">MODIS MOD16A2 (500m)</span>
+                    <span class="about-pill">NASA POWER REST API</span>
+                    <span class="about-pill">NASA GRACE-FO</span>
+                    <span class="about-pill">PAU &amp; ICAR Standardized</span>
+                    <span class="about-pill">FastAPI 2.0 &amp; Python 3.11</span>
+                </div>
+            </div>
+
+            <!-- Section 1: Challenge & Context -->
+            <div class="dark-card" style="margin-bottom:16px;">
+                <div class="card-title">
+                    <span>🌍 1. The Challenge &amp; Punjab Groundwater Crisis</span>
+                    <span style="font-size:0.80rem; color:var(--critical-red);">Critical South Asian Hotspot</span>
+                </div>
+                <div style="font-size:0.88rem; color:var(--text-main); line-height:1.65;">
+                    Punjab is ground zero for the most severe groundwater depletion crisis in South Asia:
+                    <ul style="margin: 10px 0 10px 20px; color:var(--text-muted);">
+                        <li><b style="color:var(--text-main);">0.5 – 1.0 m/year Groundwater Decline:</b> Over 20+ years of satellite gravimetry, NASA GRACE / GRACE-FO have recorded over <b>3,122 km³ of human-driven freshwater loss</b> across global agricultural hotspots. In Punjab, over 150 out of 167 administrative blocks are officially categorized as "Over-Exploited".</li>
+                        <li><b style="color:var(--text-main);">Global Food Security Linchpin:</b> Despite occupying just 1.53% of India's landmass, Punjab contributes <b>47% of India's central wheat procurement pool</b> and drives <b>~26% of global Basmati rice exports</b>. A structural collapse in Punjab's water-soil ecosystem presents a systemic shock to global food security.</li>
+                        <li><b style="color:var(--text-main);">The Hidden Soil Quality Barrier:</b> Even where tube-well irrigation is maintained, crop yields suffer from secondary salinization (EC &gt; 4.0 dS/m), tubewell-induced sodicity (pH &gt; 8.5), organic carbon depletion (&lt;0.40%), and subsurface puddling hardpans at 15–20 cm depth.</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Section 2: 6 NASA Earth Observation Datasets Table -->
+            <div class="dark-card" style="margin-bottom:16px;">
+                <div class="card-title">
+                    <span>🛰️ 2. The 6 NASA Earth Observation Constellations</span>
+                    <span style="font-size:0.80rem; color:var(--accent-teal);">Direct CMR &amp; DAAC Data Ingestion</span>
+                </div>
+                <div class="science-table-wrapper">
+                    <table class="science-table">
+                        <thead>
+                            <tr>
+                                <th>NASA Mission</th>
+                                <th>Collection Short Name</th>
+                                <th>Spatial / Temporal Resolution</th>
+                                <th>Agro-Hydrological System Role</th>
+                                <th>DAAC Data Source</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><b>NASA SMAP L4</b></td>
+                                <td><code>SPL4SMGP</code></td>
+                                <td>9 km / 3-Hourly</td>
+                                <td>Primary rootzone (0–100 cm) &amp; surface (0–5 cm) volumetric soil moisture ($m^3/m^3$). 40% index weight.</td>
+                                <td>NSIDC DAAC</td>
+                            </tr>
+                            <tr>
+                                <td><b>NASA GPM IMERG</b></td>
+                                <td><code>GPM_3IMERGDF</code></td>
+                                <td>0.1° / Daily</td>
+                                <td>30-day cumulative precipitation and rainfall deficit tracking against the 50 mm monsoon baseline.</td>
+                                <td>GES DISC DAAC</td>
+                            </tr>
+                            <tr>
+                                <td><b>MODIS MOD16A2</b></td>
+                                <td><code>MOD16A2</code></td>
+                                <td>500 m / 8-Day</td>
+                                <td>Evapotranspiration (ET) measuring crop canopy atmospheric moisture loss (scaled 2.0 to 7.0 mm/day).</td>
+                                <td>LP DAAC</td>
+                            </tr>
+                            <tr>
+                                <td><b>Landsat 8/9 OLI/TIRS</b></td>
+                                <td><code>HLSL30</code></td>
+                                <td>30 m / 16-Day</td>
+                                <td>Canopy vegetative vigor (NDVI, SAVI, NDWI) and Land Surface Temperature (LST) thermal stress (25°C–42°C).</td>
+                                <td>LP DAAC</td>
+                            </tr>
+                            <tr>
+                                <td><b>NASA POWER DAV</b></td>
+                                <td>REST API</td>
+                                <td>Daily Point</td>
+                                <td>Agroclimatology: surface solar radiation, ambient temperature, relative humidity, and 10m wind speed.</td>
+                                <td>NASA Langley</td>
+                            </tr>
+                            <tr>
+                                <td><b>NASA GRACE / GRACE-FO</b></td>
+                                <td>Mass Anomaly</td>
+                                <td>Regional / Monthly</td>
+                                <td>20-year groundwater equivalent water thickness anomaly (cm) &amp; secular aquifer depletion trend baseline.</td>
+                                <td>JPL PO.DAAC</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Section 3: Water Stress Scoring Engine -->
+            <div class="dark-card" style="margin-bottom:16px;">
+                <div class="card-title">
+                    <span>🧮 3. Water Stress Scoring Engine (0–100)</span>
+                    <span style="font-size:0.80rem; color:var(--accent-amber);">Weighted Multi-Satellite Calibration</span>
+                </div>
+                <div class="formula-card">
+                    <div class="formula-display">
+                        Water Stress Score = 0.40·(SMAP Deficit) + 0.30·(GPM Deficit) + 0.20·(MODIS ET) + 0.10·(Landsat LST)
+                    </div>
+                    <div style="font-size:0.84rem; color:var(--text-muted); line-height:1.5;">
+                        • <b>SMAP Soil Moisture Deficit (40%):</b> Scaled between Field Capacity ($\theta_{FC} = 0.36\text{ m}^3/\text{m}^3$) and Permanent Wilting Point ($\theta_{WP} = 0.10\text{ m}^3/\text{m}^3$).<br>
+                        • <b>GPM Rainfall Deficit (30%):</b> Evaluates cumulative 30-day precipitation against a 50 mm agricultural buffer threshold.<br>
+                        • <b>MODIS Atmospheric Evaporative Draw (20%):</b> Scaled linearly from 2.0 mm/day (low draw) to 7.0 mm/day (extreme atmospheric draw).<br>
+                        • <b>Landsat Thermal Canopy Stress (10%):</b> Scaled from 25.0°C (optimal canopy temperature) to 42.0°C (severe heat stress).
+                    </div>
+                </div>
+                <div style="display:grid; grid-template-columns: repeat(3, 1fr); gap:12px; margin-top:12px;">
+                    <div style="background:rgba(22, 163, 74, 0.15); border:1px solid #16A34A; border-radius:8px; padding:12px; text-align:center;">
+                        <span class="badge badge-safe">0 – 30: Green Zone</span>
+                        <div style="font-size:0.80rem; color:var(--text-main); margin-top:6px;">Adequate moisture. Cross-check NDVI for hidden chemical/physical soil anomalies.</div>
+                    </div>
+                    <div style="background:rgba(245, 158, 11, 0.15); border:1px solid #F59E0B; border-radius:8px; padding:12px; text-align:center;">
+                        <span class="badge badge-warning">31 – 60: Yellow Zone</span>
+                        <div style="font-size:0.80rem; color:var(--text-main); margin-top:6px;">Moderate stress. Delay flood irrigation by 3 days and deploy paddy straw mulching.</div>
+                    </div>
+                    <div style="background:rgba(220, 38, 38, 0.15); border:1px solid #DC2626; border-radius:8px; padding:12px; text-align:center;">
+                        <span class="badge badge-critical">61 – 100: Red Zone</span>
+                        <div style="font-size:0.80rem; color:var(--text-main); margin-top:6px;">Critical drought deficit. Immediate transition to Direct Seeded Rice (DSR) &amp; furrow irrigation.</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Section 4: Dual-Diagnosis Soil Innovation -->
+            <div class="dark-card" style="margin-bottom:16px;">
+                <div class="card-title">
+                    <span>🧪 4. Dual-Diagnosis Soil Quality Innovation</span>
+                    <span style="font-size:0.80rem; color:var(--accent-mint);">SMAP vs. Landsat Divergence Gate</span>
+                </div>
+                <div class="dual-diag-box">
+                    <b>⚡ Diagnostic Matrix Logic Gate:</b><br>
+                    <code>IF SMAP Water Stress is 0–30 (GREEN Adequate Water) AND Landsat NDVI &lt; 0.42 / SAVI &lt; 0.35 THEN: TRIGGER SOIL QUALITY ANOMALY ALERT!</code>
+                </div>
+                <div style="font-size:0.86rem; color:var(--text-main); line-height:1.6;">
+                    When radar sensors confirm ample subterranean moisture but optical reflectances indicate stunted vegetative growth, the limiting factor is <b>not water deficit</b>, but severe chemical or physical soil degradation:
+                    <ul style="margin: 8px 0 8px 20px; color:var(--text-muted);">
+                        <li><b>Secondary Sodicity:</b> Tubewells drawing deep brackish water elevate soil pH above 8.5, causing clay dispersion and poor soil aeration.</li>
+                        <li><b>Secondary Salinization:</b> High electrical conductivity (EC &gt; 4.0 dS/m) creates osmotic stress, preventing roots from absorbing available water.</li>
+                        <li><b>Subsurface Hardpan:</b> Repetitive tractor puddling in flooded paddy fields creates an impermeable plough pan at 15–20 cm depth.</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Section 5: 7-Day ML Forecaster & Aquifer Preservation -->
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:16px; margin-bottom:16px;">
+                <div class="dark-card">
+                    <div class="card-title">
+                        <span>🔮 5. 7-Day ML Forecaster</span>
+                        <span style="font-size:0.80rem; color:var(--accent-teal);">RandomForest Regressor</span>
+                    </div>
+                    <div style="font-size:0.84rem; color:var(--text-muted); line-height:1.6;">
+                        • Trained on 7-day multi-satellite historical lags (SMAP rootzone moisture, GPM rainfall, NASA POWER daily temperature).<br>
+                        • Outputs a 7-day step-ahead outlook with a <b>90% confidence uncertainty envelope</b> derived from ensemble tree variance.<br>
+                        • Automatically falls back to an empirical physical exponential soil drydown curve if historical telemetry is sparse.
+                    </div>
+                </div>
+
+                <div class="dark-card">
+                    <div class="card-title">
+                        <span>💧 6. Quantified Aquifer Impact</span>
+                        <span style="font-size:0.80rem; color:var(--accent-mint);">PAU Field Prescriptions</span>
+                    </div>
+                    <div style="font-size:0.84rem; color:var(--text-muted); line-height:1.6;">
+                        • <b>1.8 Million Litres Saved / 10 Acres:</b> Direct Seeded Rice (DSR) saves ~20% irrigation water compared to traditional puddle-transplanted paddy.<br>
+                        • <b>1,420 kWh Power Saved / 10 Acres:</b> Directly cuts coal-fired state grid load and farmer tubewell pump degradation.<br>
+                        • <b>District Scaling:</b> A 10% adoption across Punjab's 1.4 million tubewells preserves billions of litres and stabilizes falling water tables.
+                    </div>
+                </div>
+            </div>
+
+            <!-- Section 6: Official Team Roster & Citations -->
+            <div class="dark-card" style="margin-bottom:16px;">
+                <div class="card-title">
+                    <span>👥 7. Team The SMAP Squad &amp; Credits</span>
+                    <span style="font-size:0.80rem; color:var(--accent-amber);">NASA Space Apps Challenge 2026 (Delhi NCR)</span>
+                </div>
+                <div class="team-members-grid">
+                    <div class="member-card">
+                        <div class="member-icon">👑</div>
+                        <div class="member-name">Arnav Sharma</div>
+                        <div class="member-role" style="color:var(--accent-amber);">Team Leader · Coder</div>
+                        <div class="member-desc">
+                            Spearheaded end-to-end full-stack systems architecture, FastAPI backend development, NASA Earthdata pipelines, real-time spatial analytics, and team coordination.
+                        </div>
+                        <div class="tech-tags">
+                            <span class="tech-tag" style="background:#451A03; color:#F59E0B; border-color:#B45309;">Team Leader</span>
+                            <span class="tech-tag">Full-Stack Coder</span>
+                            <span class="tech-tag">FastAPI</span>
+                            <span class="tech-tag">Python 3.11</span>
+                            <span class="tech-tag">Leaflet GIS</span>
+                        </div>
+                    </div>
+
+                    <div class="member-card">
+                        <div class="member-icon">⚡</div>
+                        <div class="member-name">Chetan Kaushik</div>
+                        <div class="member-role">Core Member · Coder</div>
+                        <div class="member-desc">
+                            Engineered core algorithmic modeling, 7-day RandomForest soil moisture machine learning forecaster, Water Stress index calculations, and automated test pipelines.
+                        </div>
+                        <div class="tech-tags">
+                            <span class="tech-tag">Member · Coder</span>
+                            <span class="tech-tag">Machine Learning</span>
+                            <span class="tech-tag">Scikit-Learn</span>
+                            <span class="tech-tag">Data Modeling</span>
+                            <span class="tech-tag">Pytest (11/11)</span>
+                        </div>
+                    </div>
+
+                    <div class="member-card">
+                        <div class="member-icon">🔬</div>
+                        <div class="member-name">Aryan Sharma</div>
+                        <div class="member-role">Core Member · Researcher</div>
+                        <div class="member-desc">
+                            Led scientific and agronomic research, PAU/ICAR soil protocol integration, NASA GRACE regional aquifer depletion studies, and trilingual farmer advisory datasets.
+                        </div>
+                        <div class="tech-tags">
+                            <span class="tech-tag">Member · Researcher</span>
+                            <span class="tech-tag">Agronomy Research</span>
+                            <span class="tech-tag">NASA GRACE</span>
+                            <span class="tech-tag">Soil Chemistry</span>
+                            <span class="tech-tag">PAU Protocols</span>
+                        </div>
+                    </div>
+
+                    <div class="member-card">
+                        <div class="member-icon">🎨</div>
+                        <div class="member-name">Amisha Ajana</div>
+                        <div class="member-role">Core Member · Designer</div>
+                        <div class="member-desc">
+                            Designed the responsive Mission Control interface, deep-teal telemetry visual system, high-contrast accessible cards, custom GIS legends, and user journey flows.
+                        </div>
+                        <div class="tech-tags">
+                            <span class="tech-tag">Member · Designer</span>
+                            <span class="tech-tag">UI/UX Design</span>
+                            <span class="tech-tag">Design System</span>
+                            <span class="tech-tag">WCAG 2.1 AA</span>
+                            <span class="tech-tag">Responsive UI</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="border-top: 1px solid var(--border-color); padding-top: 14px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
+                    <div style="font-size:0.82rem; color:var(--text-muted);">
+                        <b>Data Sources &amp; Citations:</b> NASA Earth Science Data Systems (ESDS), NSIDC DAAC, GES DISC, LP DAAC, NASA Langley POWER, JPL PO.DAAC, Punjab Agricultural University (PAU).
+                    </div>
+                    <a href="https://github.com/arnavskp311-debug/the-smap-squad" target="_blank" class="btn-github">
+                        <span>⭐ Star on GitHub</span>
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <!-- Global Enterprise Realistic Footer -->
+        <footer class="main-footer">
+            <div class="footer-grid">
+                <!-- Col 1: Brand & Mission -->
+                <div class="footer-col footer-brand">
+                    <div class="footer-logo">
+                        <span>🛰️</span>
+                        <span>Punjab Farm Water Watch</span>
+                    </div>
+                    <p class="footer-desc">
+                        Operational agro-hydrological early warning platform monitoring Punjab's critical groundwater reserves and soil quality using NASA Earth Observation satellites.
+                    </p>
+                    <div class="footer-badges">
+                        <span class="footer-pill">NASA Space Apps 2026</span>
+                        <span class="footer-pill">Delhi NCR, India</span>
+                        <span class="footer-pill">The SMAP Squad</span>
+                    </div>
+                </div>
+
+                <!-- Col 2: NASA Data Centers -->
+                <div class="footer-col">
+                    <h4 class="footer-heading">NASA Earthdata DAACs</h4>
+                    <ul class="footer-links">
+                        <li><a href="https://nsidc.org/data/smap" target="_blank" rel="noopener">NSIDC DAAC (SMAP L4)</a></li>
+                        <li><a href="https://disc.gsfc.nasa.gov/" target="_blank" rel="noopener">GES DISC (GPM IMERG)</a></li>
+                        <li><a href="https://lpdaac.usgs.gov/" target="_blank" rel="noopener">LP DAAC (MODIS &amp; Landsat)</a></li>
+                        <li><a href="https://power.larc.nasa.gov/" target="_blank" rel="noopener">NASA Langley POWER API</a></li>
+                        <li><a href="https://podaac.jpl.nasa.gov/" target="_blank" rel="noopener">JPL PO.DAAC (GRACE-FO)</a></li>
+                    </ul>
+                </div>
+
+                <!-- Col 3: Navigation -->
+                <div class="footer-col">
+                    <h4 class="footer-heading">Platform Tools</h4>
+                    <ul class="footer-links">
+                        <li><a href="#" class="footer-nav" data-tab="tab-overview">🛰️ Live Mission Control</a></li>
+                        <li><a href="#" class="footer-nav" data-tab="tab-forecast">📈 7-Day ML Forecast</a></li>
+                        <li><a href="#" class="footer-nav" data-tab="tab-simulator">💧 Water &amp; Crop Simulator</a></li>
+                        <li><a href="#" class="footer-nav" data-tab="tab-soil">🧪 Soil Health &amp; PAU Lab</a></li>
+                        <li><a href="#" class="footer-nav" data-tab="tab-report">📋 District Officer Dossier</a></li>
+                        <li><a href="#" class="footer-nav" data-tab="tab-about">📖 About &amp; NASA Science</a></li>
+                    </ul>
+                </div>
+
+                <!-- Col 4: Team The SMAP Squad -->
+                <div class="footer-col">
+                    <h4 class="footer-heading">Team The SMAP Squad</h4>
+                    <ul class="footer-team-list">
+                        <li><b>Arnav Sharma</b> <span>Team Leader · Coder</span></li>
+                        <li><b>Chetan Kaushik</b> <span>Member · Coder</span></li>
+                        <li><b>Aryan Sharma</b> <span>Member · Researcher</span></li>
+                        <li><b>Amisha Ajana</b> <span>Member · Designer</span></li>
+                    </ul>
+                    <a href="https://github.com/arnavskp311-debug/the-smap-squad" target="_blank" class="footer-github-link">
+                        ⭐ View on GitHub
+                    </a>
+                </div>
+            </div>
+
+            <!-- Bottom Sub-Footer -->
+            <div class="sub-footer">
+                <div class="sub-footer-text">
+                    © 2026 Team The SMAP Squad · NASA International Space Apps Challenge 2026 (Delhi NCR). All satellite telemetry provided by NASA ESDIS. Open-source under MIT License.
+                </div>
+                <div class="sub-footer-status">
+                    <span class="status-indicator"></span>
+                    <span>Systems Operational (FastAPI v2.0 · Python 3.11)</span>
+                </div>
+            </div>
         </footer>
     </div>
 

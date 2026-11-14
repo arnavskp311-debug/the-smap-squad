@@ -8,11 +8,44 @@ let forecastChart = null;
 
 // Initialize when DOM loads
 document.addEventListener("DOMContentLoaded", () => {
+    initTheme();
     initTabs();
     initMap();
     setupEventListeners();
     loadDistrictData(currentDistrict);
 });
+
+// Theme Management (Dark / Light Mode)
+function initTheme() {
+    const savedTheme = localStorage.getItem("pww_theme") || "dark";
+    applyTheme(savedTheme);
+
+    const toggleBtn = document.getElementById("themeToggleBtn");
+    if (toggleBtn) {
+        toggleBtn.addEventListener("click", () => {
+            const current = document.documentElement.getAttribute("data-theme") || "dark";
+            const newTheme = current === "dark" ? "light" : "dark";
+            applyTheme(newTheme);
+        });
+    }
+}
+
+function applyTheme(theme) {
+    document.documentElement.setAttribute("data-theme", theme);
+    localStorage.setItem("pww_theme", theme);
+
+    const themeIcon = document.getElementById("themeIcon");
+    const themeText = document.getElementById("themeText");
+    if (themeIcon && themeText) {
+        if (theme === "light") {
+            themeIcon.innerText = "🌙";
+            themeText.innerText = "Dark";
+        } else {
+            themeIcon.innerText = "☀️";
+            themeText.innerText = "Light";
+        }
+    }
+}
 
 // Tab navigation
 function initTabs() {
@@ -30,6 +63,19 @@ function initTabs() {
                 if (target === "tab-overview" && map) {
                     setTimeout(() => map.invalidateSize(), 150);
                 }
+            }
+        });
+    });
+
+    // Support footer navigation links
+    document.querySelectorAll(".footer-nav").forEach(link => {
+        link.addEventListener("click", (e) => {
+            e.preventDefault();
+            const target = link.getAttribute("data-tab");
+            const btn = document.querySelector(`.tab-btn[data-tab="${target}"]`);
+            if (btn) {
+                btn.click();
+                window.scrollTo({ top: 0, behavior: "smooth" });
             }
         });
     });
