@@ -1,7 +1,10 @@
-# Punjab Farm Water Watch 🛰️🌾
-**NASA Space Apps Challenge 2026 · Delhi NCR**  
-**Team:** The SMAP Squad  
-**Project:** Punjab Farm Water Watch — Water Scarcity & Soil-Quality Early Warning System powered by NASA Earth Observations
+<p align="center">
+  <img src="static/assets/logo.png" alt="Punjab Farm Water Watch Crest" width="190">
+</p>
+
+<h1 align="center">Punjab Farm Water Watch 🛰️🌾</h1>
+<p align="center"><b>From Space to Khet</b><br>
+NASA Space Apps Challenge 2026 · Delhi NCR · Team: The SMAP Squad</p>
 
 ---
 
