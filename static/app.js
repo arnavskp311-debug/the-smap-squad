@@ -1166,11 +1166,13 @@ function updateUserUI(user) {
     const drawerPassBadge = document.getElementById("drawerPassBadge");
     const drawerAuthBtnLabel = document.getElementById("drawerAuthBtnLabel");
 
+    const userAvatarSrc = (user && user.avatar_url) ? user.avatar_url : ((user && user.name && user.name.toLowerCase().includes("arnav")) || !user ? "/arnav_sharma.jpg" : "/default_avatar.png");
+
     if (user && user.email) {
-        if (navAvatar) navAvatar.innerHTML = `<img src="/default_avatar.png" alt="Profile" class="avatar-img">`;
+        if (navAvatar) navAvatar.innerHTML = `<img src="${userAvatarSrc}" alt="Profile" class="avatar-img">`;
         if (navText) navText.innerText = user.name || "Farmer Profile";
 
-        if (drawerAvatar) drawerAvatar.innerHTML = `<img src="/default_avatar.png" alt="Profile" class="avatar-img">`;
+        if (drawerAvatar) drawerAvatar.innerHTML = `<img src="${userAvatarSrc}" alt="Profile" class="avatar-img">`;
         if (drawerUserName) drawerUserName.innerText = user.name || "Lead Farmer";
         if (drawerUserRole) drawerUserRole.innerText = `${user.role || "Sentinel"} · ${user.district || "Punjab"}`;
         if (drawerPassBadge) {
@@ -1194,7 +1196,7 @@ function updateUserUI(user) {
         const passPowerSaved = document.getElementById("passPowerSaved");
         const passSoilGrade = document.getElementById("passSoilGrade");
 
-        if (passAvatar) passAvatar.innerHTML = `<img src="/default_avatar.png" alt="Profile" class="avatar-img">`;
+        if (passAvatar) passAvatar.innerHTML = `<img src="${userAvatarSrc}" alt="Profile" class="avatar-img">`;
         if (passMemberId) passMemberId.innerText = user.member_id || "PWW-2026-PB-0482";
         if (passName) passName.innerText = user.name;
         if (passRole) passRole.innerText = user.role || "Registered Farmer & Water Sentinel";
@@ -1219,10 +1221,10 @@ function updateUserUI(user) {
             passQrImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=180x180&margin=4&data=${encodeURIComponent(qrData)}`;
         }
     } else {
-        if (navAvatar) navAvatar.innerHTML = `<img src="/default_avatar.png" alt="Profile" class="avatar-img">`;
+        if (navAvatar) navAvatar.innerHTML = `<img src="/arnav_sharma.jpg" alt="Profile" class="avatar-img">`;
         if (navText) navText.innerText = "Sign In";
 
-        if (drawerAvatar) drawerAvatar.innerHTML = `<img src="/default_avatar.png" alt="Profile" class="avatar-img">`;
+        if (drawerAvatar) drawerAvatar.innerHTML = `<img src="/arnav_sharma.jpg" alt="Profile" class="avatar-img">`;
         if (drawerUserName) drawerUserName.innerText = "Guest Farmer";
         if (drawerUserRole) drawerUserRole.innerText = "Register to unlock dossier";
         if (drawerPassBadge) {

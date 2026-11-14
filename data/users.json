@@ -12,6 +12,7 @@
     "member_id": "PWW-2026-PB-0482",
     "provider": "google",
     "avatar_initials": "AS",
+    "avatar_url": "/arnav_sharma.jpg",
     "created_at": "2026-11-14T16:11:20.076868"
   },
   "harpreet@punjab.gov.in": {
@@ -41,10 +42,10 @@
     "water_saved_litres": 1440000,
     "electricity_saved_kwh": 1136,
     "soil_health_grade": "A (Verified via NASA SMAP)",
-    "member_id": "PWW-2026-PB-9748",
+    "member_id": "PWW-2026-PB-3438",
     "provider": "email",
     "avatar_initials": "AS",
-    "created_at": "2026-11-14T17:30:48.351809"
+    "created_at": "2026-11-14T18:49:17.952973"
   },
   "a@gmail.com": {
     "name": "Arnav Sharma",
@@ -61,6 +62,7 @@
     "member_id": "PWW-2026-PB-2101",
     "provider": "email",
     "avatar_initials": "AS",
+    "avatar_url": "/arnav_sharma.jpg",
     "created_at": "2026-11-14T17:01:45.116529"
   }
 }

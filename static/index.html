@@ -31,7 +31,7 @@
             <div class="drawer-profile-card" id="drawerProfileCard">
                 <div class="drawer-profile-header">
                     <div class="drawer-avatar" id="drawerAvatar">
-                        <img src="/default_avatar.png" alt="Farmer Profile" class="avatar-img">
+                        <img src="/arnav_sharma.jpg" alt="Farmer Profile" class="avatar-img">
                     </div>
                     <div class="drawer-profile-info">
                         <div class="drawer-user-name" id="drawerUserName">Guest Farmer</div>
@@ -72,21 +72,15 @@
                     </button>
                 </li>
                 <li>
-                    <button class="drawer-nav-btn" data-tab="tab-simulator">
-                        <span>💧</span>
-                        <span>Simulator</span>
-                    </button>
-                </li>
-                <li>
-                    <button class="drawer-nav-btn" data-tab="tab-soil">
-                        <span>🧪</span>
-                        <span>Soil Health</span>
+                    <button class="drawer-nav-btn" data-tab="tab-agrisense">
+                        <span>🌱</span>
+                        <span>AgriSense</span>
                     </button>
                 </li>
                 <li>
                     <button class="drawer-nav-btn" data-tab="tab-report">
-                        <span>📋</span>
-                        <span>Dossier</span>
+                        <span>🪪</span>
+                        <span>Farmer Identity Card</span>
                     </button>
                 </li>
                 <li>
@@ -167,7 +161,7 @@
                 <!-- Farmer / User Profile Button -->
                 <button id="userProfileBtn" class="profile-nav-btn" title="Farmer Profile & Digital Water Pass">
                     <div class="profile-nav-avatar" id="navAvatar">
-                        <img src="/default_avatar.png" alt="Profile" class="avatar-img">
+                        <img src="/arnav_sharma.jpg" alt="Profile" class="avatar-img">
                     </div>
                     <span class="profile-nav-text" id="navProfileText">Sign In</span>
                 </button>
@@ -422,8 +416,9 @@
             </div>
         </section>
 
-        <!-- TAB 3: WATER & CROP SIMULATOR -->
-        <section id="tab-simulator" class="tab-content">
+        <!-- TAB 3: AGRISENSE INTEGRATED FARM SIMULATOR & SOIL HEALTH LAB -->
+        <section id="tab-agrisense" class="tab-content">
+            <!-- Part 1: Interactive What-If Water & Energy Calculator + Crop Groundwater Budget -->
             <div style="display: grid; grid-template-columns: 1.1fr 1.3fr; gap: 16px; margin-bottom: 16px;">
                 <div class="dark-card">
                     <div class="card-title">What-If Water &amp; Energy Calculator</div>
@@ -476,13 +471,11 @@
                     </div>
                 </div>
             </div>
-        </section>
 
-        <!-- TAB 4: SOIL HEALTH CARD & PAU LAB -->
-        <section id="tab-soil" class="tab-content">
+            <!-- Part 2: Soil Health Card Parameters & PAU/KVK Lab Prescription -->
             <div style="display: grid; grid-template-columns: 1.1fr 1.25fr; gap: 16px; margin-bottom: 16px;">
                 <div class="dark-card">
-                    <div class="card-title">Soil Health Card Parameters</div>
+                    <div class="card-title">🧪 Soil Health Card Parameters</div>
                     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
                         <div>
                             <label style="font-size:0.75rem; color:var(--text-muted); font-weight:600;">Soil pH</label>
@@ -504,7 +497,7 @@
                 </div>
 
                 <div class="dark-card">
-                    <div class="card-title">PAU / KVK Lab Prescription</div>
+                    <div class="card-title">🔬 PAU / KVK Lab Prescription</div>
                     <div class="surface-card-dark" id="prescriptionBox">
                         <div style="color: var(--accent-teal); font-weight: 700; margin-bottom: 8px; font-size: 0.88rem;">Recommended Treatment:</div>
                         <div id="rxItem1" style="font-size: 0.84rem; margin-bottom: 4px; color: var(--text-main);">• 2 Bags Gypsum/Acre</div>
@@ -518,15 +511,15 @@
             </div>
         </section>
 
-        <!-- TAB 5: DISTRICT OFFICER DOSSIER -->
+        <!-- TAB 4: FARMER IDENTITY CARD & EXECUTIVE DOSSIER -->
         <section id="tab-report" class="tab-content">
             <div class="dark-card">
                 <div class="card-title">
-                    <span>📋 District Officer Executive Brief</span>
-                    <a id="btnDownloadReport" href="/api/report/Bathinda" target="_blank" class="btn-download">📥 Download Markdown Dossier</a>
+                    <span>🪪 Farmer Identity Card &amp; Executive Dossier</span>
+                    <a id="btnDownloadReport" href="/api/report/Bathinda" target="_blank" class="btn-download">📥 Download Official PDF / Dossier</a>
                 </div>
                 <div class="report-preview-box" id="reportPreview">
-                    Loading district telemetry report preview...
+                    Loading farmer identity credentials and district telemetry report preview...
                 </div>
             </div>
         </section>
@@ -584,7 +577,7 @@
                 <div class="team-members-grid">
                     <div class="member-card">
                         <div class="member-avatar-box">
-                            <img src="/default_avatar.png" alt="Arnav Sharma" class="member-avatar-img">
+                            <img src="/arnav_sharma.jpg" alt="Arnav Sharma" class="member-avatar-img">
                             <span class="member-avatar-badge" title="Team Leader">👑</span>
                         </div>
                         <div class="member-name">Arnav Sharma</div>
@@ -930,7 +923,7 @@
                 <div class="team-members-grid">
                     <div class="member-card">
                         <div class="member-avatar-box">
-                            <img src="/default_avatar.png" alt="Arnav Sharma" class="member-avatar-img">
+                            <img src="/arnav_sharma.jpg" alt="Arnav Sharma" class="member-avatar-img">
                             <span class="member-avatar-badge" title="Team Leader">👑</span>
                         </div>
                         <div class="member-name">Arnav Sharma</div>
@@ -1054,9 +1047,8 @@
                         <li><a href="#" class="footer-nav" data-tab="tab-overview">🛰️ Mission Control</a></li>
                         <li><a href="#" class="footer-nav" data-tab="tab-dashboard">📊 Dashboard</a></li>
                         <li><a href="#" class="footer-nav" data-tab="tab-forecast">📈 7-Day Forecast</a></li>
-                        <li><a href="#" class="footer-nav" data-tab="tab-simulator">💧 Simulator</a></li>
-                        <li><a href="#" class="footer-nav" data-tab="tab-soil">🧪 Soil Health</a></li>
-                        <li><a href="#" class="footer-nav" data-tab="tab-report">📋 Dossier</a></li>
+                        <li><a href="#" class="footer-nav" data-tab="tab-agrisense">🌱 AgriSense</a></li>
+                        <li><a href="#" class="footer-nav" data-tab="tab-report">🪪 Farmer Identity Card</a></li>
                         <li><a href="#" class="footer-nav" data-tab="tab-team">👥 Team</a></li>
                         <li><a href="#" class="footer-nav" data-tab="tab-about">📖 About</a></li>
                     </ul>
@@ -1242,7 +1234,7 @@
                 <div class="pass-body">
                     <div class="pass-avatar-box">
                         <div class="pass-large-avatar" id="passAvatar">
-                            <img src="/default_avatar.png" alt="Profile" class="avatar-img">
+                            <img src="/arnav_sharma.jpg" alt="Profile" class="avatar-img">
                         </div>
                         <span class="pass-verified-tag">✓ VERIFIED</span>
                     </div>
