@@ -140,3 +140,25 @@ def test_i18n_and_soil_guide_integrity():
     assert len(REMEDIES_GUIDE) >= 4, "Should have at least 4 PAU field remedies"
     for r in REMEDIES_GUIDE:
         assert "remedy_en" in r and "remedy_hi" in r and "remedy_pa" in r
+
+
+def test_crop_budget_simulator():
+    """Verify water budget and energy savings calculation for crop alternatives."""
+    from model import CropBudgetSimulator
+    res = CropBudgetSimulator.calculate_budget("Direct Seeded Rice / DSR (~20% less water)", farm_acres=10)
+    assert res["baseline_litres_m"] == 9.0
+    assert res["crop_water_demand_m"] == 7.2
+    assert res["groundwater_saved_m"] == 1.8
+    assert res["kwh_saved"] > 1400
+    assert res["pct_saved"] == 20.0
+
+
+def test_smart_calendar_generator():
+    """Verify 7-day smart calendar generation across forecast risk profiles."""
+    from src.advisories.smart_calendar import generate_smart_calendar
+    dummy_fc = [{"day_label": f"Day +{i}", "predicted_sm": 0.15, "risk_zone": "Red"} for i in range(1, 8)]
+    dummy_soil = {"alert_triggered": True}
+    cal = generate_smart_calendar(dummy_fc, dummy_soil, lang="hi")
+    assert len(cal) == 7
+    assert cal[0]["day_number"] == 1
+    assert len(cal[0]["action"]) > 10

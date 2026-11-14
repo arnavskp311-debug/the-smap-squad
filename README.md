@@ -102,15 +102,27 @@ Punjab Farm Water Watch features a **flagship dark NASA mission-control interfac
 * Parametric slider for **Farm Size (1–100 Acres)** and **Conservation Practice** selector (`DSR / Mulching`, `Delay Irrigation by 3 Days`, `Crop-Residue Mulching`, or `Combined Protocol`).
 * Dynamic KPI display featuring **1.8M Litres Saved** (in vibrant neon mint `#2DD4BF`) and **kWh Saved: 1,420 kWh** at 10 acres, with subsoil and electricity consumption formulas.
 
-### 3. 📈 Crisp White "Soil Moisture & Water Forecast" Card
-* Dedicated high-contrast white card showcasing past 30 days of **NASA SMAP L4 soil moisture** alongside a **7-day Random Forest forecast**.
-* Features a light-blue vertical shaded band over the forecast window (Nov 14 – Nov 21) with clear historical and projected trendlines.
+### 3. 📈 Crisp White "Soil Moisture & Water Forecast" Card & 30-Day Early-Warning Deltas
+* Dedicated high-contrast white card showcasing past 30 days of **NASA SMAP L4 soil moisture** alongside a **7-day Random Forest forecast** with a light-blue shaded forecast window.
+* **"30 Days Ago vs. Today" Early-Warning Delta Cards:** High-contrast 3-metric comparison row tracking the trajectory of **SMAP Root-Zone Soil Moisture**, **Landsat Canopy NDVI**, and **Water Stress Score**, empirically demonstrating early detection of subterranean moisture deficits.
 
-### 4. 🧪 Interactive Soil Health Card & Instant Lab Prescription
-* Empirical soil testing calculator with inputs for **pH (8.6)**, **EC (0.9 dS/m)**, and **Organic Carbon (0.38%)**.
-* Generates an instant prescription box with **Agricultural Gypsum bags/acre**, **Compost tonnes/acre**, and **Zinc Sulfate dosage**.
+### 4. 🗓️ Pin-Drop "7-Day Smart Farm Action Calendar"
+* Dynamically translates the 7-day RandomForest moisture projections and dual-diagnosis soil alerts into a structured **Day 1 – Day 7 action schedule**.
+* Guides farmers through irrigation holds, 15 cm V-cut soil sampling, straw mulching, gypsum application, and tube-well meter auditing in **English, Hindi, and Punjabi**.
 
-### 5. 📢 Farmer Advisory & Alert Card with WhatsApp & Web Speech Voice Alerts
+### 5. 🌾 Crop-Switch & Aquifer-Life Budget Simulator
+* Interactive water budget and diversification calculator modeling:
+  - `Traditional Paddy (Baseline)` (900,000 L/acre)
+  - `Direct Seeded Rice / DSR` (~20% water saved)
+  - `Maize / Kharif Pulses` (~60% water saved)
+  - `Moong + Mulching` (~45% water saved)
+* Computes real-time **Seasonal Water Demand (Million Litres)**, **Groundwater Saved**, and **Estimated Tube-Well Power Saved (kWh)** with side-by-side Plotly bar visualizations.
+
+### 6. 🧪 Interactive Soil Health Card & Instant Lab Prescription
+* Empirical soil testing calculator with inputs for **pH (8.6)**, **EC (0.9 dS/m)**, **Organic Carbon (0.38%)**, and **Nitrogen (kg/ha)**.
+* Generates an instant prescription box with **Agricultural Gypsum bags/acre**, **Compost tonnes/acre**, and **Zinc Sulfate dosage**, paired with an expandable PAU 4-step sampling protocol.
+
+### 7. 📢 Farmer Advisory & Alert Card with WhatsApp & Web Speech Voice Alerts
 * High-impact alert card with localized advice (*"Kisan bhai, 3 din paani rok do"*, *"Switch to Direct Seeded Rice (DSR) & Mulching"* in English, Hindi, and Punjabi).
 * Includes a one-click **"Share on WhatsApp"** (`wa.me`) community broadcast button and a **"Listen Voice Alert"** button powered by browser-native Web Speech API (`window.speechSynthesis`).
 * **Download District Officer Report:** One-click download button exporting an official Markdown dossier and 30-day NASA telemetry CSV.

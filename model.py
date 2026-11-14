@@ -74,3 +74,62 @@ class SoilQualityAnomalyDetector(SoilQualityChecker):
             "probable_issues": [c["cause"] if isinstance(c, dict) else str(c) for c in res["probable_causes"]],
             "action_required": res["recommended_action"]
         }
+
+
+class CropBudgetSimulator:
+    """
+    Simulates water demand, groundwater conservation, and tube-well electricity
+    for crop diversification alternatives across Punjab agricultural districts.
+    """
+    CROP_PROFILES = {
+        "Traditional Paddy (Baseline)": {
+            "water_litres_per_acre": 900000,
+            "pct_saving": 0.0,
+            "duration_days": 120,
+            "color": "#DC2626",
+            "pau_recommendation": "Standard flooded paddy - high groundwater extraction."
+        },
+        "Direct Seeded Rice / DSR (~20% less water)": {
+            "water_litres_per_acre": 720000,
+            "pct_saving": 0.20,
+            "duration_days": 110,
+            "color": "#0284C7",
+            "pau_recommendation": "Direct seeding eliminates nursery puddling, saving 180,000 L/acre."
+        },
+        "Maize / Kharif Pulses (~60% less water)": {
+            "water_litres_per_acre": 360000,
+            "pct_saving": 0.60,
+            "duration_days": 95,
+            "color": "#16A34A",
+            "pau_recommendation": "Drastic water reduction; protects deep aquifers from secular decline."
+        },
+        "Moong + Mulching (~45% less water)": {
+            "water_litres_per_acre": 495000,
+            "pct_saving": 0.45,
+            "duration_days": 65,
+            "color": "#F59E0B",
+            "pau_recommendation": "Short duration pulse fixes atmospheric nitrogen and conserves 405,000 L/acre."
+        }
+    }
+
+    @classmethod
+    def calculate_budget(cls, crop_choice, farm_acres=10):
+        prof = cls.CROP_PROFILES.get(crop_choice, cls.CROP_PROFILES["Traditional Paddy (Baseline)"])
+        base_prof = cls.CROP_PROFILES["Traditional Paddy (Baseline)"]
+
+        baseline_litres = farm_acres * base_prof["water_litres_per_acre"]
+        crop_water_litres = farm_acres * prof["water_litres_per_acre"]
+        groundwater_saved = max(0, baseline_litres - crop_water_litres)
+        kwh_saved = int(groundwater_saved * 0.000789)
+
+        return {
+            "crop_name": crop_choice,
+            "farm_acres": farm_acres,
+            "baseline_litres_m": round(baseline_litres / 1e6, 2),
+            "crop_water_demand_m": round(crop_water_litres / 1e6, 2),
+            "groundwater_saved_m": round(groundwater_saved / 1e6, 2),
+            "pct_saved": prof["pct_saving"] * 100.0,
+            "kwh_saved": kwh_saved,
+            "duration_days": prof["duration_days"],
+            "recommendation": prof["pau_recommendation"]
+        }

@@ -28,11 +28,12 @@ import plotly.graph_objects as go
 import geopandas as gpd
 
 # Local models, spatial processor, and localized guides
-from model import WaterStressModel, SevenDayMoistureForecaster, SoilQualityAnomalyDetector
+from model import WaterStressModel, SevenDayMoistureForecaster, SoilQualityAnomalyDetector, CropBudgetSimulator
 from fetch_nasa_data import NASADataFetcher, REGIONAL_BOUNDING_BOXES
 from src.pipeline.spatial_processor import SpatialProcessor
 from src.advisories.i18n_content import I18N
 from src.advisories.soil_testing_guide import SOIL_TESTING_STEPS, REMEDIES_GUIDE
+from src.advisories.smart_calendar import generate_smart_calendar
 
 # Page Configuration
 st.set_page_config(
@@ -241,6 +242,62 @@ st.markdown("""
         border-radius: 12px;
         font-size: 0.75rem;
         font-weight: 700;
+    }
+
+    /* 30 Days Ago vs Today Early Warning Cards */
+    .delta-box {
+        background: #09202C;
+        border: 1px solid #14384B;
+        border-radius: 8px;
+        padding: 10px 14px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+    }
+    .delta-label {
+        font-size: 0.75rem;
+        font-weight: 700;
+        color: #94A3B8;
+        text-transform: uppercase;
+        letter-spacing: 0.03em;
+    }
+    .delta-current {
+        font-size: 1.35rem;
+        font-weight: 800;
+        color: #FFFFFF;
+        margin: 2px 0;
+    }
+    .delta-sub {
+        font-size: 0.76rem;
+        color: #CBD5E1;
+    }
+
+    /* Smart Farm Calendar Cards */
+    .calendar-card {
+        background: #081B26;
+        border: 1px solid #143548;
+        border-radius: 8px;
+        padding: 10px 12px;
+        margin-bottom: 8px;
+        display: flex;
+        gap: 12px;
+        align-items: flex-start;
+    }
+    .calendar-icon-col {
+        font-size: 1.35rem;
+        padding-top: 2px;
+    }
+    .calendar-title {
+        font-size: 0.88rem;
+        font-weight: 700;
+        color: #FFFFFF;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    .calendar-desc {
+        font-size: 0.82rem;
+        color: #CBD5E1;
+        margin-top: 3px;
+        line-height: 1.38;
     }
 
     /* Crisp White Forecast Card (Middle Row) */
@@ -760,6 +817,50 @@ with col_main:
         st.markdown("</div>", unsafe_allow_html=True)
 
     # ---------------------------------------------------------------------
+    # EARLY WARNING DELTA ROW: 30 DAYS AGO vs. TODAY
+    # ---------------------------------------------------------------------
+    row_30d = dist_df.iloc[0]
+    sm_old = float(row_30d["smap_rootzone_sm"])
+    sm_now = float(latest["smap_rootzone_sm"])
+    sm_diff = sm_now - sm_old
+    sm_color = "#DC2626" if sm_diff < -0.03 else ("#16A34A" if sm_diff > 0.02 else "#F59E0B")
+
+    ndvi_old = float(row_30d["landsat_ndvi"])
+    ndvi_now = float(latest["landsat_ndvi"])
+    ndvi_diff = ndvi_now - ndvi_old
+    ndvi_color = "#DC2626" if ndvi_diff < -0.05 else ("#16A34A" if ndvi_diff > 0.03 else "#F59E0B")
+
+    score_old = stress_model.compute_water_stress_score(
+        smap_rootzone_sm=sm_old,
+        rain_30d_mm=float(dist_df["gpm_precipitation_mm"].head(10).sum()) * 1.5,
+        modis_et_mm=float(row_30d["modis_et_mm"]),
+        landsat_lst_c=float(row_30d["landsat_lst_c"])
+    )["score"]
+    score_now = stress_res["score"]
+    score_diff = score_now - score_old
+    score_color = "#DC2626" if score_diff > 10 else ("#16A34A" if score_diff < -5 else "#F59E0B")
+
+    st.markdown(f"""
+    <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-top: 10px; margin-bottom: 12px;">
+        <div class="delta-box">
+            <div class="delta-label">SMAP Rootzone Soil Moisture</div>
+            <div class="delta-current">{sm_now:.3f} <span style="font-size:0.82rem; color:#94A3B8;">m³/m³</span></div>
+            <div class="delta-sub">30d Ago: {sm_old:.3f} | <span style="color:{sm_color}; font-weight:700;">{sm_diff:+.3f} m³/m³</span></div>
+        </div>
+        <div class="delta-box">
+            <div class="delta-label">Landsat 8/9 Canopy NDVI</div>
+            <div class="delta-current">{ndvi_now:.3f}</div>
+            <div class="delta-sub">30d Ago: {ndvi_old:.3f} | <span style="color:{ndvi_color}; font-weight:700;">{ndvi_diff:+.3f}</span></div>
+        </div>
+        <div class="delta-box">
+            <div class="delta-label">Water Stress Index (0–100)</div>
+            <div class="delta-current">{score_now} <span style="font-size:0.82rem; color:#94A3B8;">/ 100</span></div>
+            <div class="delta-sub">30d Ago: {score_old:.1f} | <span style="color:{score_color}; font-weight:700;">{score_diff:+.1f} pts</span></div>
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
+
+    # ---------------------------------------------------------------------
     # MIDDLE ROW: SOIL MOISTURE & WATER FORECAST (CRISP WHITE CARD)
     # ---------------------------------------------------------------------
     st.markdown("""
@@ -865,6 +966,110 @@ with col_main:
 
     st.plotly_chart(fig_line, use_container_width=True, config={'displayModeBar': False})
     st.markdown("</div>", unsafe_allow_html=True)
+
+
+    # ---------------------------------------------------------------------
+    # DECISION SUPPORT SUITE: 7-DAY SMART CALENDAR & CROP-SWITCH SIMULATOR
+    # ---------------------------------------------------------------------
+    tab_cal, tab_crops = st.tabs([
+        "🗓️ Pin-Drop 7-Day Smart Farm Action Calendar",
+        "🌾 Crop-Switch & Aquifer-Life Budget Simulator"
+    ])
+
+    with tab_cal:
+        st.markdown(f"""
+        <div class="dark-card" style="margin-bottom:12px;">
+            <div class="dark-card-title">
+                <span>🗓️ Precision Action Calendar for {selected_district}</span>
+                <span class="info-circle" title="Dynamic 7-day schedule generated from RandomForest soil projections & anomaly triggers">ⓘ</span>
+            </div>
+        """, unsafe_allow_html=True)
+        smart_cal_days = generate_smart_calendar(fc_results, soil_res, lang=lang_selection)
+
+        c_cols = st.columns(2)
+        for idx, c_day in enumerate(smart_cal_days):
+            col_target = c_cols[idx % 2]
+            with col_target:
+                st.markdown(f"""
+                <div class="calendar-card">
+                    <div class="calendar-icon-col">{c_day['icon']}</div>
+                    <div style="flex-grow:1;">
+                        <div class="calendar-title">
+                            <span>{c_day['day_label']}: {c_day['title']}</span>
+                            <span class="badge-status" style="border-color:{c_day['badge_color']}; color:{c_day['badge_color']};">{c_day['badge']}</span>
+                        </div>
+                        <div class="calendar-desc">{c_day['action']}</div>
+                        <div style="font-size:0.74rem; color:#64748B; margin-top:4px;">
+                            Projected Moisture: <b>{c_day['projected_sm']:.3f} m³/m³</b> · Zone: <b style="color:{c_day['badge_color']};">{c_day['risk_zone']}</b>
+                        </div>
+                    </div>
+                </div>
+                """, unsafe_allow_html=True)
+        st.markdown("</div>", unsafe_allow_html=True)
+
+    with tab_crops:
+        st.markdown(f"""
+        <div class="dark-card" style="margin-bottom:12px;">
+            <div class="dark-card-title">
+                <span>🌾 Crop Diversification &amp; Groundwater Budget Simulator ({selected_district})</span>
+                <span class="info-circle" title="PAU Agronomic Benchmarks for Groundwater Depletion Mitigation">ⓘ</span>
+            </div>
+        """, unsafe_allow_html=True)
+
+        sim_col_sel, sim_col_chart = st.columns([1.1, 1.4], gap="medium")
+        with sim_col_sel:
+            st.markdown("<div style='font-size:0.83rem; font-weight:600; color:#94A3B8; margin-bottom:2px;'>Select Crop Diversification Option:</div>", unsafe_allow_html=True)
+            crop_choice = st.selectbox(
+                "Crop Choice",
+                options=list(CropBudgetSimulator.CROP_PROFILES.keys()),
+                index=1,
+                label_visibility="collapsed"
+            )
+            sim_budget = CropBudgetSimulator.calculate_budget(crop_choice, farm_acres=farm_acres)
+
+            st.markdown(f"""
+            <div style="background:#09202C; border:1px solid #163C52; border-radius:8px; padding:12px; margin-top:6px;">
+                <div style="font-size:0.82rem; font-weight:700; color:#38BDF8; margin-bottom:6px;">📊 Seasonal Water Budget ({farm_acres} Acres)</div>
+                <div style="display:flex; justify-content:space-between; margin-bottom:4px; font-size:0.82rem;">
+                    <span style="color:#94A3B8;">Water Demand:</span>
+                    <span style="color:#FFFFFF; font-weight:700;">{sim_budget['crop_water_demand_m']}M Litres</span>
+                </div>
+                <div style="display:flex; justify-content:space-between; margin-bottom:4px; font-size:0.82rem;">
+                    <span style="color:#94A3B8;">Groundwater Saved:</span>
+                    <span style="color:#2DD4BF; font-weight:700;">{sim_budget['groundwater_saved_m']}M Litres ({sim_budget['pct_saved']:.0f}%)</span>
+                </div>
+                <div style="display:flex; justify-content:space-between; font-size:0.82rem;">
+                    <span style="color:#94A3B8;">Tube-Well Power Saved:</span>
+                    <span style="color:#F59E0B; font-weight:700;">{sim_budget['kwh_saved']:,} kWh</span>
+                </div>
+                <div style="margin-top:8px; font-size:0.77rem; color:#CBD5E1; font-style:italic;">
+                    💡 {sim_budget['recommendation']}
+                </div>
+            </div>
+            """, unsafe_allow_html=True)
+
+        with sim_col_chart:
+            # Side-by-side Plotly Bar Chart comparing Baseline Paddy vs Alternative
+            fig_sim = go.Figure()
+            fig_sim.add_trace(go.Bar(
+                x=["Paddy Baseline", "Selected Crop", "Water Saved"],
+                y=[sim_budget["baseline_litres_m"], sim_budget["crop_water_demand_m"], sim_budget["groundwater_saved_m"]],
+                marker_color=["#DC2626", "#0284C7", "#2DD4BF"],
+                text=[f"{sim_budget['baseline_litres_m']}M", f"{sim_budget['crop_water_demand_m']}M", f"{sim_budget['groundwater_saved_m']}M"],
+                textposition="auto"
+            ))
+            fig_sim.update_layout(
+                template="plotly_dark",
+                height=185,
+                margin=dict(l=25, r=15, t=10, b=25),
+                paper_bgcolor="rgba(0,0,0,0)",
+                plot_bgcolor="rgba(0,0,0,0)",
+                yaxis=dict(title="Million Litres", showgrid=True, gridcolor="#163C52", title_font=dict(size=10)),
+                xaxis=dict(showgrid=False)
+            )
+            st.plotly_chart(fig_sim, use_container_width=True, config={'displayModeBar': False})
+
+        st.markdown("</div>", unsafe_allow_html=True)
 
 
     # ---------------------------------------------------------------------
