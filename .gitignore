@@ -1,0 +1,27 @@
+# Python & Virtual Environment
+.venv/
+venv/
+ENV/
+env/
+__pycache__/
+*.py[cod]
+*$py.class
+*.pyc
+
+# Local environment variables & secrets
+.env
+*.local
+credentials.json
+token.json
+
+# Operating System files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Streamlit local runtime
+.streamlit/
+
+# Temporary / intermediate data caches
+*.tmp
+*.log

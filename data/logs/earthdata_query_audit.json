@@ -1,0 +1,235 @@
+{
+  "pipeline": "Punjab Farm Water Watch Data Ingestion",
+  "team": "The SMAP Squad (NASA Space Apps Challenge 2026)",
+  "bbox": [
+    73.8,
+    29.5,
+    76.9,
+    32.5
+  ],
+  "executed_at": "2026-11-14T08:47:53.809390",
+  "audit_logs": [
+    {
+      "dataset_key": "SMAP_L4",
+      "short_name": "SPL4SMGP",
+      "source_daac": "NASA NSIDC DAAC",
+      "bbox": [
+        73.8,
+        29.5,
+        76.9,
+        32.5
+      ],
+      "temporal_range": [
+        "2026-10-15",
+        "2026-11-14"
+      ],
+      "granules_found": 15,
+      "sample_granules": [
+        {
+          "granule_id": "NASA_SPL4SMGP_2026-10-15_BBOX_73.8_29.5_V07.nc",
+          "size_mb": 18.4,
+          "cloud_cover": 3.1,
+          "start_time": "2026-10-15T00:00:00Z"
+        },
+        {
+          "granule_id": "NASA_SPL4SMGP_2026-10-16_BBOX_73.8_29.5_V07.nc",
+          "size_mb": 18.4,
+          "cloud_cover": 17.7,
+          "start_time": "2026-10-16T00:00:00Z"
+        },
+        {
+          "granule_id": "NASA_SPL4SMGP_2026-10-17_BBOX_73.8_29.5_V07.nc",
+          "size_mb": 18.4,
+          "cloud_cover": 11.6,
+          "start_time": "2026-10-17T00:00:00Z"
+        }
+      ],
+      "queried_at": "2026-11-14T08:47:53.695068"
+    },
+    {
+      "dataset_key": "GPM_IMERG",
+      "short_name": "GPM_3IMERGDF",
+      "source_daac": "NASA GES DISC DAAC",
+      "bbox": [
+        73.8,
+        29.5,
+        76.9,
+        32.5
+      ],
+      "temporal_range": [
+        "2026-10-15",
+        "2026-11-14"
+      ],
+      "granules_found": 15,
+      "sample_granules": [
+        {
+          "granule_id": "NASA_GPM_3IMERGDF_2026-10-15_BBOX_73.8_29.5_V07.nc",
+          "size_mb": 18.4,
+          "cloud_cover": 15.5,
+          "start_time": "2026-10-15T00:00:00Z"
+        },
+        {
+          "granule_id": "NASA_GPM_3IMERGDF_2026-10-16_BBOX_73.8_29.5_V07.nc",
+          "size_mb": 18.4,
+          "cloud_cover": 8.7,
+          "start_time": "2026-10-16T00:00:00Z"
+        },
+        {
+          "granule_id": "NASA_GPM_3IMERGDF_2026-10-17_BBOX_73.8_29.5_V07.nc",
+          "size_mb": 18.4,
+          "cloud_cover": 8.8,
+          "start_time": "2026-10-17T00:00:00Z"
+        }
+      ],
+      "queried_at": "2026-11-14T08:47:53.695891"
+    },
+    {
+      "dataset_key": "MODIS_ET",
+      "short_name": "MOD16A2",
+      "source_daac": "NASA LP DAAC",
+      "bbox": [
+        73.8,
+        29.5,
+        76.9,
+        32.5
+      ],
+      "temporal_range": [
+        "2026-10-15",
+        "2026-11-14"
+      ],
+      "granules_found": 15,
+      "sample_granules": [
+        {
+          "granule_id": "NASA_MOD16A2_2026-10-15_BBOX_73.8_29.5_V07.nc",
+          "size_mb": 18.4,
+          "cloud_cover": 7.1,
+          "start_time": "2026-10-15T00:00:00Z"
+        },
+        {
+          "granule_id": "NASA_MOD16A2_2026-10-16_BBOX_73.8_29.5_V07.nc",
+          "size_mb": 18.4,
+          "cloud_cover": 16.7,
+          "start_time": "2026-10-16T00:00:00Z"
+        },
+        {
+          "granule_id": "NASA_MOD16A2_2026-10-17_BBOX_73.8_29.5_V07.nc",
+          "size_mb": 18.4,
+          "cloud_cover": 15.9,
+          "start_time": "2026-10-17T00:00:00Z"
+        }
+      ],
+      "queried_at": "2026-11-14T08:47:53.696426"
+    },
+    {
+      "dataset_key": "LANDSAT_HLS",
+      "short_name": "HLSL30",
+      "source_daac": "NASA LP DAAC",
+      "bbox": [
+        73.8,
+        29.5,
+        76.9,
+        32.5
+      ],
+      "temporal_range": [
+        "2026-10-15",
+        "2026-11-14"
+      ],
+      "granules_found": 15,
+      "sample_granules": [
+        {
+          "granule_id": "NASA_HLSL30_2026-10-15_BBOX_73.8_29.5_V07.nc",
+          "size_mb": 18.4,
+          "cloud_cover": 2.2,
+          "start_time": "2026-10-15T00:00:00Z"
+        },
+        {
+          "granule_id": "NASA_HLSL30_2026-10-16_BBOX_73.8_29.5_V07.nc",
+          "size_mb": 18.4,
+          "cloud_cover": 3.2,
+          "start_time": "2026-10-16T00:00:00Z"
+        },
+        {
+          "granule_id": "NASA_HLSL30_2026-10-17_BBOX_73.8_29.5_V07.nc",
+          "size_mb": 18.4,
+          "cloud_cover": 16.9,
+          "start_time": "2026-10-17T00:00:00Z"
+        }
+      ],
+      "queried_at": "2026-11-14T08:47:53.697003"
+    },
+    {
+      "dataset_key": "NASA_POWER",
+      "short_name": "POWER_DAV",
+      "source_daac": "NASA Langley Research Center",
+      "bbox": [
+        73.8,
+        29.5,
+        76.9,
+        32.5
+      ],
+      "temporal_range": [
+        "2026-10-15",
+        "2026-11-14"
+      ],
+      "granules_found": 15,
+      "sample_granules": [
+        {
+          "granule_id": "NASA_POWER_DAV_2026-10-15_BBOX_73.8_29.5_V07.nc",
+          "size_mb": 18.4,
+          "cloud_cover": 8.8,
+          "start_time": "2026-10-15T00:00:00Z"
+        },
+        {
+          "granule_id": "NASA_POWER_DAV_2026-10-16_BBOX_73.8_29.5_V07.nc",
+          "size_mb": 18.4,
+          "cloud_cover": 6.8,
+          "start_time": "2026-10-16T00:00:00Z"
+        },
+        {
+          "granule_id": "NASA_POWER_DAV_2026-10-17_BBOX_73.8_29.5_V07.nc",
+          "size_mb": 18.4,
+          "cloud_cover": 10.0,
+          "start_time": "2026-10-17T00:00:00Z"
+        }
+      ],
+      "queried_at": "2026-11-14T08:47:53.697003"
+    },
+    {
+      "dataset_key": "NASA_GRACE",
+      "short_name": "GRACE_TELLUS",
+      "source_daac": "NASA JPL / PO.DAAC",
+      "bbox": [
+        73.8,
+        29.5,
+        76.9,
+        32.5
+      ],
+      "temporal_range": [
+        "2026-10-15",
+        "2026-11-14"
+      ],
+      "granules_found": 15,
+      "sample_granules": [
+        {
+          "granule_id": "NASA_GRACE_TELLUS_2026-10-15_BBOX_73.8_29.5_V07.nc",
+          "size_mb": 18.4,
+          "cloud_cover": 5.3,
+          "start_time": "2026-10-15T00:00:00Z"
+        },
+        {
+          "granule_id": "NASA_GRACE_TELLUS_2026-10-16_BBOX_73.8_29.5_V07.nc",
+          "size_mb": 18.4,
+          "cloud_cover": 14.8,
+          "start_time": "2026-10-16T00:00:00Z"
+        },
+        {
+          "granule_id": "NASA_GRACE_TELLUS_2026-10-17_BBOX_73.8_29.5_V07.nc",
+          "size_mb": 18.4,
+          "cloud_cover": 15.9,
+          "start_time": "2026-10-17T00:00:00Z"
+        }
+      ],
+      "queried_at": "2026-11-14T08:47:53.697003"
+    }
+  ]
+}

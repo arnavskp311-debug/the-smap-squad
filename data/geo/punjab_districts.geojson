@@ -1,0 +1,195 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Bathinda",
+        "state": "Punjab",
+        "lat": 30.211,
+        "lon": 74.9455,
+        "primary_crop": "Cotton / Wheat",
+        "soil_type": "Aridic / Sandy Loam"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              74.7,
+              29.95
+            ],
+            [
+              75.25,
+              29.95
+            ],
+            [
+              75.25,
+              30.45
+            ],
+            [
+              74.7,
+              30.45
+            ],
+            [
+              74.7,
+              29.95
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Ludhiana",
+        "state": "Punjab",
+        "lat": 30.901,
+        "lon": 75.8573,
+        "primary_crop": "Paddy / Wheat",
+        "soil_type": "Alluvial Loam"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              75.5,
+              30.65
+            ],
+            [
+              76.15,
+              30.65
+            ],
+            [
+              76.15,
+              31.1
+            ],
+            [
+              75.5,
+              31.1
+            ],
+            [
+              75.5,
+              30.65
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Patiala",
+        "state": "Punjab",
+        "lat": 30.3398,
+        "lon": 76.3869,
+        "primary_crop": "Paddy / Wheat",
+        "soil_type": "Silty Clay Loam"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              76.1,
+              30.05
+            ],
+            [
+              76.7,
+              30.05
+            ],
+            [
+              76.7,
+              30.65
+            ],
+            [
+              76.1,
+              30.65
+            ],
+            [
+              76.1,
+              30.05
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Amritsar",
+        "state": "Punjab",
+        "lat": 31.634,
+        "lon": 74.8723,
+        "primary_crop": "Basmati Rice / Wheat",
+        "soil_type": "Coarse Loam"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              74.6,
+              31.4
+            ],
+            [
+              75.15,
+              31.4
+            ],
+            [
+              75.15,
+              31.9
+            ],
+            [
+              74.6,
+              31.9
+            ],
+            [
+              74.6,
+              31.4
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Sangrur",
+        "state": "Punjab",
+        "lat": 30.2458,
+        "lon": 75.8421,
+        "primary_crop": "Paddy / Wheat",
+        "soil_type": "Alluvial Loam"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              75.55,
+              30.0
+            ],
+            [
+              76.1,
+              30.0
+            ],
+            [
+              76.1,
+              30.5
+            ],
+            [
+              75.55,
+              30.5
+            ],
+            [
+              75.55,
+              30.0
+            ]
+          ]
+        ]
+      }
+    }
+  ]
+}
