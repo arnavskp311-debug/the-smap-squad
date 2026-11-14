@@ -158,7 +158,12 @@ def get_telemetry(district: str = "Bathinda", lang: str = "en"):
         coords = GLOBAL_HOTSPOTS[district]
         lat = coords["lat"]
         lon = coords["lon"]
-        dist_df = df_satellite[df_satellite["district"] == "Bathinda"].copy()
+        hotspot_key = district.split()[0]
+        match = df_satellite[df_satellite["district"].str.contains(hotspot_key, case=False, na=False)]
+        if not match.empty:
+            dist_df = match.copy()
+        else:
+            dist_df = df_satellite[df_satellite["district"] == "Bathinda"].copy()
     else:
         dist_sub = df_satellite[df_satellite["district"] == district]
         matching_dist = districts_gdf[districts_gdf["name"] == district]
