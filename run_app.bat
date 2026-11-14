@@ -1,6 +1,6 @@
 @echo off
-echo Starting Punjab Farm Water Watch Dashboard...
+echo Starting Punjab Farm Water Watch Standalone Web App...
 cd /d "%~dp0"
 call .venv\Scripts\activate.bat
-streamlit run app.py
+python server.py
 pause
