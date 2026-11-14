@@ -1097,6 +1097,205 @@ footer {
     font-weight: 600;
 }
 
+/* ==========================================================================
+   ANALYTICS & GRAPHS DASHBOARD STYLES
+   ========================================================================== */
+.dash-hero-box {
+    background: linear-gradient(135deg, #07232E 0%, #0D3545 100%);
+    border: 1px solid #164E63;
+    border-radius: 12px;
+    padding: 20px 24px;
+    margin-bottom: 18px;
+    box-shadow: 0 4px 18px rgba(0, 0, 0, 0.25);
+}
+
+[data-theme="light"] .dash-hero-box {
+    background: linear-gradient(135deg, #F0F9FF 0%, #E0F2FE 100%);
+    border-color: #BAE6FD;
+}
+
+.dash-hero-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: 14px;
+}
+
+.dash-hero-title {
+    font-size: 1.55rem;
+    font-weight: 800;
+    color: #FFFFFF;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+[data-theme="light"] .dash-hero-title {
+    color: #0F172A;
+}
+
+.dash-hero-sub {
+    font-size: 0.88rem;
+    color: #CBD5E1;
+    line-height: 1.45;
+}
+
+[data-theme="light"] .dash-hero-sub {
+    color: #475569;
+}
+
+.dash-kpi-row {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 12px;
+}
+
+@media (max-width: 992px) {
+    .dash-kpi-row {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+@media (max-width: 600px) {
+    .dash-kpi-row {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+.dash-kpi-card {
+    background: rgba(8, 27, 38, 0.7);
+    border: 1px solid #163649;
+    border-radius: 8px;
+    padding: 10px 14px;
+    text-align: center;
+}
+
+[data-theme="light"] .dash-kpi-card {
+    background: #FFFFFF;
+    border-color: #E2E8F0;
+}
+
+.dash-kpi-val {
+    font-size: 1.45rem;
+    font-weight: 800;
+    color: var(--accent-amber);
+    line-height: 1.15;
+}
+
+.dash-kpi-lbl {
+    font-size: 0.72rem;
+    color: #94A3B8;
+    text-transform: uppercase;
+    font-weight: 600;
+    margin-top: 3px;
+}
+
+[data-theme="light"] .dash-kpi-lbl {
+    color: #64748B;
+}
+
+.dash-charts-grid-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 16px;
+}
+
+@media (max-width: 900px) {
+    .dash-charts-grid-2 {
+        grid-template-columns: 1fr;
+    }
+}
+
+.dash-charts-grid-3 {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 16px;
+}
+
+@media (max-width: 992px) {
+    .dash-charts-grid-3 {
+        grid-template-columns: 1fr;
+    }
+}
+
+.chart-card {
+    background: #0C2933;
+    border: 1px solid #164E63;
+    border-radius: 10px;
+    padding: 16px 18px;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.22);
+    display: flex;
+    flex-direction: column;
+}
+
+[data-theme="light"] .chart-card {
+    background: #FFFFFF;
+    border-color: #E2E8F0;
+    box-shadow: 0 4px 14px rgba(15, 23, 42, 0.06);
+}
+
+.chart-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 4px;
+}
+
+.chart-card-title {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: #FFFFFF;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+[data-theme="light"] .chart-card-title {
+    color: #0F172A;
+}
+
+.chart-card-badge {
+    font-size: 0.72rem;
+    padding: 2px 8px;
+    border-radius: 12px;
+    background: rgba(56, 189, 248, 0.15);
+    color: var(--accent-teal);
+    border: 1px solid rgba(56, 189, 248, 0.3);
+    font-weight: 700;
+}
+
+[data-theme="light"] .chart-card-badge {
+    background: #E0F2FE;
+    color: #0369A1;
+    border-color: #BAE6FD;
+}
+
+.chart-card-sub {
+    font-size: 0.76rem;
+    color: #94A3B8;
+    margin-bottom: 12px;
+}
+
+[data-theme="light"] .chart-card-sub {
+    color: #64748B;
+}
+
+.chart-canvas-wrapper {
+    position: relative;
+    height: 275px;
+    width: 100%;
+}
+
+.chart-canvas-wrapper-tall {
+    position: relative;
+    height: 310px;
+    width: 100%;
+}
+
 .status-indicator {
     width: 7px;
     height: 7px;

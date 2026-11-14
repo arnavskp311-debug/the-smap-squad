@@ -57,6 +57,7 @@
         <!-- Flagship Mission Control Tabs -->
         <nav class="tab-bar">
             <button class="tab-btn active" data-tab="tab-overview">🛰️ Live Mission Control</button>
+            <button class="tab-btn" data-tab="tab-dashboard" style="color:var(--accent-mint); font-weight:700;">📊 Analytics &amp; Graphs Dashboard</button>
             <button class="tab-btn" data-tab="tab-forecast">📈 7-Day ML Forecast &amp; Calendar</button>
             <button class="tab-btn" data-tab="tab-simulator">💧 Water &amp; Crop Simulator</button>
             <button class="tab-btn" data-tab="tab-soil">🧪 Soil Health Card &amp; PAU Lab</button>
@@ -128,6 +129,158 @@
                     <div class="delta-label">Water Stress Index (0–100)</div>
                     <div class="delta-current" id="deltaScoreNow">--</div>
                     <div class="delta-sub" id="deltaScoreSub">30d Ago: --</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB: ANALYTICS & GRAPHS DASHBOARD -->
+        <section id="tab-dashboard" class="tab-content">
+            <!-- Dashboard Hero & Quick Live KPIs -->
+            <div class="dash-hero-box">
+                <div class="dash-hero-header">
+                    <div>
+                        <div class="dash-hero-title">
+                            <span>📊</span>
+                            <span>Agro-Hydrological Visual Analytics Dashboard</span>
+                        </div>
+                        <div class="dash-hero-sub">
+                            Comprehensive multi-satellite telemetry curves, predictive drydown envelopes, and comparative cross-district benchmarks for <b id="dashDistrictName" style="color:var(--accent-amber);">Bathinda</b>.
+                        </div>
+                    </div>
+                    <div class="nasa-live-pill">
+                        <div class="pulsing-dot"></div>
+                        <span>NASA Live Stream Synced</span>
+                    </div>
+                </div>
+
+                <div class="dash-kpi-row">
+                    <div class="dash-kpi-card">
+                        <div class="dash-kpi-val" id="dashKpiStress">--</div>
+                        <div class="dash-kpi-lbl">Water Stress Score</div>
+                    </div>
+                    <div class="dash-kpi-card">
+                        <div class="dash-kpi-val" id="dashKpiSm">--</div>
+                        <div class="dash-kpi-lbl">Rootzone Moisture (m³/m³)</div>
+                    </div>
+                    <div class="dash-kpi-card">
+                        <div class="dash-kpi-val" id="dashKpiRain">--</div>
+                        <div class="dash-kpi-lbl">30d Rain Accumulation (mm)</div>
+                    </div>
+                    <div class="dash-kpi-card">
+                        <div class="dash-kpi-val" id="dashKpiNdvi">--</div>
+                        <div class="dash-kpi-lbl">Canopy NDVI Greenness</div>
+                    </div>
+                    <div class="dash-kpi-card">
+                        <div class="dash-kpi-val" id="dashKpiLst">--</div>
+                        <div class="dash-kpi-lbl">Canopy Thermal LST (°C)</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Row 1: Dual-Depth Soil Moisture & 30-Day Rainfall Deficit -->
+            <div class="dash-charts-grid-2">
+                <div class="chart-card">
+                    <div class="chart-card-header">
+                        <div class="chart-card-title">
+                            <span>💧</span>
+                            <span>SMAP Dual-Depth Moisture &amp; 7-Day Forecast</span>
+                        </div>
+                        <span class="chart-card-badge">SMAP L4 + ML</span>
+                    </div>
+                    <div class="chart-card-sub">Rootzone (0–100 cm) vs. Surface (0–5 cm) moisture dynamics with 90% confidence predictive envelope.</div>
+                    <div class="chart-canvas-wrapper">
+                        <canvas id="dashMoistureChart"></canvas>
+                    </div>
+                </div>
+
+                <div class="chart-card">
+                    <div class="chart-card-header">
+                        <div class="chart-card-title">
+                            <span>🌧️</span>
+                            <span>NASA GPM IMERG 30-Day Precipitation Deficit</span>
+                        </div>
+                        <span class="chart-card-badge">GPM IMERG</span>
+                    </div>
+                    <div class="chart-card-sub">Daily rainfall spikes vs. cumulative accumulation against the 50 mm agricultural buffer threshold.</div>
+                    <div class="chart-canvas-wrapper">
+                        <canvas id="dashRainChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Row 2: Crop Physiology & Atmospheric Demand -->
+            <div class="dash-charts-grid-2">
+                <div class="chart-card">
+                    <div class="chart-card-header">
+                        <div class="chart-card-title">
+                            <span>🌿</span>
+                            <span>Landsat 8/9 Crop Vigor: NDVI vs. SAVI vs. NDWI</span>
+                        </div>
+                        <span class="chart-card-badge">Landsat 8/9 (30m)</span>
+                    </div>
+                    <div class="chart-card-sub">Vegetative vigor (NDVI), soil-adjusted canopy health (SAVI), and leaf water content index (NDWI).</div>
+                    <div class="chart-canvas-wrapper">
+                        <canvas id="dashVigorChart"></canvas>
+                    </div>
+                </div>
+
+                <div class="chart-card">
+                    <div class="chart-card-header">
+                        <div class="chart-card-title">
+                            <span>🌡️</span>
+                            <span>Evapotranspiration (ET) vs. Canopy Thermal Heat (LST)</span>
+                        </div>
+                        <span class="chart-card-badge">MODIS + Landsat</span>
+                    </div>
+                    <div class="chart-card-sub">Atmospheric evaporative moisture draw (mm/day) paired with land surface canopy temperature (°C).</div>
+                    <div class="chart-canvas-wrapper">
+                        <canvas id="dashEtLstChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Row 3: Component Attribution, District Benchmark & Conservation Scenarios -->
+            <div class="dash-charts-grid-3">
+                <div class="chart-card">
+                    <div class="chart-card-header">
+                        <div class="chart-card-title">
+                            <span>🎯</span>
+                            <span>Index Component Attribution</span>
+                        </div>
+                        <span class="chart-card-badge">Index Weights</span>
+                    </div>
+                    <div class="chart-card-sub">Relative stress attribution: SMAP (40%), GPM (30%), MODIS (20%), Landsat (10%).</div>
+                    <div class="chart-canvas-wrapper">
+                        <canvas id="dashStressDonutChart"></canvas>
+                    </div>
+                </div>
+
+                <div class="chart-card">
+                    <div class="chart-card-header">
+                        <div class="chart-card-title">
+                            <span>📍</span>
+                            <span>Punjab District Vulnerability</span>
+                        </div>
+                        <span class="chart-card-badge">Cross-District</span>
+                    </div>
+                    <div class="chart-card-sub">Cross-district Water Stress Index benchmark across all primary agricultural monitoring zones.</div>
+                    <div class="chart-canvas-wrapper">
+                        <canvas id="dashBenchmarkChart"></canvas>
+                    </div>
+                </div>
+
+                <div class="chart-card">
+                    <div class="chart-card-header">
+                        <div class="chart-card-title">
+                            <span>⚡</span>
+                            <span>Aquifer &amp; Energy Savings</span>
+                        </div>
+                        <span class="chart-card-badge">PAU Scenarios</span>
+                    </div>
+                    <div class="chart-card-sub">Groundwater saved (Million Litres) and tubewell electricity conserved (kWh) per 10 acres.</div>
+                    <div class="chart-canvas-wrapper">
+                        <canvas id="dashScenarioChart"></canvas>
+                    </div>
                 </div>
             </div>
         </section>
@@ -749,6 +902,7 @@
                     <h4 class="footer-heading">Platform Tools</h4>
                     <ul class="footer-links">
                         <li><a href="#" class="footer-nav" data-tab="tab-overview">🛰️ Live Mission Control</a></li>
+                        <li><a href="#" class="footer-nav" data-tab="tab-dashboard">📊 Analytics &amp; Graphs Dashboard</a></li>
                         <li><a href="#" class="footer-nav" data-tab="tab-forecast">📈 7-Day ML Forecast</a></li>
                         <li><a href="#" class="footer-nav" data-tab="tab-simulator">💧 Water &amp; Crop Simulator</a></li>
                         <li><a href="#" class="footer-nav" data-tab="tab-soil">🧪 Soil Health &amp; PAU Lab</a></li>

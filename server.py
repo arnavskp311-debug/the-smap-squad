@@ -219,9 +219,56 @@ def get_telemetry(district: str = "Bathinda", lang: str = "en"):
             adv1 = "Water reserves are currently sufficient for crop demand"
             adv2 = "Avoid unnecessary over-irrigation to conserve regional groundwater"
 
-    # Historical timeline data for line chart
+    # 30-Day Historical Timelines for Visual Analytics Dashboard
     history_dates = dist_df["date"].dt.strftime("%b %d").tolist()
     history_sm = dist_df["smap_rootzone_sm"].round(3).tolist()
+    history_surface_sm = dist_df["smap_surface_sm"].round(3).tolist()
+    history_rain = dist_df["gpm_precipitation_mm"].round(2).tolist()
+    history_cum_rain = dist_df["gpm_precipitation_mm"].cumsum().round(2).tolist()
+    history_et = dist_df["modis_et_mm"].round(2).tolist()
+    history_ndvi = dist_df["landsat_ndvi"].round(3).tolist()
+    history_savi = dist_df["landsat_savi"].round(3).tolist()
+    history_ndwi = dist_df["landsat_ndwi"].round(3).tolist()
+    history_lst = dist_df["landsat_lst_c"].round(1).tolist()
+    history_temp = dist_df["power_temp_c"].round(1).tolist()
+    history_grace = dist_df["grace_water_anomaly_cm"].round(2).tolist()
+
+    # Cross-District Benchmarks for Comparison Graph
+    district_benchmarks = []
+    for d in CORE_PUNJAB:
+        d_sub = df_satellite[df_satellite["district"] == d]
+        if not d_sub.empty:
+            d_latest = d_sub.iloc[-1]
+            d_r30 = float(d_sub["gpm_precipitation_mm"].sum())
+            sc = stress_model.compute_water_stress_score(
+                d_latest["smap_rootzone_sm"], d_r30, d_latest["modis_et_mm"], d_latest["landsat_lst_c"]
+            )
+            district_benchmarks.append({
+                "district": d,
+                "score": round(sc["score"], 1),
+                "zone": sc["zone"],
+                "color": "#DC2626" if sc["score"] > 60 else ("#F59E0B" if sc["score"] > 30 else "#16A34A")
+            })
+
+    # Water Stress Component Contributions for Active District
+    sm_val = float(latest["smap_rootzone_sm"])
+    sm_def = max(0.0, min(100.0, ((0.36 - sm_val) / (0.36 - 0.10)) * 100.0))
+    rain_def = max(0.0, (1.0 - min(rain_30d / 50.0, 1.0)) * 100.0)
+    et_val = float(latest["modis_et_mm"])
+    et_def = max(0.0, min(100.0, ((et_val - 2.0) / (7.0 - 2.0)) * 100.0))
+    lst_val = float(latest["landsat_lst_c"])
+    lst_def = max(0.0, min(100.0, ((lst_val - 25.0) / (42.0 - 25.0)) * 100.0))
+
+    stress_components = {
+        "smap_contrib": round(0.40 * sm_def, 1),
+        "rain_contrib": round(0.30 * rain_def, 1),
+        "et_contrib": round(0.20 * et_def, 1),
+        "lst_contrib": round(0.10 * lst_def, 1),
+        "smap_deficit": round(sm_def, 1),
+        "rain_deficit": round(rain_def, 1),
+        "et_anomaly": round(et_def, 1),
+        "lst_anomaly": round(lst_def, 1)
+    }
 
     return {
         "district": district,
@@ -255,10 +302,22 @@ def get_telemetry(district: str = "Bathinda", lang: str = "en"):
         "chart_data": {
             "history_dates": history_dates,
             "history_sm": history_sm,
+            "history_surface_sm": history_surface_sm,
+            "history_rain": history_rain,
+            "history_cum_rain": history_cum_rain,
+            "history_et": history_et,
+            "history_ndvi": history_ndvi,
+            "history_savi": history_savi,
+            "history_ndwi": history_ndwi,
+            "history_lst": history_lst,
+            "history_temp": history_temp,
+            "history_grace": history_grace,
             "forecast_dates": [f["day_label"] for f in fc_results],
             "forecast_sm": [round(f["predicted_sm"], 3) for f in fc_results],
             "forecast_lower": [round(f["lower_sm_bound"], 3) for f in fc_results],
-            "forecast_upper": [round(f["upper_sm_bound"], 3) for f in fc_results]
+            "forecast_upper": [round(f["upper_sm_bound"], 3) for f in fc_results],
+            "district_benchmarks": district_benchmarks,
+            "stress_components": stress_components
         },
         "forecast_results": fc_results,
         "calendar_days": calendar_days
