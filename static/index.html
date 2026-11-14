@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Punjab Farm Water Watch | NASA Space Apps 2026</title>
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link rel="stylesheet" href="/style.css">
+    <!-- Chart.js & Leaflet JS -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="container">
+        <!-- Top Navigation Bar -->
+        <header class="top-navbar">
+            <div class="app-title">
+                <span>🛰️</span>
+                <span>Punjab Farm Water Watch</span>
+            </div>
+            <div class="nav-controls">
+                <select id="districtSelect" class="region-select">
+                    <optgroup label="Punjab Districts">
+                        <option value="Bathinda" selected>Punjab - Bathinda</option>
+                        <option value="Sangrur">Punjab - Sangrur</option>
+                        <option value="Patiala">Punjab - Patiala</option>
+                        <option value="Ludhiana">Punjab - Ludhiana</option>
+                        <option value="Amritsar">Punjab - Amritsar</option>
+                    </optgroup>
+                    <optgroup label="Global Hotspots">
+                        <option value="Central Valley (California, USA)">Global - Central Valley (USA)</option>
+                        <option value="Nile Delta (Egypt)">Global - Nile Delta (Egypt)</option>
+                        <option value="Murray-Darling Basin (Australia)">Global - Murray-Darling (Australia)</option>
+                    </optgroup>
+                </select>
+
+                <div class="nasa-live-pill">
+                    <div class="pulsing-dot"></div>
+                    <span>NASA Earthdata Live</span>
+                </div>
+
+                <div class="lang-toggle">
+                    <button class="lang-btn active" data-lang="en">EN</button>
+                    <button class="lang-btn" data-lang="hi">HI</button>
+                    <button class="lang-btn" data-lang="pa">PA</button>
+                </div>
+            </div>
+        </header>
+
+        <!-- 5 Flagship Mission Control Tabs -->
+        <nav class="tab-bar">
+            <button class="tab-btn active" data-tab="tab-overview">🛰️ Live Mission Control</button>
+            <button class="tab-btn" data-tab="tab-forecast">📈 7-Day ML Forecast &amp; Calendar</button>
+            <button class="tab-btn" data-tab="tab-simulator">💧 Water &amp; Crop Simulator</button>
+            <button class="tab-btn" data-tab="tab-soil">🧪 Soil Health Card &amp; PAU Lab</button>
+            <button class="tab-btn" data-tab="tab-report">📋 District Officer Dossier</button>
+        </nav>
+
+        <!-- TAB 1: LIVE MISSION CONTROL -->
+        <section id="tab-overview" class="tab-content active">
+            <div class="grid-top">
+                <div class="map-wrapper">
+                    <div id="map"></div>
+                </div>
+                <div class="cards-stack">
+                    <!-- Water Stress Score Card -->
+                    <div class="dark-card">
+                        <div class="card-title">
+                            <span>Water Stress Score</span>
+                            <span class="badge" id="stressBadge">Loading...</span>
+                        </div>
+                        <div style="text-align: center; margin: 8px 0;">
+                            <div style="font-size: 2.8rem; font-weight: 800; color: #FFFFFF;" id="stressScoreVal">--</div>
+                            <div style="font-size: 0.78rem; color: #94A3B8;">Composite Water Stress Index (0–100)</div>
+                        </div>
+                    </div>
+
+                    <!-- Soil Quality Card -->
+                    <div class="dark-card">
+                        <div class="card-title">
+                            <span>Soil Quality Status</span>
+                            <span class="badge" id="soilBadge">Optimal</span>
+                        </div>
+                        <div style="font-size: 0.88rem; font-weight: 700; color: #FFF; margin-bottom: 6px;" id="soilStatusText">
+                            Checking dual-diagnosis...
+                        </div>
+                        <div style="font-size: 0.76rem; color: #94A3B8;">SMAP vs Landsat NDVI/SAVI Correlation</div>
+                    </div>
+
+                    <!-- Farmer Advisory Card -->
+                    <div class="advisory-box">
+                        <div style="font-weight: 700; font-size: 0.90rem; margin-bottom: 8px; display:flex; justify-content:space-between;">
+                            <span>Farmer Advisory &amp; Action</span>
+                            <span>🔔</span>
+                        </div>
+                        <div id="advLine1" style="font-size: 0.84rem; font-weight: 600; margin-bottom: 4px;">• Loading...</div>
+                        <div id="advLine2" style="font-size: 0.84rem; font-weight: 600; margin-bottom: 12px;">• Loading...</div>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+                            <a id="btnWhatsApp" href="#" target="_blank" class="btn-whatsapp">💬 WhatsApp</a>
+                            <button id="btnVoice" class="btn-voice">🔊 Listen Voice</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Delta 30 Days Ago vs Today -->
+            <div class="delta-grid">
+                <div class="delta-box">
+                    <div class="delta-label">SMAP Rootzone Soil Moisture</div>
+                    <div class="delta-current" id="deltaSmNow">--</div>
+                    <div class="delta-sub" id="deltaSmSub">30d Ago: --</div>
+                </div>
+                <div class="delta-box">
+                    <div class="delta-label">Landsat 8/9 Canopy NDVI</div>
+                    <div class="delta-current" id="deltaNdviNow">--</div>
+                    <div class="delta-sub" id="deltaNdviSub">30d Ago: --</div>
+                </div>
+                <div class="delta-box">
+                    <div class="delta-label">Water Stress Index (0–100)</div>
+                    <div class="delta-current" id="deltaScoreNow">--</div>
+                    <div class="delta-sub" id="deltaScoreSub">30d Ago: --</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 2: 7-DAY ML FORECAST & CALENDAR -->
+        <section id="tab-forecast" class="tab-content">
+            <div class="white-card">
+                <div class="white-card-title">Soil Moisture &amp; Water Forecast (30-Day SMAP + 7-Day Random Forest)</div>
+                <div style="height: 270px;">
+                    <canvas id="forecastChart"></canvas>
+                </div>
+            </div>
+
+            <div class="dark-card" style="margin-bottom: 16px;">
+                <div class="card-title">
+                    <span>🗓️ Pin-Drop 7-Day Precision Action Calendar</span>
+                    <span style="font-size: 0.78rem; color: #94A3B8;">Projected by RandomForest Regressor</span>
+                </div>
+                <div class="calendar-grid" id="calendarGrid">
+                    <!-- Populated by JS -->
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 3: WATER & CROP SIMULATOR -->
+        <section id="tab-simulator" class="tab-content">
+            <div style="display: grid; grid-template-columns: 1.1fr 1.3fr; gap: 16px; margin-bottom: 16px;">
+                <div class="dark-card">
+                    <div class="card-title">What-If Water &amp; Energy Calculator</div>
+                    <label style="font-size: 0.82rem; color: #94A3B8; font-weight: 600;">Farm Size: <span id="farmSizeLabel">10</span> Acres</label>
+                    <input type="range" id="farmSizeSlider" min="1" max="100" value="10" style="width: 100%; margin: 8px 0 14px 0;">
+
+                    <label style="font-size: 0.82rem; color: #94A3B8; font-weight: 600;">Conservation Practice</label>
+                    <select id="practiceSelect" class="region-select" style="width: 100%; margin-top: 6px;">
+                        <option value="DSR (Direct Seeded Rice) / Mulching">DSR (Direct Seeded Rice) / Mulching (~20% saved)</option>
+                        <option value="Delay Irrigation by 3 Days">Delay Irrigation by 3 Days (~10% saved)</option>
+                        <option value="Crop-Residue Mulching">Crop-Residue Mulching (~15% saved)</option>
+                        <option value="Combined Protocol">Combined Protocol (~30% saved)</option>
+                    </select>
+
+                    <div class="savings-box">
+                        <div class="savings-val" id="calcLitresSaved">1.8M</div>
+                        <div style="font-size: 0.85rem; color: #94A3B8;">Litres Saved</div>
+                        <div style="margin-top: 8px; font-size: 0.80rem; color: #E2E8F0; background: #1E293B; display: inline-block; padding: 4px 12px; border-radius: 12px;" id="calcKwhSaved">
+                            ⚡ Electricity Saved: 1,420 kWh
+                        </div>
+                    </div>
+                </div>
+
+                <div class="dark-card">
+                    <div class="card-title">🌾 Crop Diversification &amp; Groundwater Budget</div>
+                    <label style="font-size: 0.82rem; color: #94A3B8; font-weight: 600;">Select Alternative Crop:</label>
+                    <select id="cropChoiceSelect" class="region-select" style="width: 100%; margin: 6px 0 12px 0;">
+                        <option value="Direct Seeded Rice / DSR (~20% less water)">Direct Seeded Rice / DSR (~20% less water)</option>
+                        <option value="Maize / Kharif Pulses (~60% less water)">Maize / Kharif Pulses (~60% less water)</option>
+                        <option value="Moong + Mulching (~45% less water)">Moong + Mulching (~45% less water)</option>
+                        <option value="Traditional Paddy (Baseline)">Traditional Paddy (Baseline)</option>
+                    </select>
+
+                    <div style="background: #09202C; border: 1px solid #163C52; border-radius: 8px; padding: 14px;">
+                        <div style="display:flex; justify-content:space-between; margin-bottom: 6px; font-size: 0.84rem;">
+                            <span style="color: #94A3B8;">Crop Water Demand:</span>
+                            <span id="cropDemandVal" style="font-weight: 700; color: #FFF;">7.2M Litres</span>
+                        </div>
+                        <div style="display:flex; justify-content:space-between; margin-bottom: 6px; font-size: 0.84rem;">
+                            <span style="color: #94A3B8;">Groundwater Preserved:</span>
+                            <span id="cropSavedVal" style="font-weight: 700; color: #2DD4BF;">1.8M Litres (20%)</span>
+                        </div>
+                        <div style="display:flex; justify-content:space-between; font-size: 0.84rem;">
+                            <span style="color: #94A3B8;">Tube-Well Power Saved:</span>
+                            <span id="cropPowerVal" style="font-weight: 700; color: #F59E0B;">1,420 kWh</span>
+                        </div>
+                        <div style="margin-top: 10px; font-size: 0.78rem; color: #CBD5E1; border-top: 1px solid #163C52; padding-top: 6px;" id="cropRecommendation">
+                            💡 Recommended for medium-textured soils.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 4: SOIL HEALTH CARD & PAU LAB -->
+        <section id="tab-soil" class="tab-content">
+            <div style="display: grid; grid-template-columns: 1.1fr 1.25fr; gap: 16px; margin-bottom: 16px;">
+                <div class="dark-card">
+                    <div class="card-title">Soil Health Card Parameters</div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                        <div>
+                            <label style="font-size:0.75rem; color:#94A3B8; font-weight:600;">Soil pH</label>
+                            <input type="number" id="soilPh" value="8.6" step="0.1" class="region-select" style="width:100%;">
+                        </div>
+                        <div>
+                            <label style="font-size:0.75rem; color:#94A3B8; font-weight:600;">EC (dS/m)</label>
+                            <input type="number" id="soilEc" value="0.9" step="0.1" class="region-select" style="width:100%;">
+                        </div>
+                        <div>
+                            <label style="font-size:0.75rem; color:#F59E0B; font-weight:600;">Organic Carbon (%)</label>
+                            <input type="number" id="soilOc" value="0.38" step="0.01" class="region-select" style="width:100%;">
+                        </div>
+                        <div>
+                            <label style="font-size:0.75rem; color:#94A3B8; font-weight:600;">Nitrogen (kg/ha)</label>
+                            <input type="number" id="soilN" value="190" step="10" class="region-select" style="width:100%;">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="dark-card">
+                    <div class="card-title">PAU / KVK Lab Prescription</div>
+                    <div style="background: #09202C; border: 1px solid #163C52; border-radius: 8px; padding: 14px;" id="prescriptionBox">
+                        <div style="color: #38BDF8; font-weight: 700; margin-bottom: 8px; font-size: 0.88rem;">Recommended Treatment:</div>
+                        <div id="rxItem1" style="font-size: 0.84rem; margin-bottom: 4px;">• 2 Bags Gypsum/Acre</div>
+                        <div id="rxItem2" style="font-size: 0.84rem; margin-bottom: 4px;">• 4t Compost/Acre</div>
+                        <div id="rxItem3" style="font-size: 0.84rem; margin-bottom: 8px;">• Zinc Dose (25 kg/ha ZnSO4)</div>
+                        <div id="rxStatus" style="font-size: 0.78rem; font-weight: 700; color: #F87171; border-top: 1px solid #163C52; padding-top: 6px;">
+                            Alkaline / Low Carbon Soil — Immediate Soil Conditioning Required
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 5: DISTRICT OFFICER DOSSIER -->
+        <section id="tab-report" class="tab-content">
+            <div class="dark-card">
+                <div class="card-title">
+                    <span>📋 District Officer Executive Brief</span>
+                    <a id="btnDownloadReport" href="/api/report/Bathinda" target="_blank" class="btn-download">📥 Download Markdown Dossier</a>
+                </div>
+                <div style="background: #09202C; border: 1px solid #163C52; border-radius: 8px; padding: 16px; font-size: 0.84rem; line-height: 1.6;" id="reportPreview">
+                    Loading district telemetry report preview...
+                </div>
+            </div>
+        </section>
+
+        <!-- Global Footer -->
+        <footer>
+            <div>Team <b>The SMAP Squad</b> · NASA Space Apps Challenge 2026 (Delhi NCR)</div>
+            <div>Data Sources: NASA SMAP, GPM IMERG, Landsat 8/9, MODIS, POWER, GRACE</div>
+        </footer>
+    </div>
+
+    <script src="/app.js"></script>
+</body>
+</html>

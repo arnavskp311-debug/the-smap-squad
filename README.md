@@ -156,11 +156,11 @@ python fetch_nasa_data.py
 * Clips gridded rasters using `xarray` and `rasterio` to Punjab district boundaries (`Bathinda`, `Ludhiana`, `Patiala`, `Amritsar`, `Sangrur`).
 * Outputs processed time-series to `data/processed/` and audit logs to `data/logs/`.
 
-### Run Interactive Dashboard
+### Run Interactive Web Application
 ```bash
-streamlit run app.py
+python server.py
 ```
-*Or double-click `run_app.bat` on Windows.*
+*Or double-click `run_app.bat` on Windows. Opens standard web dashboard at `http://localhost:8000`.*
 
 ---
 

@@ -1,0 +1,370 @@
+/* Punjab Farm Water Watch - Flagship Dark Mission Control UI */
+:root {
+    --bg-main: #071924;
+    --card-bg: #0B1E29;
+    --card-dark: #09202C;
+    --border-color: #163649;
+    --text-main: #E2E8F0;
+    --text-muted: #94A3B8;
+    --accent-teal: #38BDF8;
+    --accent-mint: #2DD4BF;
+    --accent-amber: #F59E0B;
+    --critical-red: #DC2626;
+    --safe-green: #16A34A;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
+body {
+    background-color: var(--bg-main);
+    color: var(--text-main);
+    padding: 16px 24px;
+    min-height: 100vh;
+}
+
+.container {
+    max-width: 1440px;
+    margin: 0 auto;
+}
+
+/* Top Navigation Bar */
+.top-navbar {
+    background-color: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    padding: 12px 20px;
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+}
+
+.app-title {
+    font-size: 1.35rem;
+    font-weight: 700;
+    color: #FFFFFF;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.nav-controls {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+select.region-select {
+    background: #09202C;
+    color: #E2E8F0;
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    padding: 6px 12px;
+    font-size: 0.86rem;
+    font-weight: 600;
+    outline: none;
+    cursor: pointer;
+}
+
+.nasa-live-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    background: rgba(16, 185, 129, 0.12);
+    border: 1px solid #10B981;
+    color: #34D399;
+    padding: 5px 12px;
+    border-radius: 20px;
+    font-size: 0.82rem;
+    font-weight: 600;
+    box-shadow: 0 0 10px rgba(16, 185, 129, 0.25);
+}
+
+.pulsing-dot {
+    width: 8px;
+    height: 8px;
+    background-color: #10B981;
+    border-radius: 50%;
+    animation: pulse-green 2s infinite ease-in-out;
+}
+
+@keyframes pulse-green {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.45; transform: scale(0.85); }
+}
+
+.lang-btn {
+    background: transparent;
+    border: 1px solid var(--border-color);
+    color: var(--text-muted);
+    padding: 4px 10px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.80rem;
+    font-weight: 600;
+    transition: all 0.2s;
+}
+
+.lang-btn.active {
+    background: var(--accent-teal);
+    color: #071924;
+    border-color: var(--accent-teal);
+}
+
+/* Tab Navigation */
+.tab-bar {
+    display: flex;
+    gap: 8px;
+    background-color: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    padding: 6px 10px;
+    margin-bottom: 18px;
+}
+
+.tab-btn {
+    background: transparent;
+    border: none;
+    color: var(--text-muted);
+    font-size: 0.90rem;
+    font-weight: 600;
+    padding: 8px 16px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.tab-btn:hover {
+    color: #FFFFFF;
+    background: rgba(255,255,255,0.05);
+}
+
+.tab-btn.active {
+    background-color: #143548;
+    color: var(--accent-teal);
+    border-bottom: 2px solid var(--accent-teal);
+    font-weight: 700;
+}
+
+.tab-content {
+    display: none;
+}
+
+.tab-content.active {
+    display: block;
+}
+
+/* Grid Layouts */
+.grid-top {
+    display: grid;
+    grid-template-columns: 1.6fr 1fr;
+    gap: 16px;
+    margin-bottom: 16px;
+}
+
+.cards-stack {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+/* Cards Styling */
+.dark-card {
+    background-color: #0E2533;
+    border: 1px solid #17384B;
+    border-radius: 10px;
+    padding: 16px 18px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.18);
+}
+
+.card-title {
+    font-size: 0.92rem;
+    font-weight: 700;
+    color: #FFFFFF;
+    margin-bottom: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.white-card {
+    background-color: #FFFFFF;
+    border: 1px solid #E2E8F0;
+    border-radius: 10px;
+    padding: 18px 20px;
+    color: #0F172A;
+    margin-bottom: 16px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+.white-card-title {
+    font-size: 0.96rem;
+    font-weight: 700;
+    color: #0F172A;
+    margin-bottom: 12px;
+}
+
+/* Map Container */
+#map {
+    height: 385px;
+    border-radius: 10px;
+    border: 1px solid var(--border-color);
+}
+
+/* Delta Early Warning Grid */
+.delta-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    margin-top: 14px;
+}
+
+.delta-box {
+    background: #09202C;
+    border: 1px solid #14384B;
+    border-radius: 8px;
+    padding: 12px 14px;
+}
+
+.delta-label {
+    font-size: 0.74rem;
+    color: #94A3B8;
+    text-transform: uppercase;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    margin-bottom: 4px;
+}
+
+.delta-current {
+    font-size: 1.55rem;
+    font-weight: 800;
+    color: #FFFFFF;
+    line-height: 1.1;
+    margin-bottom: 3px;
+}
+
+.delta-sub {
+    font-size: 0.75rem;
+    color: #64748B;
+}
+
+/* Badges */
+.badge {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: 700;
+}
+
+.badge-critical { background: var(--critical-red); color: #FFF; }
+.badge-warning { background: var(--accent-amber); color: #000; }
+.badge-safe { background: var(--safe-green); color: #FFF; }
+
+/* Advisory White Card */
+.advisory-box {
+    background: #FFFFFF;
+    border-radius: 8px;
+    border-top: 4px solid var(--critical-red);
+    padding: 14px;
+    color: #1E293B;
+}
+
+.btn-whatsapp {
+    background: #22C55E;
+    color: #FFF;
+    border: none;
+    border-radius: 6px;
+    padding: 8px 12px;
+    font-size: 0.84rem;
+    font-weight: 700;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    width: 100%;
+}
+
+.btn-voice {
+    background: #E2E8F0;
+    color: #1E293B;
+    border: none;
+    border-radius: 6px;
+    padding: 8px 12px;
+    font-size: 0.84rem;
+    font-weight: 700;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    width: 100%;
+}
+
+/* Simulator elements */
+.savings-box {
+    background: #081B26;
+    border: 1px solid #143548;
+    border-radius: 8px;
+    padding: 18px 12px;
+    text-align: center;
+    margin: 12px 0;
+}
+
+.savings-val {
+    font-size: 2.6rem;
+    font-weight: 800;
+    color: var(--accent-mint);
+}
+
+.calendar-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+}
+
+.calendar-card {
+    background: #09202C;
+    border: 1px solid #163649;
+    border-radius: 8px;
+    padding: 12px;
+    display: flex;
+    gap: 12px;
+}
+
+.calendar-icon {
+    font-size: 1.6rem;
+}
+
+/* Footer */
+footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-top: 1px solid var(--border-color);
+    padding-top: 14px;
+    margin-top: 24px;
+    font-size: 0.80rem;
+    color: #64748B;
+}
+
+.btn-download {
+    background: #0284C7;
+    color: #FFF;
+    padding: 8px 16px;
+    border-radius: 6px;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.84rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
