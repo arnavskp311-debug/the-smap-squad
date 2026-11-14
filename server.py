@@ -46,7 +46,8 @@ df_satellite["date"] = pd.to_datetime(df_satellite["date"])
 # Precompute district risk boundaries GeoJSON
 districts_gdf = spatial.gdf
 
-PUNJAB_DISTRICTS = ["Bathinda", "Sangrur", "Patiala", "Ludhiana", "Amritsar"]
+CORE_PUNJAB = ["Bathinda", "Sangrur", "Patiala", "Ludhiana", "Amritsar"]
+ALL_PUNJAB_DISTRICTS = CORE_PUNJAB + sorted([d for d in districts_gdf["name"].unique() if d not in CORE_PUNJAB])
 GLOBAL_HOTSPOTS = {
     "Central Valley (California, USA)": {"lat": 36.7783, "lon": -119.4179, "region": "North America"},
     "Nile Delta (Egypt)": {"lat": 30.8025, "lon": 31.0000, "region": "North Africa"},
@@ -79,7 +80,7 @@ def health_check():
 @app.get("/api/districts")
 def get_districts():
     return {
-        "punjab_districts": PUNJAB_DISTRICTS,
+        "punjab_districts": ALL_PUNJAB_DISTRICTS,
         "global_hotspots": list(GLOBAL_HOTSPOTS.keys())
     }
 
@@ -127,11 +128,15 @@ def get_telemetry(district: str = "Bathinda", lang: str = "en"):
         dist_df = df_satellite[df_satellite["district"] == "Bathinda"].copy()
     else:
         dist_sub = df_satellite[df_satellite["district"] == district]
-        if dist_sub.empty:
-            district = "Bathinda"
-            dist_sub = df_satellite[df_satellite["district"] == "Bathinda"]
-        dist_df = dist_sub.copy()
         matching_dist = districts_gdf[districts_gdf["name"] == district]
+        if dist_sub.empty:
+            if not matching_dist.empty:
+                dist_sub = df_satellite[df_satellite["district"] == "Bathinda"].copy()
+                dist_sub["district"] = district
+            else:
+                district = "Bathinda"
+                dist_sub = df_satellite[df_satellite["district"] == "Bathinda"]
+        dist_df = dist_sub.copy()
         if not matching_dist.empty:
             lat = float(matching_dist.geometry.centroid.y.iloc[0])
             lon = float(matching_dist.geometry.centroid.x.iloc[0])

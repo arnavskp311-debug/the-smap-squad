@@ -41,52 +41,108 @@ function initMap() {
         center: [30.2110, 74.9455],
         zoom: 7,
         minZoom: 5,
-        maxZoom: 14
+        maxZoom: 15
     });
 
     // Base Layers
+    const esriSatellite = L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}", {
+        attribution: 'Tiles &copy; Esri & NASA',
+        maxZoom: 18
+    }).addTo(map);
+
     const darkMatter = L.tileLayer("https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png", {
         attribution: '&copy; CartoDB & OpenStreetMap',
         maxZoom: 19
-    }).addTo(map);
-
-    const esriSatellite = L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}", {
-        attribution: 'Tiles &copy; Esri'
     });
 
     // Layer control
     L.control.layers({
-        "🗺️ Dark Matter": darkMatter,
-        "🌍 High-Res Satellite (Esri)": esriSatellite
+        "🌍 High-Res Satellite (Esri)": esriSatellite,
+        "🗺️ Dark Matter": darkMatter
     }, null, { position: "topright" }).addTo(map);
 
-    // Initial marker
-    marker = L.marker([30.2110, 74.9455]).addTo(map).bindPopup("<b>Bathinda</b>");
+    // Initial marker with custom styling
+    marker = L.marker([30.2110, 74.9455]).addTo(map);
 
-    // Load GeoJSON district boundaries
+    // Load authentic GeoJSON district boundaries
     fetch("/api/geojson")
         .then(res => res.json())
         .then(data => {
             geojsonLayer = L.geoJSON(data, {
-                style: feature => ({
-                    fillColor: feature.properties.color || "#16A34A",
-                    weight: 1.8,
-                    opacity: 1,
-                    color: "#1E293B",
-                    fillOpacity: 0.70
-                }),
+                style: feature => {
+                    const color = feature.properties.color || "#10B981";
+                    return {
+                        fillColor: color,
+                        weight: 1.6,
+                        opacity: 0.85,
+                        color: "#38BDF8", // Clean cyan administrative border
+                        fillOpacity: 0.35, // Balanced opacity so real agricultural fields are visible
+                        dashArray: ""
+                    };
+                },
                 onEachFeature: (feature, layer) => {
                     const props = feature.properties;
-                    layer.bindTooltip(`<b>${props.name}</b><br>Stress Score: ${props.stress_score}/100<br>Soil: ${props.soil_type}`);
-                    layer.on("click", () => {
-                        const select = document.getElementById("districtSelect");
-                        select.value = props.name;
-                        loadDistrictData(props.name);
+                    const zoneBadgeClass = props.zone === "Red" ? "badge-critical" : (props.zone === "Yellow" ? "badge-warning" : "badge-safe");
+
+                    layer.bindTooltip(`
+                        <div class="map-tooltip-box">
+                            <div class="tooltip-header">${props.name}</div>
+                            <div class="tooltip-sub"><span class="badge ${zoneBadgeClass}">${props.zone} Risk · ${props.stress_score}/100</span></div>
+                            <div class="tooltip-detail">🌱 Crop: ${props.primary_crop || 'Paddy / Wheat'}</div>
+                            <div class="tooltip-detail">🧪 Soil: ${props.soil_type || 'Alluvial Loam'}</div>
+                        </div>
+                    `, {
+                        sticky: true,
+                        direction: "top",
+                        className: "custom-gis-tooltip",
+                        opacity: 0.98
+                    });
+
+                    layer.on({
+                        mouseover: (e) => {
+                            const l = e.target;
+                            l.setStyle({
+                                weight: 2.8,
+                                color: "#F59E0B", // Warm amber highlight
+                                fillOpacity: 0.60
+                            });
+                            if (!L.Browser.ie && !L.Browser.opera && !L.Browser.edge) {
+                                l.bringToFront();
+                            }
+                        },
+                        mouseout: (e) => {
+                            geojsonLayer.resetStyle(e.target);
+                        },
+                        click: () => {
+                            selectDistrict(props.name);
+                        }
                     });
                 }
             }).addTo(map);
         })
         .catch(err => console.error("Error loading GeoJSON:", err));
+}
+
+// Select district from map or UI
+function selectDistrict(name) {
+    const select = document.getElementById("districtSelect");
+    let found = false;
+    for (let i = 0; i < select.options.length; i++) {
+        if (select.options[i].value === name) {
+            select.selectedIndex = i;
+            found = true;
+            break;
+        }
+    }
+    if (!found) {
+        const optGroup = select.querySelector('optgroup[label="Punjab Districts"]') || select;
+        const newOpt = document.createElement("option");
+        newOpt.value = name;
+        newOpt.text = `Punjab - ${name}`;
+        newOpt.selected = true;
+        optGroup.appendChild(newOpt);
+    }
+    loadDistrictData(name);
 }
 
 // Event Listeners
@@ -154,9 +210,16 @@ function loadDistrictData(district) {
 function renderTelemetry(data) {
     // 1. Map Updates
     if (map && marker) {
-        map.setView([data.lat, data.lon], data.is_hotspot ? 6 : 7);
+        map.flyTo([data.lat, data.lon], data.is_hotspot ? 6 : 8, { duration: 0.8 });
         marker.setLatLng([data.lat, data.lon]);
-        marker.bindPopup(`<b>${data.district}</b><br>Score: ${data.stress.score}/100 (${data.stress.zone})`).openPopup();
+        marker.bindPopup(`
+            <div class="marker-popup-card">
+                <div style="font-weight:700; color:#F59E0B; font-size:1rem; margin-bottom:4px;">📍 ${data.district}</div>
+                <div style="font-size:0.85rem; color:#E2E8F0; margin-bottom:4px;">Stress Score: <b>${data.stress.score}/100</b></div>
+                <div><span class="badge ${data.stress.zone === 'Red' ? 'badge-critical' : (data.stress.zone === 'Yellow' ? 'badge-warning' : 'badge-safe')}">${data.stress.zone} Risk Zone</span></div>
+                <div style="font-size:0.75rem; color:#94A3B8; margin-top:6px;">Centroid: ${data.lat.toFixed(4)}°N, ${data.lon.toFixed(4)}°E</div>
+            </div>
+        `);
     }
 
     // 2. Stress Card

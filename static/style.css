@@ -215,6 +215,73 @@ select.region-select {
     height: 385px;
     border-radius: 10px;
     border: 1px solid var(--border-color);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+}
+
+/* Custom GIS Map Tooltips & Popups */
+.custom-gis-tooltip {
+    background: rgba(7, 31, 39, 0.94) !important;
+    border: 1px solid rgba(56, 189, 248, 0.4) !important;
+    border-radius: 8px !important;
+    color: #F8FAFC !important;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.55) !important;
+    backdrop-filter: blur(8px) !important;
+    padding: 8px 12px !important;
+    font-family: inherit !important;
+}
+
+.custom-gis-tooltip::before {
+    border-top-color: rgba(7, 31, 39, 0.94) !important;
+}
+
+.map-tooltip-box .tooltip-header {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: #F59E0B;
+    margin-bottom: 4px;
+}
+
+.map-tooltip-box .tooltip-sub {
+    margin-bottom: 6px;
+}
+
+.map-tooltip-box .tooltip-detail {
+    font-size: 0.78rem;
+    color: #CBD5E1;
+    line-height: 1.4;
+}
+
+/* Styled Leaflet Popups */
+.leaflet-popup-content-wrapper {
+    background: rgba(11, 45, 56, 0.96) !important;
+    border: 1px solid #164E63 !important;
+    border-radius: 10px !important;
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.65) !important;
+    color: #F8FAFC !important;
+    backdrop-filter: blur(10px) !important;
+    font-family: inherit !important;
+}
+
+.leaflet-popup-tip {
+    background: rgba(11, 45, 56, 0.96) !important;
+}
+
+.leaflet-popup-content {
+    margin: 10px 14px !important;
+    line-height: 1.4 !important;
+}
+
+.leaflet-container a.leaflet-popup-close-button {
+    color: #94A3B8 !important;
+    padding: 6px 8px 0 0 !important;
+}
+
+.leaflet-container a.leaflet-popup-close-button:hover {
+    color: #F59E0B !important;
+}
+
+.marker-popup-card {
+    min-width: 140px;
 }
 
 /* Delta Early Warning Grid */
