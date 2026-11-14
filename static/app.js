@@ -1075,6 +1075,13 @@ function initAuth() {
 
     updateUserUI(currentUser);
     setupAuthListeners();
+
+    // MANDATORY GATE: If user is not authenticated, lock the entire platform immediately
+    if (!currentUser || !currentUser.email) {
+        enforceAuthGate();
+    } else {
+        unlockAuthGate();
+    }
 }
 
 function updateUserUI(user) {
@@ -1187,12 +1194,14 @@ function setupAuthListeners() {
     if (closeAuthModalBtn) closeAuthModalBtn.addEventListener("click", closeAuthModal);
     if (closeProfileModalBtn) closeProfileModalBtn.addEventListener("click", closeProfileModal);
 
-    // Close on backdrop click
+    // Close on backdrop click (Only allow if user is already authenticated)
     const authModal = document.getElementById("authModal");
     const profileModal = document.getElementById("profileModal");
     if (authModal) {
         authModal.addEventListener("click", (e) => {
-            if (e.target === authModal) closeAuthModal();
+            if (e.target === authModal && currentUser && currentUser.email) {
+                closeAuthModal();
+            }
         });
     }
     if (profileModal) {
@@ -1256,7 +1265,14 @@ function setupAuthListeners() {
                     currentUser = data.user;
                     localStorage.setItem("pww_user", JSON.stringify(currentUser));
                     updateUserUI(currentUser);
-                    closeAuthModal();
+                    unlockAuthGate();
+                    if (currentUser.district) {
+                        const select = document.getElementById("districtSelect");
+                        if (select) {
+                            select.value = currentUser.district;
+                            loadDistrictData(currentUser.district);
+                        }
+                    }
                     openProfileModal();
                 }
             } catch (err) {
@@ -1291,7 +1307,14 @@ function setupAuthListeners() {
                     currentUser = data.user;
                     localStorage.setItem("pww_user", JSON.stringify(currentUser));
                     updateUserUI(currentUser);
-                    closeAuthModal();
+                    unlockAuthGate();
+                    if (currentUser.district) {
+                        const select = document.getElementById("districtSelect");
+                        if (select) {
+                            select.value = currentUser.district;
+                            loadDistrictData(currentUser.district);
+                        }
+                    }
                     openProfileModal();
                 } else {
                     if (feedback) {
@@ -1331,18 +1354,51 @@ function setupAuthListeners() {
             currentUser = null;
             updateUserUI(null);
             closeProfileModal();
+            enforceAuthGate(); // Immediately lock platform again!
         });
     }
 }
 
+function enforceAuthGate() {
+    const modal = document.getElementById("authModal");
+    const closeBtn = document.getElementById("closeAuthModalBtn");
+    if (modal) {
+        modal.classList.add("mandatory-lock");
+        modal.style.display = "flex";
+    }
+    if (closeBtn) closeBtn.style.display = "none";
+    document.body.classList.add("auth-locked");
+}
+
+function unlockAuthGate() {
+    const modal = document.getElementById("authModal");
+    const closeBtn = document.getElementById("closeAuthModalBtn");
+    if (modal) {
+        modal.classList.remove("mandatory-lock");
+        modal.style.display = "none";
+    }
+    if (closeBtn) closeBtn.style.display = "";
+    document.body.classList.remove("auth-locked");
+}
+
 function openAuthModal() {
     const modal = document.getElementById("authModal");
-    if (modal) modal.style.display = "flex";
+    if (modal) {
+        if (!currentUser || !currentUser.email) {
+            enforceAuthGate();
+        } else {
+            modal.style.display = "flex";
+            const closeBtn = document.getElementById("closeAuthModalBtn");
+            if (closeBtn) closeBtn.style.display = "";
+        }
+    }
 }
 
 function closeAuthModal() {
-    const modal = document.getElementById("authModal");
-    if (modal) modal.style.display = "none";
+    if (!currentUser || !currentUser.email) {
+        return; // Cannot dismiss without logging in!
+    }
+    unlockAuthGate();
 }
 
 function openProfileModal() {

@@ -2776,3 +2776,51 @@ select.region-select {
 .btn-signout-pass:hover {
     background: rgba(220, 38, 38, 0.25);
 }
+
+/* ==========================================================================
+   MANDATORY AUTHENTICATION GATE & LOCK SYSTEM
+   ========================================================================== */
+body.auth-locked {
+    overflow: hidden !important;
+}
+
+body.auth-locked .container {
+    filter: blur(12px) grayscale(40%);
+    pointer-events: none !important;
+    user-select: none !important;
+    transition: filter 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+body.auth-locked #hamburgerBtn,
+body.auth-locked #navDrawer,
+body.auth-locked #drawerOverlay {
+    display: none !important;
+}
+
+.auth-modal-backdrop.mandatory-lock {
+    background: rgba(3, 11, 16, 0.92) !important;
+    backdrop-filter: blur(16px) !important;
+    -webkit-backdrop-filter: blur(16px) !important;
+    z-index: 999999 !important;
+    cursor: default;
+}
+
+[data-theme="light"] .auth-modal-backdrop.mandatory-lock {
+    background: rgba(241, 245, 249, 0.88) !important;
+}
+
+.auth-modal-backdrop.mandatory-lock .auth-modal-close {
+    display: none !important;
+}
+
+.auth-gate-lock-icon {
+    font-size: 2.4rem;
+    margin-bottom: 6px;
+    animation: lockPulse 2s infinite ease-in-out;
+}
+
+@keyframes lockPulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.12); filter: drop-shadow(0 0 10px rgba(56, 189, 248, 0.6)); }
+    100% { transform: scale(1); }
+}
