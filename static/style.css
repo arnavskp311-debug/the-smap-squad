@@ -368,3 +368,177 @@ footer {
     align-items: center;
     gap: 6px;
 }
+
+/* ==========================================================================
+   PROJECT & TEAM DOSSIER STYLES
+   ========================================================================== */
+.team-hero-box {
+    background: linear-gradient(135deg, #092633 0%, #0D3545 100%);
+    border: 1px solid #164E63;
+    border-radius: 12px;
+    padding: 24px;
+    margin-bottom: 20px;
+    box-shadow: 0 4px 18px rgba(0,0,0,0.25);
+}
+
+.team-hero-title {
+    font-size: 1.6rem;
+    font-weight: 800;
+    color: #FFFFFF;
+    margin-bottom: 6px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.team-hero-sub {
+    font-size: 0.90rem;
+    color: #94A3B8;
+    line-height: 1.5;
+    max-width: 900px;
+    margin-bottom: 16px;
+}
+
+.team-stats-row {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+    margin-top: 16px;
+}
+
+.team-stat-card {
+    background: rgba(8, 27, 38, 0.7);
+    border: 1px solid #163649;
+    border-radius: 8px;
+    padding: 12px 14px;
+    text-align: center;
+}
+
+.team-stat-num {
+    font-size: 1.8rem;
+    font-weight: 800;
+    color: var(--accent-amber);
+    line-height: 1.1;
+}
+
+.team-stat-lbl {
+    font-size: 0.75rem;
+    color: #94A3B8;
+    text-transform: uppercase;
+    font-weight: 600;
+    margin-top: 4px;
+}
+
+.team-members-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+    margin-bottom: 20px;
+}
+
+.member-card {
+    background: #0C2933;
+    border: 1px solid #164E63;
+    border-radius: 10px;
+    padding: 18px 16px;
+    transition: transform 0.2s, border-color 0.2s;
+}
+
+.member-card:hover {
+    transform: translateY(-2px);
+    border-color: var(--accent-amber);
+}
+
+.member-icon {
+    font-size: 2.2rem;
+    margin-bottom: 8px;
+}
+
+.member-name {
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: #FFFFFF;
+    margin-bottom: 2px;
+}
+
+.member-role {
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: var(--accent-teal);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    margin-bottom: 10px;
+}
+
+.member-desc {
+    font-size: 0.82rem;
+    color: #CBD5E1;
+    line-height: 1.45;
+    margin-bottom: 12px;
+}
+
+.tech-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+}
+
+.tech-tag {
+    background: #081B26;
+    border: 1px solid #163649;
+    color: #94A3B8;
+    font-size: 0.70rem;
+    padding: 2px 7px;
+    border-radius: 4px;
+    font-weight: 600;
+}
+
+.arch-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 14px;
+    margin-bottom: 20px;
+}
+
+.arch-card {
+    background: #09202C;
+    border: 1px solid #14384B;
+    border-radius: 8px;
+    padding: 16px;
+}
+
+.arch-header {
+    font-size: 0.90rem;
+    font-weight: 700;
+    color: #38BDF8;
+    margin-bottom: 6px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.arch-body {
+    font-size: 0.81rem;
+    color: #CBD5E1;
+    line-height: 1.5;
+}
+
+.btn-github {
+    background: #24292F;
+    color: #FFFFFF;
+    border: 1px solid #475569;
+    padding: 8px 16px;
+    border-radius: 6px;
+    text-decoration: none;
+    font-weight: 700;
+    font-size: 0.85rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: background 0.2s;
+}
+
+.btn-github:hover {
+    background: #33383F;
+    border-color: #94A3B8;
+}
