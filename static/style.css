@@ -849,6 +849,64 @@ select.region-select {
     margin-bottom: 8px;
 }
 
+.member-avatar-box {
+    position: relative;
+    width: 76px;
+    height: 76px;
+    margin: 0 auto 12px;
+}
+
+.member-avatar-img {
+    width: 76px;
+    height: 76px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2.5px solid var(--border-color);
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35);
+    background: #0f2735;
+    display: block;
+    transition: transform 0.25s ease, border-color 0.25s ease;
+}
+
+.member-card:hover .member-avatar-img {
+    transform: scale(1.05);
+    border-color: var(--accent-amber);
+}
+
+.member-avatar-badge {
+    position: absolute;
+    bottom: -2px;
+    right: -2px;
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    background: var(--card-bg);
+    border: 1.5px solid var(--border-color);
+    font-size: 0.85rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+}
+
+[data-theme="light"] .member-avatar-img {
+    background: #E2E8F0;
+    border-color: #CBD5E1;
+}
+
+[data-theme="light"] .member-avatar-badge {
+    background: #FFFFFF;
+    border-color: #CBD5E1;
+}
+
+.avatar-img {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    object-fit: cover;
+    display: block;
+}
+
 .member-name {
     font-size: 1.05rem;
     font-weight: 700;
@@ -2019,6 +2077,8 @@ select.region-select {
     display: flex;
     align-items: center;
     justify-content: center;
+    overflow: hidden;
+    flex-shrink: 0;
 }
 
 [data-theme="light"] .profile-nav-btn {
@@ -2065,6 +2125,7 @@ select.region-select {
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
+    overflow: hidden;
     box-shadow: 0 2px 8px rgba(45, 212, 191, 0.25);
 }
 
@@ -2567,6 +2628,7 @@ select.region-select {
     display: flex;
     align-items: center;
     justify-content: center;
+    overflow: hidden;
     box-shadow: 0 4px 14px rgba(45, 212, 191, 0.3);
     margin: 0 auto 6px;
 }

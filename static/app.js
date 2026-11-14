@@ -1102,10 +1102,10 @@ function updateUserUI(user) {
     const drawerAuthBtnLabel = document.getElementById("drawerAuthBtnLabel");
 
     if (user && user.email) {
-        if (navAvatar) navAvatar.innerText = user.avatar_initials || (user.name ? user.name.charAt(0) : "PB");
+        if (navAvatar) navAvatar.innerHTML = `<img src="/default_avatar.png" alt="Profile" class="avatar-img">`;
         if (navText) navText.innerText = user.name || "Farmer Profile";
 
-        if (drawerAvatar) drawerAvatar.innerText = user.avatar_initials || (user.name ? user.name.charAt(0) : "PB");
+        if (drawerAvatar) drawerAvatar.innerHTML = `<img src="/default_avatar.png" alt="Profile" class="avatar-img">`;
         if (drawerUserName) drawerUserName.innerText = user.name || "Lead Farmer";
         if (drawerUserRole) drawerUserRole.innerText = `${user.role || "Sentinel"} · ${user.district || "Punjab"}`;
         if (drawerPassId) drawerPassId.innerText = user.member_id || "PWW-2026-PB-0482";
@@ -1124,7 +1124,7 @@ function updateUserUI(user) {
         const passPowerSaved = document.getElementById("passPowerSaved");
         const passSoilGrade = document.getElementById("passSoilGrade");
 
-        if (passAvatar) passAvatar.innerText = user.avatar_initials || (user.name ? user.name.charAt(0) : "PB");
+        if (passAvatar) passAvatar.innerHTML = `<img src="/default_avatar.png" alt="Profile" class="avatar-img">`;
         if (passMemberId) passMemberId.innerText = user.member_id || "PWW-2026-PB-0482";
         if (passName) passName.innerText = user.name;
         if (passRole) passRole.innerText = user.role || "Lead Farmer & Water Steward";
@@ -1138,10 +1138,10 @@ function updateUserUI(user) {
         if (passPowerSaved) passPowerSaved.innerText = `${user.electricity_saved_kwh.toLocaleString()} kWh`;
         if (passSoilGrade) passSoilGrade.innerText = user.soil_health_grade || "Grade A";
     } else {
-        if (navAvatar) navAvatar.innerText = "🔑";
+        if (navAvatar) navAvatar.innerHTML = `<img src="/default_avatar.png" alt="Profile" class="avatar-img">`;
         if (navText) navText.innerText = "Sign In";
 
-        if (drawerAvatar) drawerAvatar.innerText = "🌱";
+        if (drawerAvatar) drawerAvatar.innerHTML = `<img src="/default_avatar.png" alt="Profile" class="avatar-img">`;
         if (drawerUserName) drawerUserName.innerText = "Guest Sentinel";
         if (drawerUserRole) drawerUserRole.innerText = "Sign in to unlock dossier";
         if (drawerPassId) drawerPassId.innerText = "LOCKED";
