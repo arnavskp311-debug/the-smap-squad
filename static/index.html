@@ -30,14 +30,50 @@
         <div class="drawer-section">
             <div class="drawer-section-label">Active Region</div>
             <select id="drawerDistrictSelect" class="region-select drawer-select">
-                <optgroup label="Punjab Districts">
+                <optgroup label="Punjab Districts (All 22 Districts)">
                     <option value="Bathinda" selected>Punjab - Bathinda</option>
-                    <option value="Sangrur">Punjab - Sangrur</option>
-                    <option value="Patiala">Punjab - Patiala</option>
-                    <option value="Ludhiana">Punjab - Ludhiana</option>
                     <option value="Amritsar">Punjab - Amritsar</option>
+                    <option value="Barnala">Punjab - Barnala</option>
+                    <option value="Faridkot">Punjab - Faridkot</option>
+                    <option value="Fatehgarh Sahib">Punjab - Fatehgarh Sahib</option>
+                    <option value="Fazilka">Punjab - Fazilka</option>
+                    <option value="Ferozepur">Punjab - Ferozepur</option>
+                    <option value="Gurdaspur">Punjab - Gurdaspur</option>
+                    <option value="Hoshiarpur">Punjab - Hoshiarpur</option>
+                    <option value="Jalandhar">Punjab - Jalandhar</option>
+                    <option value="Kapurthala">Punjab - Kapurthala</option>
+                    <option value="Ludhiana">Punjab - Ludhiana</option>
+                    <option value="Mansa">Punjab - Mansa</option>
+                    <option value="Moga">Punjab - Moga</option>
+                    <option value="Pathankot">Punjab - Pathankot</option>
+                    <option value="Patiala">Punjab - Patiala</option>
+                    <option value="Rupnagar">Punjab - Rupnagar</option>
+                    <option value="S.A.S. Nagar">Punjab - S.A.S. Nagar (Mohali)</option>
+                    <option value="Sangrur">Punjab - Sangrur</option>
+                    <option value="Shahid Bhagat Singh Nagar">Punjab - SBS Nagar</option>
+                    <option value="Sri Muktsar Sahib">Punjab - Sri Muktsar Sahib</option>
+                    <option value="Tarn Taran">Punjab - Tarn Taran</option>
                 </optgroup>
-                <optgroup label="Global Hotspots">
+                <optgroup label="Global - USA Central Valley (California)">
+                    <option value="Central Valley - Fresno County (USA)">Fresno County (California, USA)</option>
+                    <option value="Central Valley - Kern County (USA)">Kern County / Bakersfield (USA)</option>
+                    <option value="Central Valley - Tulare County (USA)">Tulare County (California, USA)</option>
+                    <option value="Central Valley - San Joaquin (USA)">San Joaquin County (USA)</option>
+                    <option value="Central Valley - Sacramento (USA)">Sacramento County (USA)</option>
+                </optgroup>
+                <optgroup label="Global - Egypt Nile Delta">
+                    <option value="Nile Delta - Kafr El-Sheikh (Egypt)">Kafr El-Sheikh (Nile Delta, Egypt)</option>
+                    <option value="Nile Delta - Beheira (Egypt)">Beheira Governorate (Egypt)</option>
+                    <option value="Nile Delta - Dakahlia (Egypt)">Dakahlia Governorate (Egypt)</option>
+                    <option value="Nile Delta - Gharbia (Egypt)">Gharbia Governorate (Egypt)</option>
+                </optgroup>
+                <optgroup label="Global - Australia Murray-Darling">
+                    <option value="Murray-Darling - Riverina (Australia)">Riverina (Murray-Darling, Australia)</option>
+                    <option value="Murray-Darling - Sunraysia (Australia)">Sunraysia (Murray-Darling, Australia)</option>
+                    <option value="Murray-Darling - Murrumbidgee (Australia)">Murrumbidgee (Australia)</option>
+                    <option value="Murray-Darling - Goulburn Valley (Australia)">Goulburn Valley (Australia)</option>
+                </optgroup>
+                <optgroup label="Global Hotspot Basins">
                     <option value="Central Valley (California, USA)">Global - Central Valley (USA)</option>
                     <option value="Nile Delta (Egypt)">Global - Nile Delta (Egypt)</option>
                     <option value="Murray-Darling Basin (Australia)">Global - Murray-Darling (Australia)</option>
@@ -153,14 +189,50 @@
             </div>
             <div class="nav-controls">
                 <select id="districtSelect" class="region-select">
-                    <optgroup label="Punjab Districts">
+                    <optgroup label="Punjab Districts (All 22 Districts)">
                         <option value="Bathinda" selected>Punjab - Bathinda</option>
-                        <option value="Sangrur">Punjab - Sangrur</option>
-                        <option value="Patiala">Punjab - Patiala</option>
-                        <option value="Ludhiana">Punjab - Ludhiana</option>
                         <option value="Amritsar">Punjab - Amritsar</option>
+                        <option value="Barnala">Punjab - Barnala</option>
+                        <option value="Faridkot">Punjab - Faridkot</option>
+                        <option value="Fatehgarh Sahib">Punjab - Fatehgarh Sahib</option>
+                        <option value="Fazilka">Punjab - Fazilka</option>
+                        <option value="Ferozepur">Punjab - Ferozepur</option>
+                        <option value="Gurdaspur">Punjab - Gurdaspur</option>
+                        <option value="Hoshiarpur">Punjab - Hoshiarpur</option>
+                        <option value="Jalandhar">Punjab - Jalandhar</option>
+                        <option value="Kapurthala">Punjab - Kapurthala</option>
+                        <option value="Ludhiana">Punjab - Ludhiana</option>
+                        <option value="Mansa">Punjab - Mansa</option>
+                        <option value="Moga">Punjab - Moga</option>
+                        <option value="Pathankot">Punjab - Pathankot</option>
+                        <option value="Patiala">Punjab - Patiala</option>
+                        <option value="Rupnagar">Punjab - Rupnagar</option>
+                        <option value="S.A.S. Nagar">Punjab - S.A.S. Nagar (Mohali)</option>
+                        <option value="Sangrur">Punjab - Sangrur</option>
+                        <option value="Shahid Bhagat Singh Nagar">Punjab - SBS Nagar</option>
+                        <option value="Sri Muktsar Sahib">Punjab - Sri Muktsar Sahib</option>
+                        <option value="Tarn Taran">Punjab - Tarn Taran</option>
                     </optgroup>
-                    <optgroup label="Global Hotspots">
+                    <optgroup label="Global - USA Central Valley (California)">
+                        <option value="Central Valley - Fresno County (USA)">Fresno County (California, USA)</option>
+                        <option value="Central Valley - Kern County (USA)">Kern County / Bakersfield (USA)</option>
+                        <option value="Central Valley - Tulare County (USA)">Tulare County (California, USA)</option>
+                        <option value="Central Valley - San Joaquin (USA)">San Joaquin County (USA)</option>
+                        <option value="Central Valley - Sacramento (USA)">Sacramento County (USA)</option>
+                    </optgroup>
+                    <optgroup label="Global - Egypt Nile Delta">
+                        <option value="Nile Delta - Kafr El-Sheikh (Egypt)">Kafr El-Sheikh (Nile Delta, Egypt)</option>
+                        <option value="Nile Delta - Beheira (Egypt)">Beheira Governorate (Egypt)</option>
+                        <option value="Nile Delta - Dakahlia (Egypt)">Dakahlia Governorate (Egypt)</option>
+                        <option value="Nile Delta - Gharbia (Egypt)">Gharbia Governorate (Egypt)</option>
+                    </optgroup>
+                    <optgroup label="Global - Australia Murray-Darling">
+                        <option value="Murray-Darling - Riverina (Australia)">Riverina (Murray-Darling, Australia)</option>
+                        <option value="Murray-Darling - Sunraysia (Australia)">Sunraysia (Murray-Darling, Australia)</option>
+                        <option value="Murray-Darling - Murrumbidgee (Australia)">Murrumbidgee (Australia)</option>
+                        <option value="Murray-Darling - Goulburn Valley (Australia)">Goulburn Valley (Australia)</option>
+                    </optgroup>
+                    <optgroup label="Global Hotspot Basins">
                         <option value="Central Valley (California, USA)">Global - Central Valley (USA)</option>
                         <option value="Nile Delta (Egypt)">Global - Nile Delta (Egypt)</option>
                         <option value="Murray-Darling Basin (Australia)">Global - Murray-Darling (Australia)</option>
@@ -1297,10 +1369,7 @@
                     <!-- Pass QR Code -->
                     <div class="pass-qr-box">
                         <div class="pass-qr-frame" id="passQrCode">
-                            <!-- SVG QR Representation -->
-                            <svg width="86" height="86" viewBox="0 0 24 24" fill="currentColor">
-                                <path d="M2 2h8v8H2V2zm2 2v4h4V4H4zm10-2h8v8h-8V2zm2 2v4h4V4h-4zM2 14h8v8H2v-8zm2 2v4h4v-4H4zm14 0h4v4h-4v-4zm-4 0h2v2h-2v-2zm4 4h2v2h-2v-2zm-2 2h2v2h-2v-2zm-2-2h2v2h-2v-2zm0-4h2v2h-2v-2zm4-2h2v2h-2v-2zm-6 0h2v2h-2v-2z"/>
-                            </svg>
+                            <img id="passQrImg" src="/logo.png" alt="Scannable Pass QR Code" style="width: 86px; height: 86px; display: block; border-radius: 4px; object-fit: contain; background: white; padding: 2px;">
                         </div>
                         <span class="pass-qr-caption">SCAN TO VERIFY</span>
                     </div>
@@ -1329,6 +1398,10 @@
 
             <!-- Modal Action Buttons -->
             <div class="pass-modal-actions">
+                <button type="button" class="btn-pass-action btn-close-pass" id="btnClosePassBottomBtn">
+                    <span>✕</span>
+                    <span>Close / View Platform</span>
+                </button>
                 <button type="button" class="btn-pass-action btn-print-pass" id="btnPrintPassBtn">
                     <span>🖨️</span>
                     <span>Print / Download Pass</span>

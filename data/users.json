@@ -41,9 +41,26 @@
     "water_saved_litres": 1440000,
     "electricity_saved_kwh": 1136,
     "soil_health_grade": "A (Verified via NASA SMAP)",
-    "member_id": "PWW-2026-PB-4271",
+    "member_id": "PWW-2026-PB-9748",
     "provider": "email",
     "avatar_initials": "AS",
-    "created_at": "2026-11-14T16:58:48.488400"
+    "created_at": "2026-11-14T17:30:48.351809"
+  },
+  "a@gmail.com": {
+    "name": "Arnav Sharma",
+    "email": "a@gmail.com",
+    "phone": "+91 9718227495",
+    "role": "Registered Farmer & Water Sentinel",
+    "district": "Muktsar",
+    "farm_acres": 3.5,
+    "primary_crop": "Cotton & Mustard",
+    "irrigation_source": "Solar Powered Drip System",
+    "water_saved_litres": 630000,
+    "electricity_saved_kwh": 497,
+    "soil_health_grade": "A (Verified via NASA SMAP)",
+    "member_id": "PWW-2026-PB-2101",
+    "provider": "email",
+    "avatar_initials": "AS",
+    "created_at": "2026-11-14T17:01:45.116529"
   }
 }

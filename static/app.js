@@ -218,9 +218,9 @@ function initMap() {
         maxZoom: 18
     });
 
-    // 3. NASA GIBS Live WMTS (MODIS TrueColor Daily)
-    const nasaGibs = L.tileLayer("https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/MODIS_Terra_CorrectedReflectance_TrueColor/default/2024-05-01/GoogleMapsCompatible_Level9/{z}/{y}/{x}.jpg", {
-        attribution: 'NASA GIBS / Worldview',
+    // 3. NASA GIBS Live WMTS (Suomi NPP VIIRS TrueColor Daily - Wide Swath Seamless)
+    const nasaGibs = L.tileLayer("https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/VIIRS_SNPP_CorrectedReflectance_TrueColor/default/2024-05-01/GoogleMapsCompatible_Level9/{z}/{y}/{x}.jpg", {
+        attribution: 'NASA GIBS / Suomi NPP VIIRS',
         maxNativeZoom: 9,
         maxZoom: 18
     });
@@ -1135,6 +1135,17 @@ function updateUserUI(user) {
         if (passWaterSaved) passWaterSaved.innerText = `${savedMillions}M L`;
         if (passPowerSaved) passPowerSaved.innerText = `${(user.electricity_saved_kwh || 1420).toLocaleString()} kWh`;
         if (passSoilGrade) passSoilGrade.innerText = user.soil_health_grade || "Grade A";
+
+        // Generate Real Scannable High-Res QR Code for Farm Verification
+        const passQrImg = document.getElementById("passQrImg");
+        if (passQrImg) {
+            const memberId = user.member_id || "PWW-2026-PB-0482";
+            const farmerName = user.name || "Punjab Water Sentinel";
+            const district = user.district || "Bathinda";
+            const waterSaved = `${savedMillions}M L`;
+            const qrData = `https://punjab-water-watch.gov.in/verify?member_id=${encodeURIComponent(memberId)}&farmer=${encodeURIComponent(farmerName)}&district=${encodeURIComponent(district)}&water_saved=${encodeURIComponent(waterSaved)}`;
+            passQrImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=180x180&margin=4&data=${encodeURIComponent(qrData)}`;
+        }
     } else {
         if (navAvatar) navAvatar.innerHTML = `<img src="/default_avatar.png" alt="Profile" class="avatar-img">`;
         if (navText) navText.innerText = "Sign In";
@@ -1162,6 +1173,7 @@ function setupAuthListeners() {
     const panelRegisterAuth = document.getElementById("panelRegisterAuth");
     const panelLoginAuth = document.getElementById("panelLoginAuth");
     const linkSwitchToRegister = document.getElementById("linkSwitchToRegister");
+    const btnClosePassBottomBtn = document.getElementById("btnClosePassBottomBtn");
     const btnPrintPassBtn = document.getElementById("btnPrintPassBtn");
     const btnSignOutBtn = document.getElementById("btnSignOutBtn");
 
@@ -1340,6 +1352,13 @@ function setupAuthListeners() {
         });
     }
 
+    // Close Pass to explore platform
+    if (btnClosePassBottomBtn) {
+        btnClosePassBottomBtn.addEventListener("click", () => {
+            closeProfileModal();
+        });
+    }
+
     // Print / Download Pass
     if (btnPrintPassBtn) {
         btnPrintPassBtn.addEventListener("click", () => {
@@ -1402,6 +1421,7 @@ function closeAuthModal() {
 }
 
 function openProfileModal() {
+    if (currentUser) updateUserUI(currentUser);
     const modal = document.getElementById("profileModal");
     if (modal) modal.style.display = "flex";
 }
