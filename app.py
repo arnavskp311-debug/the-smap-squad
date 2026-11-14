@@ -357,20 +357,29 @@ with top_col1:
     st.markdown('<div class="app-title-text">Punjab Farm Water Watch</div>', unsafe_allow_html=True)
 
 with top_col2:
-    # Region Switcher: Punjab / Global Hotspots
-    region_display_map = {
-        "Punjab, India (Primary)": "Punjab (Primary Basin)",
-        "Central Valley, California (Hotspot)": "Central Valley, CA (Hotspot)",
-        "North Africa / Nile Basin (Hotspot)": "Nile Basin, Africa (Hotspot)",
-        "High Plains Aquifer, USA (Hotspot)": "High Plains, USA (Hotspot)"
-    }
-    selected_region = st.selectbox(
+    # Combined Region & District Selection
+    region_options = [
+        "Punjab - Bathinda (Critical Risk)",
+        "Punjab - Sangrur (Moderate Stress)",
+        "Punjab - Patiala (Moderate Stress)",
+        "Punjab - Ludhiana (Safe / Low Stress)",
+        "Punjab - Amritsar (Safe / Low Stress)",
+        "Central Valley, California (Hotspot)",
+        "North Africa / Nile Basin (Hotspot)",
+        "High Plains Aquifer, USA (Hotspot)"
+    ]
+    if "selected_region_opt" not in st.session_state:
+        st.session_state["selected_region_opt"] = "Punjab - Bathinda (Critical Risk)"
+
+    current_idx = region_options.index(st.session_state["selected_region_opt"]) if st.session_state["selected_region_opt"] in region_options else 0
+    selected_opt = st.selectbox(
         "Region Selection",
-        options=list(REGIONAL_BOUNDING_BOXES.keys()),
-        format_func=lambda x: f"📍 Region: {region_display_map.get(x, x)}",
+        options=region_options,
+        index=current_idx,
+        format_func=lambda x: f"📍 Region: {x}",
         label_visibility="collapsed"
     )
-    is_global_hotspot = selected_region != "Punjab, India (Primary)"
+    st.session_state["selected_region_opt"] = selected_opt
 
 with top_col3:
     st.markdown(
@@ -393,20 +402,25 @@ with top_col4:
 
 
 # --- REGION & DISTRICT TELEMETRY FILTERING ---
-if not is_global_hotspot:
-    # Default to Bathinda as in design
-    selected_district = "Bathinda"
+if selected_opt.startswith("Punjab - "):
+    is_global_hotspot = False
+    selected_district = selected_opt.split(" - ")[1].split(" ")[0]  # e.g., "Bathinda"
+    dist_row = gdf_districts[gdf_districts["name"] == selected_district]
+    if not dist_row.empty:
+        lat_in, lon_in = float(dist_row.iloc[0]["lat"]), float(dist_row.iloc[0]["lon"])
+    else:
+        lat_in, lon_in = 30.2110, 74.9455
     dist_df = df_all[df_all["district"] == selected_district].copy()
-    lat_in, lon_in = 30.2110, 74.9455
 else:
-    selected_district = selected_region
-    dist_df = df_all[df_all["district"] == selected_region].copy()
+    is_global_hotspot = True
+    selected_district = selected_opt
     hotspot_coords = {
         "Central Valley, California (Hotspot)": (36.7783, -119.4179),
         "North Africa / Nile Basin (Hotspot)": (26.8206, 30.8025),
         "High Plains Aquifer, USA (Hotspot)": (38.0000, -100.5000)
     }
-    lat_in, lon_in = hotspot_coords.get(selected_region, (36.0, -119.0))
+    lat_in, lon_in = hotspot_coords.get(selected_district, (36.0, -119.0))
+    dist_df = df_all[df_all["district"] == selected_district].copy()
 
 if dist_df.empty:
     dist_df = df_all[df_all["district"] == "Bathinda"].copy()
@@ -582,26 +596,27 @@ with col_main:
                 )
             ).add_to(m)
 
-            # Red Pin on Bathinda with "Bathinda" text label
+            # Dynamic Pin on Selected District
+            pin_color = "red" if stress_res["zone"] == "Red" else ("orange" if stress_res["zone"] == "Yellow" else "green")
             folium.Marker(
-                [30.2110, 74.9455],
-                tooltip="<b>Bathinda</b><br>Stress Score: 76/100 (Critical)",
-                icon=folium.Icon(color="red", icon="tint", prefix="fa")
+                [lat_in, lon_in],
+                tooltip=f"<b>{selected_district}</b><br>Stress Score: {stress_res['score']}/100 ({stress_res['zone']})",
+                icon=folium.Icon(color=pin_color, icon="tint", prefix="fa")
             ).add_to(m)
 
-            # Text label directly under Bathinda pin
+            # Text label directly under pin
             folium.map.Marker(
-                [30.2110, 74.9455],
+                [lat_in, lon_in],
                 icon=folium.DivIcon(
                     icon_size=(100, 24),
                     icon_anchor=(50, -10),
-                    html='<div style="font-size:11px; font-weight:700; color:#1E293B; background:rgba(255,255,255,0.92); padding:2px 6px; border-radius:4px; border:1px solid #94A3B8; text-align:center; width:max-content; margin:0 auto; box-shadow:0 1px 4px rgba(0,0,0,0.3);">Bathinda</div>'
+                    html=f'<div style="font-size:11px; font-weight:700; color:#1E293B; background:rgba(255,255,255,0.92); padding:2px 6px; border-radius:4px; border:1px solid #94A3B8; text-align:center; width:max-content; margin:0 auto; box-shadow:0 1px 4px rgba(0,0,0,0.3);">{selected_district}</div>'
                 )
             ).add_to(m)
         else:
             folium.Marker(
                 [lat_in, lon_in],
-                tooltip=f"<b>{selected_region}</b>",
+                tooltip=f"<b>{selected_district}</b>",
                 icon=folium.Icon(color="red", icon="warning-sign")
             ).add_to(m)
 
@@ -627,8 +642,18 @@ with col_main:
         """
         m.get_root().html.add_child(Element(legend_html))
 
-        # Render Map
-        st_folium(m, height=330, width="100%", returned_objects=[])
+        # Render Map with click listener
+        map_interaction = st_folium(m, height=330, width="100%", returned_objects=["last_clicked"])
+        if map_interaction and map_interaction.get("last_clicked") and not is_global_hotspot:
+            c_lat = map_interaction["last_clicked"]["lat"]
+            c_lon = map_interaction["last_clicked"]["lng"]
+            loc = spatial.locate_point(c_lat, c_lon)
+            clicked_dist = loc["district"]
+            matched_prefix = f"Punjab - {clicked_dist}"
+            for opt in region_options:
+                if opt.startswith(matched_prefix) and opt != st.session_state.get("selected_region_opt"):
+                    st.session_state["selected_region_opt"] = opt
+                    st.rerun()
 
     with top_cards_col:
         # Card 1: Water Stress Score
@@ -673,13 +698,13 @@ with col_main:
 
         st.markdown(f"""
             <div style="display:flex; justify-content:center; gap:8px; margin-top:-6px; margin-bottom:4px;">
-                <span class="badge-critical">{gauge_zone}</span>
+                <span class="badge-critical" style="background:{gauge_color};">{gauge_zone}</span>
                 <span class="badge-status">Current Status</span>
             </div>
         </div>
         """, unsafe_allow_html=True)
 
-        # Card 2: Soil Quality Status
+        # Card 2: Soil Quality Status (Dynamic)
         st.markdown("""
         <div class="dark-card" style="padding:12px 14px; margin-bottom:0px;">
             <div class="dark-card-title" style="margin-bottom:4px;">
@@ -690,20 +715,31 @@ with col_main:
         
         sq_c1, sq_c2 = st.columns([1.3, 1.0])
         with sq_c1:
-            st.markdown(
-                '<div style="font-size:0.86rem; font-weight:700; color:#FFFFFF; line-height:1.25; margin-top:4px;">'
-                'Alert: Low Organic Carbon &amp; Alkaline'
-                '</div>',
-                unsafe_allow_html=True
-            )
-            st.markdown('<div style="margin-top:10px;"><span class="badge-critical">Critical</span></div>', unsafe_allow_html=True)
+            if soil_res["alert_triggered"]:
+                st.markdown(
+                    '<div style="font-size:0.86rem; font-weight:700; color:#FFFFFF; line-height:1.25; margin-top:4px;">'
+                    'Alert: Low Organic Carbon &amp; Alkaline'
+                    '</div>',
+                    unsafe_allow_html=True
+                )
+                st.markdown('<div style="margin-top:10px;"><span class="badge-critical">Critical</span></div>', unsafe_allow_html=True)
+            else:
+                st.markdown(
+                    '<div style="font-size:0.86rem; font-weight:700; color:#FFFFFF; line-height:1.25; margin-top:4px;">'
+                    'Optimal Soil Health &amp; Carbon Balance'
+                    '</div>',
+                    unsafe_allow_html=True
+                )
+                st.markdown('<div style="margin-top:10px;"><span class="badge-green">Optimal</span></div>', unsafe_allow_html=True)
         with sq_c2:
+            sq_gauge_val = 82 if soil_res["alert_triggered"] else 20
+            sq_bar_color = "#DC2626" if soil_res["alert_triggered"] else "#16A34A"
             fig_soil_mini = go.Figure(go.Indicator(
                 mode="gauge",
-                value=82,
+                value=sq_gauge_val,
                 gauge={
                     'axis': {'range': [0, 100], 'ticks': ''},
-                    'bar': {'color': '#DC2626', 'thickness': 0.35},
+                    'bar': {'color': sq_bar_color, 'thickness': 0.35},
                     'bgcolor': '#1E293B',
                     'borderwidth': 0,
                     'steps': [
@@ -856,34 +892,73 @@ with col_main:
             st.markdown("<div style='font-size:0.75rem; color:#F59E0B; font-weight:600; margin-top:4px;'>OC (%)</div>", unsafe_allow_html=True)
             input_oc = st.number_input("OC", value=0.38, step=0.01, min_value=0.05, max_value=2.0, label_visibility="collapsed")
 
+            st.markdown("<div style='font-size:0.75rem; color:#94A3B8; font-weight:600; margin-top:4px;'>Nitrogen (kg/ha)</div>", unsafe_allow_html=True)
+            input_n = st.number_input("Nitrogen", value=190, step=10, min_value=50, max_value=600, label_visibility="collapsed")
+
         # Dynamic prescription doses
         gypsum_bags = 2 if input_ph > 8.5 else 0
         fym_tonnes = 4 if input_oc < 0.5 else 0
+        gypsum_text = f"• {gypsum_bags} Bags Gypsum/Acre" if gypsum_bags > 0 else "• Gypsum: Normal (No Treatment)"
+        compost_text = f"• {fym_tonnes}t Compost/Acre" if fym_tonnes > 0 else "• Compost: Adequate Carbon"
+        zinc_text = "• Zinc Dose (25 kg/ha ZnSO4)" if input_n < 250 else "• Standard Basal Dose"
 
         with sc_rx_col:
             st.markdown(f"""
             <div class="prescription-box">
                 <div class="prescription-title">Apply Gypsum &amp;<br>Lab Prescription</div>
-                <div class="prescription-item">• {gypsum_bags} Bags Gypsum/Acre</div>
-                <div class="prescription-item">• {fym_tonnes}t Compost/Acre</div>
-                <div class="prescription-item">• Zinc Dose</div>
+                <div class="prescription-item">{gypsum_text}</div>
+                <div class="prescription-item">{compost_text}</div>
+                <div class="prescription-item">{zinc_text}</div>
             </div>
             """, unsafe_allow_html=True)
 
         st.markdown("</div>", unsafe_allow_html=True)
 
+        with st.expander("📖 PAU / KVK 15 cm Soil Testing Protocol & Field Remedies"):
+            st.markdown("**PAU / ICAR 4-Step Soil Sampling Protocol:**")
+            for step in SOIL_TESTING_STEPS:
+                t_key = f"title_{lang_selection}" if f"title_{lang_selection}" in step else "title_en"
+                d_key = f"desc_{lang_selection}" if f"desc_{lang_selection}" in step else "desc_en"
+                st.markdown(f"**Step {step['step_number']}: {step.get(t_key, step['title_en'])}**\n{step.get(d_key, step['desc_en'])}")
+            st.markdown("---")
+            st.markdown("**Recommended Field Remedies:**")
+            for rem in REMEDIES_GUIDE:
+                r_key = f"remedy_{lang_selection}" if f"remedy_{lang_selection}" in rem else "remedy_en"
+                st.markdown(f"• **{rem['problem']}:** {rem.get(r_key, rem['remedy_en'])}")
+
     with bot_right:
         # Farmer Advisory Card (Crisp White Card with Red Top Border)
-        # Select localized text
-        if lang_selection == "pa":
-            adv1 = "ਕਿਸਾਨ ਵੀਰੋ, 3 ਦਿਨ ਪਾਣੀ ਰੋਕੋ (Kisan veero, 3 din paani roko)"
-            adv2 = "ਸਿੱਧੀ ਬਿਜਾਈ (DSR) ਅਤੇ ਮਲਚਿੰਗ ਅਪਣਾਓ (Adopt DSR & Mulching)"
-        elif lang_selection == "en":
-            adv1 = "Farmers, pause irrigation for 3 days to preserve root aeration"
-            adv2 = "Switch to Direct Seeded Rice (DSR) & Crop-Residue Mulching"
-        else: # hi
-            adv1 = "Kisan bhai, 3 din paani rok do"
-            adv2 = "Switch to Direct Seeded Rice (DSR) & Mulching"
+        # Select localized text dynamically based on risk zone
+        if stress_res["zone"] == "Red":
+            if lang_selection == "pa":
+                adv1 = "ਕਿਸਾਨ ਵੀਰੋ, 3 ਦਿਨ ਪਾਣੀ ਰੋਕੋ (Kisan veero, 3 din paani roko)"
+                adv2 = "ਸਿੱਧੀ ਬਿਜਾਈ (DSR) ਅਤੇ ਮਲਚਿੰਗ ਅਪਣਾਓ (Adopt DSR & Mulching)"
+            elif lang_selection == "en":
+                adv1 = "Farmers, pause irrigation for 3 days to preserve root aeration"
+                adv2 = "Switch to Direct Seeded Rice (DSR) & Crop-Residue Mulching"
+            else: # hi
+                adv1 = "Kisan bhai, 3 din paani rok do"
+                adv2 = "Switch to Direct Seeded Rice (DSR) & Mulching"
+        elif stress_res["zone"] == "Yellow":
+            if lang_selection == "pa":
+                adv1 = "ਜੜ੍ਹ ਖੇਤਰ ਵਿੱਚ ਦਰਮਿਆਨੀ ਨਮੀ ਦੀ ਘਾਟ - ਸਿੰਚਾਈ 2 ਦਿਨ ਟਾਲੋ"
+                adv2 = "ਵਾਸ਼ਪੀਕਰਨ ਰੋਕਣ ਲਈ ਪਰਾਲੀ ਦੀ ਮਲਚਿੰਗ ਕਰੋ"
+            elif lang_selection == "en":
+                adv1 = "Moderate moisture deficit: Delay flood irrigation by 2 days"
+                adv2 = "Apply straw mulching to curb high surface evapotranspiration losses"
+            else: # hi
+                adv1 = "जड़-क्षेत्र में मध्यम नमी की कमी - सिंचाई 2 दिन टालें"
+                adv2 = "वाष्पीकरण रोकने के लिए खेत में पुआल की मल्चिंग करें"
+        else: # Green
+            if lang_selection == "pa":
+                adv1 = "ਫ਼ਸਲ ਲਈ ਪਾਣੀ ਕਾਫ਼ੀ ਹੈ - ਬੇਲੋੜੀ ਸਿੰਚਾਈ ਤੋਂ ਬਚੋ"
+                adv2 = "ਜ਼ਮੀਨੀ ਪਾਣੀ ਬਚਾਉਣ ਲਈ ਤੁਪਕਾ ਜਾਂ ਫੁਹਾਰਾ ਸਿੰਚਾਈ ਅਪਣਾਓ"
+            elif lang_selection == "en":
+                adv1 = "Water reserves are currently sufficient for crop demand"
+                adv2 = "Avoid unnecessary over-irrigation to conserve regional groundwater"
+            else: # hi
+                adv1 = "फसल की मांग के लिए पानी पर्याप्त है - अतिरिक्त सिंचाई से बचें"
+                adv2 = "भूजल स्तर बनाए रखने के लिए संतुलित सिंचाई करें"
 
         st.markdown(f"""
         <div class="advisory-white-card" style="margin-bottom:0px;">
@@ -992,6 +1067,14 @@ for f in fc_results:
     officer_report_md += f"| {f['day_label']} | {f['predicted_sm']:.3f} | {f['lower_sm_bound']:.3f} – {f['upper_sm_bound']:.3f} | {f['predicted_stress_score']:.1f} / 100 |\n"
 
 officer_report_md += """
+---
+
+### 4. PAU / ICAR 15 cm Soil Testing Protocol for Extension Officers
+1. **Field Stratification:** Select 5–6 representative spots in a zigzag pattern across the field, avoiding field bunds and shade trees.
+2. **15 cm V-Cut Sampling:** Dig a V-shaped pit to 15 cm depth (active plow layer) and slice a uniform 2 cm core.
+3. **Composite Quartering:** Mix in clean bucket, break clods, divide into 4 quarters, discarding opposite pairs until ~500g remains.
+4. **Lab Submission:** Air-dry in shade (never sun-bake); submit to local KVK/PAU laboratory for pH, EC, OC, N-P-K, and micronutrients.
+
 ---
 *Data Sources: NASA SMAP, GPM IMERG, Landsat 8/9, MODIS, POWER, GRACE.*
 """

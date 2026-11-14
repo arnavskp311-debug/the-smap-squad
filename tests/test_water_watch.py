@@ -118,3 +118,25 @@ def test_netcdf_multi_district_mosaic():
         assert "landsat_ndvi" in ds
         assert ds["smap_rootzone_sm"].shape[0] > 10
         assert ds["smap_rootzone_sm"].shape[1] > 10
+
+
+def test_i18n_and_soil_guide_integrity():
+    """Verify trilingual localization dictionaries and PAU guide structures."""
+    from src.advisories.i18n_content import I18N
+    from src.advisories.soil_testing_guide import SOIL_TESTING_STEPS, REMEDIES_GUIDE
+
+    for lang in ["en", "hi", "pa"]:
+        assert lang in I18N, f"Missing language {lang}"
+        assert "title" in I18N[lang]
+        assert "advisories" in I18N[lang]
+        assert "SAFE" in I18N[lang]["advisories"]
+        assert "CRITICAL" in I18N[lang]["advisories"]
+
+    assert len(SOIL_TESTING_STEPS) == 4, "Should have 4-step PAU soil sampling protocol"
+    for s in SOIL_TESTING_STEPS:
+        assert "title_en" in s and "title_hi" in s and "title_pa" in s
+        assert "desc_en" in s and "desc_hi" in s and "desc_pa" in s
+
+    assert len(REMEDIES_GUIDE) >= 4, "Should have at least 4 PAU field remedies"
+    for r in REMEDIES_GUIDE:
+        assert "remedy_en" in r and "remedy_hi" in r and "remedy_pa" in r

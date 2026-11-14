@@ -81,14 +81,17 @@ class MoistureForecaster:
             # Calculate forecast water stress score
             fc = 0.36
             wp = 0.10
-            fc_score = np.clip((fc - adjusted_mean) / (fc - wp) * 75.0 + 15.0, 0, 100)
+            proj_stress = np.clip((fc - adjusted_mean) / (fc - wp) * 75.0 + 12.0, 0.0, 100.0)
 
             forecasts.append({
+                "day_label": f"Day +{step}",
+                "day_index": step,
                 "day": f"+{step}d",
                 "predicted_sm": round(float(adjusted_mean), 3),
                 "lower_sm_bound": round(float(lower_bound), 3),
                 "upper_sm_bound": round(float(upper_bound), 3),
-                "predicted_stress_score": round(float(fc_score), 1)
+                "predicted_stress_score": round(float(proj_stress), 1),
+                "risk_zone": "Green" if proj_stress <= 30 else "Yellow" if proj_stress <= 60 else "Red"
             })
 
             # Shift lags for autoregressive rolling step
