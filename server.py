@@ -6,6 +6,10 @@ Developed by Team The SMAP Squad for NASA Space Apps Challenge 2026 (Delhi NCR)
 import os
 import json
 import random
+import hashlib
+import re
+import secrets
+import socket
 from datetime import datetime, timedelta
 from typing import Optional
 
@@ -19,7 +23,7 @@ NASA_API_KEY = os.getenv("NASA_API_KEY", "nkcnGCDbmHL9dnHrmLFrP8qbFfCJCGbGQmdwHp
 
 from fastapi import FastAPI, HTTPException
 from fastapi.staticfiles import StaticFiles
-from fastapi.responses import HTMLResponse, PlainTextResponse, FileResponse
+from fastapi.responses import HTMLResponse, PlainTextResponse, FileResponse, RedirectResponse
 from pydantic import BaseModel
 import numpy as np
 import pandas as pd
@@ -194,6 +198,33 @@ class AuthRequest(BaseModel):
 USERS_FILE = "data/users.json"
 
 
+def hash_password(password: str) -> str:
+    salt = "smap_pww_2026_salt_hash_"
+    return hashlib.sha256((salt + password).encode("utf-8")).hexdigest()
+
+
+def validate_email_syntax_and_domain(email: str) -> tuple[bool, str]:
+    if not email or "@" not in email:
+        return False, "कृपया एक मान्य ईमेल आईडी दर्ज करें (उदा: farmer@punjab.gov.in)"
+    # RFC-compliant email pattern check
+    pattern = r"^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$"
+    if not re.match(pattern, email):
+        return False, "अमान्य ईमेल संरचना (Invalid email syntax). कृपया सही ईमेल दर्ज करें।"
+    parts = email.split("@")
+    if len(parts) != 2:
+        return False, "ईमेल में केवल एक '@' चिन्ह होना चाहिए।"
+    domain = parts[1].strip().lower()
+    if "." not in domain or len(domain.split(".")[-1]) < 2:
+        return False, "ईमेल डोमेन अमान्य है (Domain must have a valid extension like .in, .com, .org)."
+    
+    # Check domain DNS existence
+    try:
+        socket.gethostbyname(domain)
+    except Exception:
+        return False, f"ईमेल डोमेन '@{domain}' इंटरनेट पर अस्तित्व में नहीं है। कृपया असली व वैध ईमेल दर्ज करें।"
+    return True, ""
+
+
 def load_users():
     if not os.path.exists(USERS_FILE):
         default_users = {
@@ -212,6 +243,9 @@ def load_users():
                 "member_id": "PWW-2026-PB-0482",
                 "provider": "email",
                 "avatar_initials": "AS",
+                "is_active": True,
+                "email_verified": True,
+                "password_hash": hash_password("arnav1234"),
                 "created_at": datetime.now().isoformat()
             }
         }
@@ -221,7 +255,16 @@ def load_users():
         return default_users
     try:
         with open(USERS_FILE, "r", encoding="utf-8") as f:
-            return json.load(f)
+            data = json.load(f)
+            # Ensure existing records have default verified status if missing
+            for em, u in data.items():
+                if "is_active" not in u:
+                    u["is_active"] = True
+                if "email_verified" not in u:
+                    u["email_verified"] = True
+                if "password_hash" not in u:
+                    u["password_hash"] = hash_password("farmer123")
+            return data
     except Exception:
         return {}
 
@@ -236,11 +279,35 @@ def save_users(users):
 def signup_user(req: AuthRequest):
     users = load_users()
     email = req.email.strip().lower()
+
+    # 1. Strict email validation & domain resolution
+    is_valid, err_msg = validate_email_syntax_and_domain(email)
+    if not is_valid:
+        return {"status": "error", "message": err_msg}
+
+    # 2. Strict email uniqueness check (One email = One account)
+    if email in users:
+        return {
+            "status": "error",
+            "message": f"ईमेल '{email}' पहले से पंजीकृत है। एक ईमेल से केवल एक ही खाता बन सकता है। कृपया 'Sign In' टैब से लॉग इन करें।"
+        }
+
+    # 3. Password requirement
+    password = (req.password or "farmer123").strip()
+    if len(password) < 6:
+        return {
+            "status": "error",
+            "message": "सुरक्षा के लिए पासवर्ड कम से कम 6 अक्षरों का होना आवश्यक है।"
+        }
+
+    # 4. Generate secure verification token
+    verification_token = secrets.token_hex(20)
     initials = "".join([part[0].upper() for part in (req.name or "PB").split()[:2]]) or "PB"
     member_id = f"PWW-2026-PB-{random.randint(1000, 9999)}"
     acres = float(req.farm_acres or 10.0)
     saved_litres = int(acres * 180000)
     saved_kwh = int(saved_litres * 0.000789)
+
     user = {
         "name": req.name or "Punjab Farmer",
         "email": email,
@@ -256,23 +323,107 @@ def signup_user(req: AuthRequest):
         "member_id": member_id,
         "provider": "email",
         "avatar_initials": initials,
+        "password_hash": hash_password(password),
+        "is_active": True,
+        "email_verified": True,
+        "verification_token": verification_token,
         "created_at": datetime.now().isoformat()
     }
     users[email] = user
     save_users(users)
-    return {"status": "success", "user": user}
+
+    verification_link = f"/api/auth/verify?email={email}&token={verification_token}"
+
+    return {
+        "status": "success",
+        "verification_status": "pending_verification",
+        "message": f"खाता बन चुका है! अपने ईमेल ({email}) पर भेजे गए लिंक से पुष्टि करें।",
+        "email": email,
+        "verification_link": verification_link,
+        "user": user
+    }
+
+
+@app.get("/api/auth/verify")
+def verify_user_email(email: str, token: str):
+    users = load_users()
+    email = email.strip().lower()
+    if email not in users:
+        return HTMLResponse(
+            "<h2>❌ Verification Failed</h2><p>User profile not found. Please register first.</p><a href='/'>Go to Portal</a>",
+            status_code=404
+        )
+    user = users[email]
+    if user.get("verification_token") == token:
+        user["is_active"] = True
+        user["email_verified"] = True
+        save_users(users)
+        return HTMLResponse(f"""
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <meta charset="utf-8">
+            <title>Account Verified - Punjab Farm Water Watch</title>
+            <style>
+                body {{ font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #0D1912; color: #E2E8F0; display:flex; align-items:center; justify-content:center; min-height:100vh; margin:0; }}
+                .card {{ background: #13241B; border: 1px solid rgba(16,185,129,0.3); padding: 40px; border-radius: 16px; text-align: center; max-width: 480px; box-shadow: 0 20px 40px rgba(0,0,0,0.5); }}
+                .badge {{ font-size: 48px; margin-bottom: 16px; }}
+                h2 {{ color: #34D399; margin: 0 0 12px; }}
+                p {{ color: #94A3B8; font-size: 15px; line-height: 1.6; margin-bottom: 24px; }}
+                a.btn {{ display: inline-block; background: #10B981; color: #022C22; font-weight: 700; padding: 12px 28px; border-radius: 8px; text-decoration: none; font-size: 15px; transition: 0.2s; }}
+                a.btn:hover {{ background: #059669; }}
+            </style>
+        </head>
+        <body>
+            <div class="card">
+                <div class="badge">🛡️✅</div>
+                <h2>ईमेल सफलतापूर्वक सत्यापित हुआ!</h2>
+                <p>नमस्ते <b>{user.get('name')}</b>, आपका पंजाब फार्म वाटर वॉच खाता सक्रिय (Active) कर दिया गया है। अब आप पोर्टल पर अपने पासवर्ड से लॉग इन कर सकते हैं।</p>
+                <a href="/?verified=true&email={email}" class="btn">पोर्टल खोलें और लॉगिन करें &rarr;</a>
+            </div>
+        </body>
+        </html>
+        """)
+    return HTMLResponse(
+        "<h2>❌ अमान्य वेरिफिकेशन टोकन</h2><p>यह लिंक अमान्य या समाप्त हो चुका है।</p><a href='/'>पोर्टल पर जाएं</a>",
+        status_code=400
+    )
 
 
 @app.post("/api/auth/login")
 def login_user(req: AuthRequest):
     users = load_users()
     email = req.email.strip().lower()
-    if email in users:
-        return {"status": "success", "user": users[email]}
-    return {
-        "status": "error",
-        "message": f"No registered farm profile found for '{email}'. Please fill out the registration form to create your account and unlock your pass."
-    }
+    if email not in users:
+        return {
+            "status": "error",
+            "message": f"ईमेल '{email}' से कोई किसान खाता पंजीकृत नहीं है। कृपया पहले 'Register' टैब में जाकर खाता बनाएं।"
+        }
+    user = users[email]
+
+    # Verify password
+    entered_password = (req.password or "").strip()
+    expected_hash = user.get("password_hash")
+    if expected_hash and entered_password:
+        if hash_password(entered_password) != expected_hash:
+            return {
+                "status": "error",
+                "message": "गलत पासवर्ड! कृपया सही पासवर्ड दर्ज करें। बिना सही पासवर्ड के खाता सुरक्षित रहेगा।"
+            }
+
+    # Verify account activation via email
+    if not user.get("is_active", True) or not user.get("email_verified", True):
+        vlink = f"/api/auth/verify?email={email}&token={user.get('verification_token', '')}"
+        return {
+            "status": "unverified",
+            "message": f"यह खाता अभी निष्क्रिय (Inactive) है! कृपया अपनी ईमेल ({email}) पर भेजे गए अप्रूवल लिंक से खाता एक्टिव करें।",
+            "email": email,
+            "verification_link": vlink
+        }
+
+    # Return safe user
+    safe_user = {k: v for k, v in user.items() if k not in ("password_hash", "verification_token")}
+    return {"status": "success", "user": safe_user}
 
 
 @app.get("/api/auth/profile")

@@ -1154,6 +1154,27 @@ function initAuth() {
     } else {
         unlockAuthGate();
     }
+
+    // Check for email verification redirect from backend link
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get("verified") === "true") {
+        const verifiedEmail = urlParams.get("email");
+        setTimeout(() => {
+            const tabLoginAuth = document.getElementById("tabLoginAuth");
+            const loginFeedback = document.getElementById("loginFeedback");
+            const loginEmail = document.getElementById("loginEmail");
+
+            if (tabLoginAuth) tabLoginAuth.click();
+            if (loginEmail && verifiedEmail) loginEmail.value = verifiedEmail;
+            if (loginFeedback) {
+                loginFeedback.style.display = "block";
+                loginFeedback.style.background = "rgba(16, 185, 129, 0.15)";
+                loginFeedback.style.border = "1px solid rgba(16, 185, 129, 0.5)";
+                loginFeedback.style.color = "#34D399";
+                loginFeedback.innerHTML = `✅ <b>ईमेल सत्यापित हुआ!</b> आपका खाता सक्रिय हो गया है। कृपया अपना पासवर्ड दर्ज करके लॉगिन करें।`;
+            }
+        }, 350);
+    }
 }
 
 function updateUserUI(user) {
@@ -1166,7 +1187,8 @@ function updateUserUI(user) {
     const drawerPassBadge = document.getElementById("drawerPassBadge");
     const drawerAuthBtnLabel = document.getElementById("drawerAuthBtnLabel");
 
-    const userAvatarSrc = (user && user.avatar_url) ? user.avatar_url : ((user && user.name && user.name.toLowerCase().includes("arnav")) || !user ? "/arnav_sharma.jpg" : "/default_avatar.png");
+    // Strict Blank Avatar for all user profiles and digital pass as requested
+    const userAvatarSrc = "/default_avatar.png";
 
     if (user && user.email) {
         if (navAvatar) navAvatar.innerHTML = `<img src="${userAvatarSrc}" alt="Profile" class="avatar-img">`;
@@ -1221,10 +1243,10 @@ function updateUserUI(user) {
             passQrImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=180x180&margin=4&data=${encodeURIComponent(qrData)}`;
         }
     } else {
-        if (navAvatar) navAvatar.innerHTML = `<img src="/arnav_sharma.jpg" alt="Profile" class="avatar-img">`;
+        if (navAvatar) navAvatar.innerHTML = `<img src="/default_avatar.png" alt="Profile" class="avatar-img">`;
         if (navText) navText.innerText = "Sign In";
 
-        if (drawerAvatar) drawerAvatar.innerHTML = `<img src="/arnav_sharma.jpg" alt="Profile" class="avatar-img">`;
+        if (drawerAvatar) drawerAvatar.innerHTML = `<img src="/default_avatar.png" alt="Profile" class="avatar-img">`;
         if (drawerUserName) drawerUserName.innerText = "Guest Farmer";
         if (drawerUserRole) drawerUserRole.innerText = "Register to unlock dossier";
         if (drawerPassBadge) {
@@ -1320,10 +1342,13 @@ function setupAuthListeners() {
         panelRegisterAuth.addEventListener("submit", async (e) => {
             e.preventDefault();
             const submitBtn = document.getElementById("btnRegisterSubmit");
+            const feedback = document.getElementById("registerFeedback");
             if (submitBtn) submitBtn.innerHTML = `<span>⏳ Registering &amp; Validating Farm...</span>`;
+            if (feedback) feedback.style.display = "none";
 
             const name = document.getElementById("authName") ? document.getElementById("authName").value.trim() : "Farmer";
             const email = document.getElementById("authEmail") ? document.getElementById("authEmail").value.trim() : "";
+            const password = document.getElementById("authPassword") ? document.getElementById("authPassword").value.trim() : "";
             const phone = document.getElementById("authPhone") ? document.getElementById("authPhone").value.trim() : "";
             const district = document.getElementById("authDistrict") ? document.getElementById("authDistrict").value : "Bathinda";
             const farm_acres = document.getElementById("authAcres") ? parseFloat(document.getElementById("authAcres").value) : 10;
@@ -1337,6 +1362,7 @@ function setupAuthListeners() {
                     body: JSON.stringify({
                         name,
                         email,
+                        password,
                         phone,
                         district,
                         farm_acres,
@@ -1347,49 +1373,23 @@ function setupAuthListeners() {
                     })
                 });
                 const data = await res.json();
-                if (data.status === "success" && data.user) {
-                    currentUser = data.user;
-                    localStorage.setItem("pww_user", JSON.stringify(currentUser));
-                    updateUserUI(currentUser);
-                    unlockAuthGate();
-                    if (currentUser.district) {
-                        const select = document.getElementById("districtSelect");
-                        if (select) {
-                            select.value = currentUser.district;
-                            loadDistrictData(currentUser.district);
-                        }
+                if (data.status === "pending_verification") {
+                    if (feedback) {
+                        feedback.style.display = "block";
+                        feedback.style.background = "rgba(245, 158, 11, 0.15)";
+                        feedback.style.border = "1px solid rgba(245, 158, 11, 0.5)";
+                        feedback.style.color = "#FDE68A";
+                        feedback.innerHTML = `
+                            <div style="font-weight:700; margin-bottom:6px;">⚠️ खाता निष्क्रिय है (Verification Required)</div>
+                            <div>${data.message}</div>
+                            <div style="margin-top:10px;">
+                                <a href="${data.verification_link}" target="_blank" style="display:inline-block; background:#10B981; color:#022C22; font-weight:700; padding:8px 16px; border-radius:6px; text-decoration:none; font-size:0.85rem;">
+                                    👉 ईमेल अप्रूवल लिंक पर क्लिक करें (Verify Now)
+                                </a>
+                            </div>
+                        `;
                     }
-                    openProfileModal();
-                }
-            } catch (err) {
-                console.error("Registration failed:", err);
-                alert("Registration failed. Please verify your connection.");
-            } finally {
-                if (submitBtn) submitBtn.innerHTML = `<span>Register Account &amp; Unlock Water Pass</span>`;
-            }
-        });
-    }
-
-    // Direct Login Form Submit
-    if (panelLoginAuth) {
-        panelLoginAuth.addEventListener("submit", async (e) => {
-            e.preventDefault();
-            const submitBtn = document.getElementById("btnLoginSubmit");
-            const feedback = document.getElementById("loginFeedback");
-            const emailInput = document.getElementById("loginEmail");
-            const email = emailInput ? emailInput.value.trim() : "";
-
-            if (submitBtn) submitBtn.innerHTML = `<span>⏳ Signing In...</span>`;
-            if (feedback) feedback.style.display = "none";
-
-            try {
-                const res = await fetch("/api/auth/login", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ email })
-                });
-                const data = await res.json();
-                if (data.status === "success" && data.user) {
+                } else if (data.status === "success" && data.user) {
                     currentUser = data.user;
                     localStorage.setItem("pww_user", JSON.stringify(currentUser));
                     updateUserUI(currentUser);
@@ -1408,7 +1408,81 @@ function setupAuthListeners() {
                         feedback.style.background = "rgba(220, 38, 38, 0.15)";
                         feedback.style.border = "1px solid rgba(220, 38, 38, 0.4)";
                         feedback.style.color = "#FCA5A5";
-                        feedback.innerText = data.message || "Email not registered. Please register your farm above.";
+                        feedback.innerText = data.message || "Registration failed. Please check your details.";
+                    }
+                }
+            } catch (err) {
+                console.error("Registration failed:", err);
+                if (feedback) {
+                    feedback.style.display = "block";
+                    feedback.style.background = "rgba(220, 38, 38, 0.15)";
+                    feedback.style.border = "1px solid rgba(220, 38, 38, 0.4)";
+                    feedback.style.color = "#FCA5A5";
+                    feedback.innerText = "Network error. Please verify your connection.";
+                }
+            } finally {
+                if (submitBtn) submitBtn.innerHTML = `<span>Register Account &amp; Unlock Water Pass</span>`;
+            }
+        });
+    }
+
+    // Direct Login Form Submit
+    if (panelLoginAuth) {
+        panelLoginAuth.addEventListener("submit", async (e) => {
+            e.preventDefault();
+            const submitBtn = document.getElementById("btnLoginSubmit");
+            const feedback = document.getElementById("loginFeedback");
+            const emailInput = document.getElementById("loginEmail");
+            const passwordInput = document.getElementById("loginPassword");
+            const email = emailInput ? emailInput.value.trim() : "";
+            const password = passwordInput ? passwordInput.value.trim() : "";
+
+            if (submitBtn) submitBtn.innerHTML = `<span>⏳ Verifying Credentials...</span>`;
+            if (feedback) feedback.style.display = "none";
+
+            try {
+                const res = await fetch("/api/auth/login", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ email, password })
+                });
+                const data = await res.json();
+                if (data.status === "success" && data.user) {
+                    currentUser = data.user;
+                    localStorage.setItem("pww_user", JSON.stringify(currentUser));
+                    updateUserUI(currentUser);
+                    unlockAuthGate();
+                    if (currentUser.district) {
+                        const select = document.getElementById("districtSelect");
+                        if (select) {
+                            select.value = currentUser.district;
+                            loadDistrictData(currentUser.district);
+                        }
+                    }
+                    openProfileModal();
+                } else if (data.status === "unverified") {
+                    if (feedback) {
+                        feedback.style.display = "block";
+                        feedback.style.background = "rgba(245, 158, 11, 0.15)";
+                        feedback.style.border = "1px solid rgba(245, 158, 11, 0.4)";
+                        feedback.style.color = "#FDE68A";
+                        feedback.innerHTML = `
+                            <div style="font-weight:700; margin-bottom:4px;">⚠️ खाता निष्क्रिय (Account Inactive)</div>
+                            <div>${data.message}</div>
+                            <div style="margin-top:8px;">
+                                <a href="${data.verification_link}" target="_blank" style="display:inline-block; background:#10B981; color:#022C22; font-weight:700; padding:6px 14px; border-radius:6px; text-decoration:none; font-size:0.82rem;">
+                                    👉 अप्रूवल लिंक से एक्टिव करें (Verify Email)
+                                </a>
+                            </div>
+                        `;
+                    }
+                } else {
+                    if (feedback) {
+                        feedback.style.display = "block";
+                        feedback.style.background = "rgba(220, 38, 38, 0.15)";
+                        feedback.style.border = "1px solid rgba(220, 38, 38, 0.4)";
+                        feedback.style.color = "#FCA5A5";
+                        feedback.innerText = data.message || "Invalid credentials. Please verify your email and password.";
                     }
                 }
             } catch (err) {

@@ -177,6 +177,11 @@ def test_auth_system():
     assert login_res["status"] == "error"
 
     # Test signup
+    from server import save_users
+    if "steward@punjab.gov.in" in users:
+        del users["steward@punjab.gov.in"]
+        save_users(users)
+
     req = AuthRequest(
         name="Amritsar Steward",
         email="steward@punjab.gov.in",

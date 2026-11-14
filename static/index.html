@@ -31,7 +31,7 @@
             <div class="drawer-profile-card" id="drawerProfileCard">
                 <div class="drawer-profile-header">
                     <div class="drawer-avatar" id="drawerAvatar">
-                        <img src="/arnav_sharma.jpg" alt="Farmer Profile" class="avatar-img">
+                        <img src="/default_avatar.png" alt="Farmer Profile" class="avatar-img">
                     </div>
                     <div class="drawer-profile-info">
                         <div class="drawer-user-name" id="drawerUserName">Guest Farmer</div>
@@ -161,7 +161,7 @@
                 <!-- Farmer / User Profile Button -->
                 <button id="userProfileBtn" class="profile-nav-btn" title="Farmer Profile & Digital Water Pass">
                     <div class="profile-nav-avatar" id="navAvatar">
-                        <img src="/arnav_sharma.jpg" alt="Profile" class="avatar-img">
+                        <img src="/default_avatar.png" alt="Profile" class="avatar-img">
                     </div>
                     <span class="profile-nav-text" id="navProfileText">Sign In</span>
                 </button>
@@ -1117,35 +1117,12 @@
 
                 <div class="form-row-2">
                     <div class="auth-input-group">
-                        <label for="authPhone">Mobile / WhatsApp No. (For Daily Telemetry Alerts) *</label>
-                        <input type="tel" id="authPhone" class="auth-input" placeholder="+91 98765 43210" required>
+                        <label for="authPassword">Create Account Password *</label>
+                        <input type="password" id="authPassword" class="auth-input" placeholder="Min 6 characters (e.g. ••••••••)" minlength="6" required>
                     </div>
                     <div class="auth-input-group">
-                        <label for="authDistrict">Punjab District *</label>
-                        <select id="authDistrict" class="auth-input">
-                            <option value="Bathinda">Bathinda</option>
-                            <option value="Sangrur">Sangrur</option>
-                            <option value="Patiala">Patiala</option>
-                            <option value="Ludhiana">Ludhiana</option>
-                            <option value="Amritsar">Amritsar</option>
-                            <option value="Moga">Moga</option>
-                            <option value="Firozpur">Firozpur</option>
-                            <option value="Muktsar">Muktsar</option>
-                            <option value="Fazilka">Fazilka</option>
-                            <option value="Faridkot">Faridkot</option>
-                            <option value="Mansa">Mansa</option>
-                            <option value="Barnala">Barnala</option>
-                            <option value="Jalandhar">Jalandhar</option>
-                            <option value="Kapurthala">Kapurthala</option>
-                            <option value="Hoshiarpur">Hoshiarpur</option>
-                            <option value="Gurdaspur">Gurdaspur</option>
-                            <option value="Pathankot">Pathankot</option>
-                            <option value="Tarn Taran">Tarn Taran</option>
-                            <option value="Rupnagar">Rupnagar</option>
-                            <option value="Fatehgarh Sahib">Fatehgarh Sahib</option>
-                            <option value="SAS Nagar (Mohali)">SAS Nagar (Mohali)</option>
-                            <option value="SBS Nagar">SBS Nagar</option>
-                        </select>
+                        <label for="authPhone">Mobile / WhatsApp No. (For Daily Telemetry Alerts) *</label>
+                        <input type="tel" id="authPhone" class="auth-input" placeholder="+91 98765 43210" required>
                     </div>
                 </div>
 
@@ -1175,6 +1152,8 @@
                     </div>
                 </div>
 
+                <div id="registerFeedback" style="display:none; padding:12px 14px; border-radius:8px; font-size:0.84rem; margin-bottom:14px; line-height:1.5;"></div>
+
                 <button type="submit" class="btn-auth-primary" id="btnRegisterSubmit">
                     <span>Register Account &amp; Unlock Water Pass</span>
                 </button>
@@ -1189,8 +1168,12 @@
                     <label for="loginEmail">Registered Email Address *</label>
                     <input type="email" id="loginEmail" class="auth-input" placeholder="e.g. yourname@punjabfarms.gov.in" required>
                 </div>
+                <div class="auth-input-group" style="margin-bottom: 16px;">
+                    <label for="loginPassword">Account Password *</label>
+                    <input type="password" id="loginPassword" class="auth-input" placeholder="Enter your secret password" required>
+                </div>
 
-                <div id="loginFeedback" style="display:none; padding:10px 14px; border-radius:6px; font-size:0.82rem; margin-bottom:14px;"></div>
+                <div id="loginFeedback" style="display:none; padding:12px 14px; border-radius:8px; font-size:0.84rem; margin-bottom:14px; line-height:1.5;"></div>
 
                 <button type="submit" class="btn-auth-primary" id="btnLoginSubmit">
                     <span>Direct Sign-In to Farm Account</span>
@@ -1234,7 +1217,7 @@
                 <div class="pass-body">
                     <div class="pass-avatar-box">
                         <div class="pass-large-avatar" id="passAvatar">
-                            <img src="/arnav_sharma.jpg" alt="Profile" class="avatar-img">
+                            <img src="/default_avatar.png" alt="Profile" class="avatar-img">
                         </div>
                         <span class="pass-verified-tag">✓ VERIFIED</span>
                     </div>
