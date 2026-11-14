@@ -669,12 +669,36 @@ select.region-select {
 }
 
 .calendar-card {
-    background: #09202C;
-    border: 1px solid #163649;
+    background: var(--card-dark);
+    border: 1px solid var(--border-color);
     border-radius: 8px;
-    padding: 12px;
+    padding: 14px 16px;
     display: flex;
-    gap: 12px;
+    gap: 14px;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.calendar-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.2);
+}
+
+.calendar-title {
+    color: var(--text-main);
+    font-size: 0.90rem;
+    font-weight: 700;
+}
+
+.calendar-action {
+    font-size: 0.82rem;
+    color: var(--text-muted);
+    margin: 4px 0 6px 0;
+    line-height: 1.45;
+}
+
+.calendar-meta {
+    font-size: 0.74rem;
+    color: var(--text-muted);
 }
 
 .calendar-icon {
@@ -981,7 +1005,6 @@ footer {
 
 [data-theme="light"] .delta-box,
 [data-theme="light"] .savings-box,
-[data-theme="light"] .calendar-card,
 [data-theme="light"] .member-card,
 [data-theme="light"] .arch-card,
 [data-theme="light"] .team-stat-card,
@@ -991,6 +1014,25 @@ footer {
     background: #F8FAFC;
     border-color: #E2E8F0;
     color: #0F172A;
+}
+
+[data-theme="light"] .calendar-card {
+    background: #FFFFFF !important;
+    border-color: #CBD5E1 !important;
+    box-shadow: 0 2px 8px rgba(15, 23, 42, 0.06) !important;
+}
+
+[data-theme="light"] .calendar-title {
+    color: #0F172A !important;
+}
+
+[data-theme="light"] .calendar-action {
+    color: #334155 !important;
+    font-weight: 500;
+}
+
+[data-theme="light"] .calendar-meta {
+    color: #64748B !important;
 }
 
 [data-theme="light"] .kwh-badge {

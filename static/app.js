@@ -582,12 +582,12 @@ function renderCalendar(days) {
         card.innerHTML = `
             <div class="calendar-icon">${d.icon}</div>
             <div style="flex-grow: 1;">
-                <div style="display:flex; justify-content:space-between; margin-bottom:4px;">
-                    <b style="color:#FFF; font-size:0.86rem;">${d.day_label}: ${d.title}</b>
-                    <span class="badge" style="border:1px solid ${d.badge_color}; color:${d.badge_color}; background:transparent;">${d.badge}</span>
+                <div style="display:flex; justify-content:space-between; margin-bottom:6px; align-items:center;">
+                    <b class="calendar-title">${d.day_label}: ${d.title}</b>
+                    <span class="badge" style="border:1.5px solid ${d.badge_color}; color:${d.badge_color}; background:rgba(0,0,0,0.04); font-weight:700; padding:3px 8px; border-radius:12px;">${d.badge}</span>
                 </div>
-                <div style="font-size:0.80rem; color:#CBD5E1; margin-bottom:4px;">${d.action}</div>
-                <div style="font-size:0.72rem; color:#64748B;">Projected: <b>${d.projected_sm.toFixed(3)} m³/m³</b> · Zone: <b style="color:${d.badge_color};">${d.risk_zone}</b></div>
+                <div class="calendar-action">${d.action}</div>
+                <div class="calendar-meta">Projected: <b style="color:var(--text-main);">${d.projected_sm.toFixed(3)} m³/m³</b> · Zone: <b style="color:${d.badge_color};">${d.risk_zone}</b></div>
             </div>
         `;
         grid.appendChild(card);
