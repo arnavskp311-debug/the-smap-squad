@@ -23,6 +23,7 @@ document.addEventListener("DOMContentLoaded", () => {
     initTabs();
     initMap();
     initNasaStatus();
+    initAuth();
     setupEventListeners();
     loadDistrictData(currentDistrict);
 });
@@ -1052,4 +1053,284 @@ function renderDashScenario() {
             }
         }
     });
+}
+
+// ==========================================================================
+// FARMER AUTHENTICATION & DIGITAL PASS STATE MANAGEMENT
+// ==========================================================================
+let currentUser = null;
+
+function initAuth() {
+    try {
+        const stored = localStorage.getItem("pww_user");
+        if (stored) {
+            currentUser = JSON.parse(stored);
+        } else {
+            // Default active demo sentinel: Arnav Sharma
+            currentUser = {
+                name: "Arnav Sharma",
+                email: "arnav@punjabfarms.gov.in",
+                role: "Lead Farmer & Water Steward",
+                district: "Bathinda",
+                farm_acres: 12.5,
+                primary_crop: "Wheat & Direct Seeded Rice (DSR)",
+                water_saved_litres: 2250000,
+                electricity_saved_kwh: 1775,
+                soil_health_grade: "Grade A (Optimized via SMAP)",
+                member_id: "PWW-2026-PB-0482",
+                provider: "google",
+                avatar_initials: "AS"
+            };
+            localStorage.setItem("pww_user", JSON.stringify(currentUser));
+        }
+    } catch (e) {
+        console.warn("Storage load error:", e);
+    }
+
+    updateUserUI(currentUser);
+    setupAuthListeners();
+}
+
+function updateUserUI(user) {
+    const navAvatar = document.getElementById("navAvatar");
+    const navText = document.getElementById("navProfileText");
+
+    const drawerAvatar = document.getElementById("drawerAvatar");
+    const drawerUserName = document.getElementById("drawerUserName");
+    const drawerUserRole = document.getElementById("drawerUserRole");
+    const drawerPassId = document.getElementById("drawerPassId");
+    const drawerAuthBtnLabel = document.getElementById("drawerAuthBtnLabel");
+
+    if (user && user.email) {
+        if (navAvatar) navAvatar.innerText = user.avatar_initials || (user.name ? user.name.charAt(0) : "PB");
+        if (navText) navText.innerText = user.name || "Farmer Profile";
+
+        if (drawerAvatar) drawerAvatar.innerText = user.avatar_initials || (user.name ? user.name.charAt(0) : "PB");
+        if (drawerUserName) drawerUserName.innerText = user.name || "Lead Farmer";
+        if (drawerUserRole) drawerUserRole.innerText = `${user.role || "Sentinel"} · ${user.district || "Punjab"}`;
+        if (drawerPassId) drawerPassId.innerText = user.member_id || "PWW-2026-PB-0482";
+        if (drawerAuthBtnLabel) drawerAuthBtnLabel.innerText = "View Digital Water Pass";
+
+        // Update Pass modal fields
+        const passAvatar = document.getElementById("passAvatar");
+        const passMemberId = document.getElementById("passMemberId");
+        const passName = document.getElementById("passName");
+        const passRole = document.getElementById("passRole");
+        const passDistrict = document.getElementById("passDistrict");
+        const passAcres = document.getElementById("passAcres");
+        const passCrop = document.getElementById("passCrop");
+        const passAuthType = document.getElementById("passAuthType");
+        const passWaterSaved = document.getElementById("passWaterSaved");
+        const passPowerSaved = document.getElementById("passPowerSaved");
+        const passSoilGrade = document.getElementById("passSoilGrade");
+
+        if (passAvatar) passAvatar.innerText = user.avatar_initials || (user.name ? user.name.charAt(0) : "PB");
+        if (passMemberId) passMemberId.innerText = user.member_id || "PWW-2026-PB-0482";
+        if (passName) passName.innerText = user.name;
+        if (passRole) passRole.innerText = user.role || "Lead Farmer & Water Steward";
+        if (passDistrict) passDistrict.innerText = user.district || "Bathinda";
+        if (passAcres) passAcres.innerText = `${user.farm_acres} Acres`;
+        if (passCrop) passCrop.innerText = user.primary_crop || "Wheat & Rice";
+        if (passAuthType) passAuthType.innerText = `${user.provider === "google" ? "Google OAuth 2.0" : "Govt Ag-Stack Email"} · Verified`;
+
+        const savedMillions = (user.water_saved_litres / 1000000).toFixed(2);
+        if (passWaterSaved) passWaterSaved.innerText = `${savedMillions}M L`;
+        if (passPowerSaved) passPowerSaved.innerText = `${user.electricity_saved_kwh.toLocaleString()} kWh`;
+        if (passSoilGrade) passSoilGrade.innerText = user.soil_health_grade || "Grade A";
+    } else {
+        if (navAvatar) navAvatar.innerText = "🔑";
+        if (navText) navText.innerText = "Sign In";
+
+        if (drawerAvatar) drawerAvatar.innerText = "🌱";
+        if (drawerUserName) drawerUserName.innerText = "Guest Sentinel";
+        if (drawerUserRole) drawerUserRole.innerText = "Sign in to unlock dossier";
+        if (drawerPassId) drawerPassId.innerText = "LOCKED";
+        if (drawerAuthBtnLabel) drawerAuthBtnLabel.innerText = "Sign In with Google";
+    }
+}
+
+function setupAuthListeners() {
+    const userProfileBtn = document.getElementById("userProfileBtn");
+    const drawerAuthActionBtn = document.getElementById("drawerAuthActionBtn");
+    const closeAuthModalBtn = document.getElementById("closeAuthModalBtn");
+    const closeProfileModalBtn = document.getElementById("closeProfileModalBtn");
+    const tabGoogleAuth = document.getElementById("tabGoogleAuth");
+    const tabEmailAuth = document.getElementById("tabEmailAuth");
+    const btnGoogleInstantLogin = document.getElementById("btnGoogleInstantLogin");
+    const panelEmailAuth = document.getElementById("panelEmailAuth");
+    const btnPrintPassBtn = document.getElementById("btnPrintPassBtn");
+    const btnSignOutBtn = document.getElementById("btnSignOutBtn");
+
+    if (userProfileBtn) {
+        userProfileBtn.addEventListener("click", () => {
+            if (currentUser && currentUser.email) {
+                openProfileModal();
+            } else {
+                openAuthModal();
+            }
+        });
+    }
+
+    if (drawerAuthActionBtn) {
+        drawerAuthActionBtn.addEventListener("click", () => {
+            const navDrawer = document.getElementById("navDrawer");
+            const drawerOverlay = document.getElementById("drawerOverlay");
+            if (navDrawer) navDrawer.classList.remove("open");
+            if (drawerOverlay) drawerOverlay.classList.remove("active");
+            document.body.style.overflow = "";
+
+            if (currentUser && currentUser.email) {
+                openProfileModal();
+            } else {
+                openAuthModal();
+            }
+        });
+    }
+
+    if (closeAuthModalBtn) closeAuthModalBtn.addEventListener("click", closeAuthModal);
+    if (closeProfileModalBtn) closeProfileModalBtn.addEventListener("click", closeProfileModal);
+
+    // Close on backdrop click
+    const authModal = document.getElementById("authModal");
+    const profileModal = document.getElementById("profileModal");
+    if (authModal) {
+        authModal.addEventListener("click", (e) => {
+            if (e.target === authModal) closeAuthModal();
+        });
+    }
+    if (profileModal) {
+        profileModal.addEventListener("click", (e) => {
+            if (e.target === profileModal) closeProfileModal();
+        });
+    }
+
+    // Auth Modal Tabs
+    if (tabGoogleAuth && tabEmailAuth) {
+        tabGoogleAuth.addEventListener("click", () => {
+            tabGoogleAuth.classList.add("active");
+            tabEmailAuth.classList.remove("active");
+            document.getElementById("panelGoogleAuth").style.display = "block";
+            document.getElementById("panelEmailAuth").style.display = "none";
+        });
+        tabEmailAuth.addEventListener("click", () => {
+            tabEmailAuth.classList.add("active");
+            tabGoogleAuth.classList.remove("active");
+            document.getElementById("panelGoogleAuth").style.display = "none";
+            document.getElementById("panelEmailAuth").style.display = "block";
+        });
+    }
+
+    // Google Instant Login Action
+    if (btnGoogleInstantLogin) {
+        btnGoogleInstantLogin.addEventListener("click", async () => {
+            btnGoogleInstantLogin.innerHTML = `<span>⏳ Verifying with Google OAuth...</span>`;
+            try {
+                const res = await fetch("/api/auth/login", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        name: "Arnav Sharma",
+                        email: "arnav@punjabfarms.gov.in",
+                        provider: "google",
+                        district: "Bathinda",
+                        farm_acres: 12.5,
+                        role: "Lead Farmer & Water Steward",
+                        primary_crop: "Wheat & Direct Seeded Rice (DSR)"
+                    })
+                });
+                const data = await res.json();
+                if (data.status === "success" && data.user) {
+                    currentUser = data.user;
+                    localStorage.setItem("pww_user", JSON.stringify(currentUser));
+                    updateUserUI(currentUser);
+                    closeAuthModal();
+                    openProfileModal();
+                }
+            } catch (err) {
+                console.error("Google login failed:", err);
+            } finally {
+                btnGoogleInstantLogin.innerHTML = `<span>Sign in with Google</span>`;
+            }
+        });
+    }
+
+    // Email Registration / Login Submit
+    if (panelEmailAuth) {
+        panelEmailAuth.addEventListener("submit", async (e) => {
+            e.preventDefault();
+            const submitBtn = document.getElementById("btnEmailSubmit");
+            if (submitBtn) submitBtn.innerHTML = `<span>⏳ Creating Sentinel Profile...</span>`;
+
+            const name = document.getElementById("authName") ? document.getElementById("authName").value : "Farmer";
+            const email = document.getElementById("authEmail") ? document.getElementById("authEmail").value : "farmer@punjab.gov.in";
+            const district = document.getElementById("authDistrict") ? document.getElementById("authDistrict").value : "Bathinda";
+            const farm_acres = document.getElementById("authAcres") ? parseFloat(document.getElementById("authAcres").value) : 10;
+            const primary_crop = document.getElementById("authCrop") ? document.getElementById("authCrop").value : "Wheat & Rice";
+
+            try {
+                const res = await fetch("/api/auth/signup", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        name,
+                        email,
+                        district,
+                        farm_acres,
+                        primary_crop,
+                        provider: "email",
+                        role: "Farmer & Water Sentinel"
+                    })
+                });
+                const data = await res.json();
+                if (data.status === "success" && data.user) {
+                    currentUser = data.user;
+                    localStorage.setItem("pww_user", JSON.stringify(currentUser));
+                    updateUserUI(currentUser);
+                    closeAuthModal();
+                    openProfileModal();
+                }
+            } catch (err) {
+                console.error("Registration failed:", err);
+            } finally {
+                if (submitBtn) submitBtn.innerHTML = `<span>Unlock Farm Water Pass &amp; Dossier</span>`;
+            }
+        });
+    }
+
+    // Print / Download Pass
+    if (btnPrintPassBtn) {
+        btnPrintPassBtn.addEventListener("click", () => {
+            window.print();
+        });
+    }
+
+    // Sign Out
+    if (btnSignOutBtn) {
+        btnSignOutBtn.addEventListener("click", () => {
+            localStorage.removeItem("pww_user");
+            currentUser = null;
+            updateUserUI(null);
+            closeProfileModal();
+        });
+    }
+}
+
+function openAuthModal() {
+    const modal = document.getElementById("authModal");
+    if (modal) modal.style.display = "flex";
+}
+
+function closeAuthModal() {
+    const modal = document.getElementById("authModal");
+    if (modal) modal.style.display = "none";
+}
+
+function openProfileModal() {
+    const modal = document.getElementById("profileModal");
+    if (modal) modal.style.display = "flex";
+}
+
+function closeProfileModal() {
+    const modal = document.getElementById("profileModal");
+    if (modal) modal.style.display = "none";
 }

@@ -5,6 +5,7 @@ Developed by Team The SMAP Squad for NASA Space Apps Challenge 2026 (Delhi NCR)
 
 import os
 import json
+import random
 from datetime import datetime, timedelta
 from typing import Optional
 
@@ -73,6 +74,105 @@ class SoilPrescriptionRequest(BaseModel):
     ec: float = 0.9
     oc: float = 0.38
     nitrogen: int = 190
+
+
+class AuthRequest(BaseModel):
+    name: str = "Arnav Sharma"
+    email: str = "arnav@punjabfarms.gov.in"
+    password: Optional[str] = None
+    provider: str = "google"
+    district: str = "Bathinda"
+    farm_acres: float = 12.5
+    role: str = "Lead Farmer & Water Steward"
+    primary_crop: str = "Wheat & Direct Seeded Rice (DSR)"
+
+
+USERS_FILE = "data/users.json"
+
+
+def load_users():
+    if not os.path.exists(USERS_FILE):
+        default_users = {
+            "arnav@punjabfarms.gov.in": {
+                "name": "Arnav Sharma",
+                "email": "arnav@punjabfarms.gov.in",
+                "role": "Lead Farmer & Water Steward",
+                "district": "Bathinda",
+                "farm_acres": 12.5,
+                "primary_crop": "Wheat & Direct Seeded Rice (DSR)",
+                "water_saved_litres": 2250000,
+                "electricity_saved_kwh": 1775,
+                "soil_health_grade": "A (Optimized)",
+                "member_id": "PWW-2026-PB-0482",
+                "provider": "google",
+                "avatar_initials": "AS",
+                "created_at": datetime.now().isoformat()
+            }
+        }
+        os.makedirs(os.path.dirname(USERS_FILE), exist_ok=True)
+        with open(USERS_FILE, "w", encoding="utf-8") as f:
+            json.dump(default_users, f, indent=2)
+        return default_users
+    try:
+        with open(USERS_FILE, "r", encoding="utf-8") as f:
+            return json.load(f)
+    except Exception:
+        return {}
+
+
+def save_users(users):
+    os.makedirs(os.path.dirname(USERS_FILE), exist_ok=True)
+    with open(USERS_FILE, "w", encoding="utf-8") as f:
+        json.dump(users, f, indent=2)
+
+
+@app.post("/api/auth/signup")
+def signup_user(req: AuthRequest):
+    users = load_users()
+    email = req.email.strip().lower()
+    if email in users:
+        user = users[email]
+    else:
+        initials = "".join([part[0].upper() for part in req.name.split()[:2]]) if req.name else "PB"
+        member_id = f"PWW-2026-PB-{random.randint(1000, 9999)}"
+        saved_litres = int(float(req.farm_acres) * 180000)
+        saved_kwh = int(saved_litres * 0.000789)
+        user = {
+            "name": req.name,
+            "email": email,
+            "role": req.role or "Farmer & Water Steward",
+            "district": req.district or "Bathinda",
+            "farm_acres": float(req.farm_acres),
+            "primary_crop": req.primary_crop or "Wheat & Rice",
+            "water_saved_litres": saved_litres,
+            "electricity_saved_kwh": saved_kwh,
+            "soil_health_grade": "A (Verified via NASA SMAP)",
+            "member_id": member_id,
+            "provider": req.provider,
+            "avatar_initials": initials or "PB",
+            "created_at": datetime.now().isoformat()
+        }
+        users[email] = user
+        save_users(users)
+    return {"status": "success", "user": user}
+
+
+@app.post("/api/auth/login")
+def login_user(req: AuthRequest):
+    users = load_users()
+    email = req.email.strip().lower()
+    if email in users:
+        return {"status": "success", "user": users[email]}
+    return signup_user(req)
+
+
+@app.get("/api/auth/profile")
+def get_user_profile(email: str = "arnav@punjabfarms.gov.in"):
+    users = load_users()
+    email = email.strip().lower()
+    if email in users:
+        return {"status": "success", "user": users[email]}
+    raise HTTPException(status_code=404, detail="User profile not found")
 
 
 @app.get("/api/health")

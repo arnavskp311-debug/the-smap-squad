@@ -1,0 +1,47 @@
+{
+  "arnav@punjabfarms.gov.in": {
+    "name": "Arnav Sharma",
+    "email": "arnav@punjabfarms.gov.in",
+    "role": "Lead Farmer & Water Steward",
+    "district": "Bathinda",
+    "farm_acres": 12.5,
+    "primary_crop": "Wheat & Direct Seeded Rice (DSR)",
+    "water_saved_litres": 2250000,
+    "electricity_saved_kwh": 1775,
+    "soil_health_grade": "A (Optimized)",
+    "member_id": "PWW-2026-PB-0482",
+    "provider": "google",
+    "avatar_initials": "AS",
+    "created_at": "2026-11-14T16:11:20.076868"
+  },
+  "harpreet@punjab.gov.in": {
+    "name": "Harpreet Singh",
+    "email": "harpreet@punjab.gov.in",
+    "role": "Farmer",
+    "district": "Moga",
+    "farm_acres": 20.0,
+    "primary_crop": "DSR Rice",
+    "water_saved_litres": 3600000,
+    "electricity_saved_kwh": 2840,
+    "soil_health_grade": "A (Verified via NASA SMAP)",
+    "member_id": "PWW-2026-PB-7419",
+    "provider": "google",
+    "avatar_initials": "HS",
+    "created_at": "2026-11-14T16:11:42.389224"
+  },
+  "steward@punjab.gov.in": {
+    "name": "Amritsar Steward",
+    "email": "steward@punjab.gov.in",
+    "role": "Water Steward",
+    "district": "Amritsar",
+    "farm_acres": 8.0,
+    "primary_crop": "Mustard",
+    "water_saved_litres": 1440000,
+    "electricity_saved_kwh": 1136,
+    "soil_health_grade": "A (Verified via NASA SMAP)",
+    "member_id": "PWW-2026-PB-6803",
+    "provider": "google",
+    "avatar_initials": "AS",
+    "created_at": "2026-11-14T16:12:47.539458"
+  }
+}

@@ -45,6 +45,27 @@
             </select>
         </div>
 
+        <!-- Drawer Farmer Profile Card -->
+        <div class="drawer-section">
+            <div class="drawer-profile-card" id="drawerProfileCard">
+                <div class="drawer-profile-header">
+                    <div class="drawer-avatar" id="drawerAvatar">AS</div>
+                    <div class="drawer-profile-info">
+                        <div class="drawer-user-name" id="drawerUserName">Arnav Sharma</div>
+                        <div class="drawer-user-role" id="drawerUserRole">Lead Farmer · Bathinda</div>
+                    </div>
+                </div>
+                <div class="drawer-profile-badge" id="drawerPassBadge">
+                    <span class="pass-chip">🛡️ Active Sentinel</span>
+                    <span class="pass-id" id="drawerPassId">PWW-2026-PB-0482</span>
+                </div>
+                <button class="drawer-profile-action-btn" id="drawerAuthActionBtn">
+                    <span>🪪</span>
+                    <span id="drawerAuthBtnLabel">View Digital Water Pass</span>
+                </button>
+            </div>
+        </div>
+
         <!-- Drawer Navigation Links -->
         <div class="drawer-section" style="flex:1;">
             <div class="drawer-section-label">Platform Tools</div>
@@ -159,6 +180,12 @@
                 <button id="themeToggleBtn" class="theme-toggle-btn" title="Toggle Dark/Light Mode" aria-label="Toggle Dark/Light Mode">
                     <span class="theme-icon" id="themeIcon">☀️</span>
                     <span class="theme-label" id="themeText">Light</span>
+                </button>
+
+                <!-- Farmer / User Profile Button -->
+                <button id="userProfileBtn" class="profile-nav-btn" title="Farmer Profile & Digital Water Pass">
+                    <div class="profile-nav-avatar" id="navAvatar">AS</div>
+                    <span class="profile-nav-text" id="navProfileText">Farmer Profile</span>
                 </button>
             </div>
         </header>
@@ -1053,6 +1080,217 @@
                 </div>
             </div>
         </footer>
+    </div>
+
+    <!-- AUTHENTICATION MODAL (GOOGLE / EMAIL) -->
+    <div class="auth-modal-backdrop" id="authModal" style="display: none;">
+        <div class="auth-modal-card">
+            <button class="auth-modal-close" id="closeAuthModalBtn" aria-label="Close">&times;</button>
+            
+            <div class="auth-modal-header">
+                <div class="auth-brand-badge">
+                    <img src="/logo.png" alt="Punjab Farm Water Watch" class="auth-brand-logo">
+                    <span>PUNJAB FARM WATER WATCH</span>
+                </div>
+                <h2 class="auth-modal-title" id="authModalTitle">Farmer &amp; Sentinel Access</h2>
+                <p class="auth-modal-subtitle">Sign in or register to unlock your farm's digital water pass, tubewell audit telemetry, and custom AI soil prescriptions.</p>
+            </div>
+
+            <div class="auth-tabs">
+                <button type="button" class="auth-tab active" id="tabGoogleAuth" data-mode="google">⚡ Quick Sign-In (Google)</button>
+                <button type="button" class="auth-tab" id="tabEmailAuth" data-mode="email">📧 Register / Email</button>
+            </div>
+
+            <!-- Google Instant Sign-In Panel -->
+            <div class="auth-panel" id="panelGoogleAuth">
+                <div class="google-prompt-card">
+                    <div class="google-icon-large">
+                        <svg width="24" height="24" viewBox="0 0 24 24">
+                            <path fill="#4285F4" d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.82-2.4 3.68v3.05h3.88c2.27-2.09 3.66-5.17 3.66-9.17z"/>
+                            <path fill="#34A853" d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.88-3.05c-1.08.72-2.45 1.16-4.05 1.16-3.12 0-5.77-2.1-6.72-4.93H1.25v3.15C3.26 21.36 7.34 24 12 24z"/>
+                            <path fill="#FBBC05" d="M5.28 14.27c-.25-.72-.38-1.49-.38-2.27s.13-1.55.38-2.27V6.58H1.25C.45 8.16 0 9.94 0 12s.45 3.84 1.25 5.42l4.03-3.15z"/>
+                            <path fill="#EA4335" d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.34 0 3.26 2.64 1.25 6.58l4.03 3.15c.95-2.83 3.6-4.93 6.72-4.93z"/>
+                        </svg>
+                    </div>
+                    <div class="google-prompt-text">
+                        <div class="google-prompt-title">Continue as Arnav Sharma</div>
+                        <div class="google-prompt-sub">arnav@punjabfarms.gov.in · Bathinda Hub</div>
+                    </div>
+                </div>
+                <button type="button" class="btn-auth-primary btn-google-action" id="btnGoogleInstantLogin">
+                    <span>Sign in with Google</span>
+                </button>
+                <div class="auth-helper-note">
+                    🔒 Instant verification powered by Google OAuth 2.0 &amp; Govt of Punjab Ag-Stack
+                </div>
+            </div>
+
+            <!-- Email Registration & Login Panel -->
+            <form class="auth-panel" id="panelEmailAuth" style="display: none;">
+                <div class="form-row-2">
+                    <div class="auth-input-group">
+                        <label for="authName">Full Name</label>
+                        <input type="text" id="authName" class="auth-input" placeholder="e.g. Gurpreet Singh" required value="Gurpreet Singh">
+                    </div>
+                    <div class="auth-input-group">
+                        <label for="authEmail">Email Address</label>
+                        <input type="email" id="authEmail" class="auth-input" placeholder="farmer@punjab.gov.in" required value="gurpreet@punjabfarms.gov.in">
+                    </div>
+                </div>
+
+                <div class="form-row-3">
+                    <div class="auth-input-group">
+                        <label for="authDistrict">District</label>
+                        <select id="authDistrict" class="auth-input">
+                            <option value="Bathinda">Bathinda</option>
+                            <option value="Sangrur">Sangrur</option>
+                            <option value="Patiala">Patiala</option>
+                            <option value="Ludhiana">Ludhiana</option>
+                            <option value="Amritsar">Amritsar</option>
+                            <option value="Moga">Moga</option>
+                            <option value="Firozpur">Firozpur</option>
+                            <option value="Muktsar">Muktsar</option>
+                            <option value="Fazilka">Fazilka</option>
+                            <option value="Faridkot">Faridkot</option>
+                            <option value="Mansa">Mansa</option>
+                            <option value="Barnala">Barnala</option>
+                            <option value="Jalandhar">Jalandhar</option>
+                            <option value="Kapurthala">Kapurthala</option>
+                            <option value="Hoshiarpur">Hoshiarpur</option>
+                            <option value="Gurdaspur">Gurdaspur</option>
+                            <option value="Pathankot">Pathankot</option>
+                            <option value="Tarn Taran">Tarn Taran</option>
+                            <option value="Rupnagar">Rupnagar</option>
+                            <option value="Fatehgarh Sahib">Fatehgarh Sahib</option>
+                            <option value="SAS Nagar (Mohali)">SAS Nagar (Mohali)</option>
+                            <option value="SBS Nagar">SBS Nagar</option>
+                        </select>
+                    </div>
+                    <div class="auth-input-group">
+                        <label for="authAcres">Farm Size (Acres)</label>
+                        <input type="number" id="authAcres" class="auth-input" min="1" max="500" step="0.5" value="15">
+                    </div>
+                    <div class="auth-input-group">
+                        <label for="authCrop">Primary Crop</label>
+                        <select id="authCrop" class="auth-input">
+                            <option value="Wheat & Direct Seeded Rice (DSR)">Wheat &amp; DSR Rice</option>
+                            <option value="Conventional Puddled Rice">Conventional Rice</option>
+                            <option value="Cotton & Mustard">Cotton &amp; Mustard</option>
+                            <option value="Sugarcane & Maize">Sugarcane &amp; Maize</option>
+                        </select>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn-auth-primary" id="btnEmailSubmit">
+                    <span>Unlock Farm Water Pass &amp; Dossier</span>
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- DIGITAL FARM WATER PASS & USER PROFILE MODAL -->
+    <div class="auth-modal-backdrop" id="profileModal" style="display: none;">
+        <div class="auth-modal-card profile-card-modal">
+            <button class="auth-modal-close" id="closeProfileModalBtn" aria-label="Close">&times;</button>
+            
+            <!-- Digital Pass Container -->
+            <div class="farm-pass-card" id="farmPassPrintable">
+                <div class="pass-watermark">PUNJAB FARM WATER WATCH</div>
+                
+                <!-- Pass Top Header -->
+                <div class="pass-header">
+                    <div class="pass-gov-brand">
+                        <img src="/logo.png" alt="Punjab Water Watch" class="pass-logo">
+                        <div>
+                            <div class="pass-gov-title">GOVERNMENT OF PUNJAB · AGRI-HYDROLOGY</div>
+                            <div class="pass-gov-sub">NASA ESDIS · THE SMAP SQUAD JOINT STEWARDSHIP</div>
+                        </div>
+                    </div>
+                    <div class="pass-id-badge">
+                        <span class="pass-status-pill">ACTIVE SENTINEL</span>
+                        <span class="pass-serial" id="passMemberId">PWW-2026-PB-0482</span>
+                    </div>
+                </div>
+
+                <!-- Farmer Profile Identity -->
+                <div class="pass-body">
+                    <div class="pass-avatar-box">
+                        <div class="pass-large-avatar" id="passAvatar">AS</div>
+                        <span class="pass-verified-tag">✓ VERIFIED</span>
+                    </div>
+
+                    <div class="pass-info-grid">
+                        <div class="pass-field">
+                            <span class="pass-label">SENTINEL / FARMER</span>
+                            <span class="pass-value" id="passName">Arnav Sharma</span>
+                        </div>
+                        <div class="pass-field">
+                            <span class="pass-label">OFFICIAL ROLE</span>
+                            <span class="pass-value" id="passRole">Lead Farmer &amp; Water Steward</span>
+                        </div>
+                        <div class="pass-field">
+                            <span class="pass-label">REGISTERED DISTRICT</span>
+                            <span class="pass-value" id="passDistrict">Bathinda</span>
+                        </div>
+                        <div class="pass-field">
+                            <span class="pass-label">FARM HOLDING</span>
+                            <span class="pass-value" id="passAcres">12.5 Acres</span>
+                        </div>
+                        <div class="pass-field">
+                            <span class="pass-label">PRIMARY CROPPING CYCLE</span>
+                            <span class="pass-value" id="passCrop">Wheat &amp; Direct Seeded Rice (DSR)</span>
+                        </div>
+                        <div class="pass-field">
+                            <span class="pass-label">VERIFICATION SOURCE</span>
+                            <span class="pass-value" id="passAuthType">Google OAuth 2.0 · Verified</span>
+                        </div>
+                    </div>
+
+                    <!-- Pass QR Code -->
+                    <div class="pass-qr-box">
+                        <div class="pass-qr-frame" id="passQrCode">
+                            <!-- SVG QR Representation -->
+                            <svg width="86" height="86" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M2 2h8v8H2V2zm2 2v4h4V4H4zm10-2h8v8h-8V2zm2 2v4h4V4h-4zM2 14h8v8H2v-8zm2 2v4h4v-4H4zm14 0h4v4h-4v-4zm-4 0h2v2h-2v-2zm4 4h2v2h-2v-2zm-2 2h2v2h-2v-2zm-2-2h2v2h-2v-2zm0-4h2v2h-2v-2zm4-2h2v2h-2v-2zm-6 0h2v2h-2v-2z"/>
+                            </svg>
+                        </div>
+                        <span class="pass-qr-caption">SCAN TO VERIFY</span>
+                    </div>
+                </div>
+
+                <!-- Impact Metrics Bar -->
+                <div class="pass-metrics-strip">
+                    <div class="pass-metric-item">
+                        <span class="metric-num" id="passWaterSaved">2.25M L</span>
+                        <span class="metric-title">Groundwater Conserved</span>
+                    </div>
+                    <div class="pass-metric-item">
+                        <span class="metric-num" id="passPowerSaved">1,775 kWh</span>
+                        <span class="metric-title">Tubewell Power Saved</span>
+                    </div>
+                    <div class="pass-metric-item">
+                        <span class="metric-num" id="passSoilGrade">Grade A</span>
+                        <span class="metric-title">NASA SMAP Soil Health</span>
+                    </div>
+                    <div class="pass-metric-item">
+                        <span class="metric-num" id="passDossierAccess">UNLOCKED</span>
+                        <span class="metric-title">Full Dossier &amp; Prescriptions</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Modal Action Buttons -->
+            <div class="pass-modal-actions">
+                <button type="button" class="btn-pass-action btn-print-pass" id="btnPrintPassBtn">
+                    <span>🖨️</span>
+                    <span>Print / Download Pass</span>
+                </button>
+                <button type="button" class="btn-pass-action btn-signout-pass" id="btnSignOutBtn">
+                    <span>🚪</span>
+                    <span>Sign Out</span>
+                </button>
+            </div>
+        </div>
     </div>
 
     <script src="/app.js"></script>

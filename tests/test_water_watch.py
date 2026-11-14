@@ -162,3 +162,27 @@ def test_smart_calendar_generator():
     assert len(cal) == 7
     assert cal[0]["day_number"] == 1
     assert len(cal[0]["action"]) > 10
+
+
+def test_auth_system():
+    """Verify backend profile, registration, and user data persistence."""
+    from server import load_users, signup_user, AuthRequest
+    users = load_users()
+    assert "arnav@punjabfarms.gov.in" in users
+    assert users["arnav@punjabfarms.gov.in"]["member_id"] == "PWW-2026-PB-0482"
+
+    # Test signup
+    req = AuthRequest(
+        name="Amritsar Steward",
+        email="steward@punjab.gov.in",
+        district="Amritsar",
+        farm_acres=8.0,
+        role="Water Steward",
+        primary_crop="Mustard"
+    )
+    res = signup_user(req)
+    assert res["status"] == "success"
+    assert res["user"]["name"] == "Amritsar Steward"
+    assert res["user"]["water_saved_litres"] == int(8.0 * 180000)
+    assert "PWW-2026-PB-" in res["user"]["member_id"]
+
