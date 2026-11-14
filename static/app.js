@@ -18,11 +18,96 @@ let dashScenarioChart = null;
 // Initialize when DOM loads
 document.addEventListener("DOMContentLoaded", () => {
     initTheme();
+    initDrawer();
     initTabs();
     initMap();
     setupEventListeners();
     loadDistrictData(currentDistrict);
 });
+
+// Hamburger Menu & Side Drawer Navigation
+function initDrawer() {
+    const hamburgerBtn = document.getElementById("hamburgerBtn");
+    const navDrawer = document.getElementById("navDrawer");
+    const drawerOverlay = document.getElementById("drawerOverlay");
+    const drawerCloseBtn = document.getElementById("drawerCloseBtn");
+
+    function openDrawer() {
+        if (navDrawer && drawerOverlay) {
+            navDrawer.classList.add("open");
+            drawerOverlay.classList.add("active");
+            if (hamburgerBtn) hamburgerBtn.classList.add("is-active");
+            document.body.style.overflow = "hidden";
+        }
+    }
+
+    function closeDrawer() {
+        if (navDrawer && drawerOverlay) {
+            navDrawer.classList.remove("open");
+            drawerOverlay.classList.remove("active");
+            if (hamburgerBtn) hamburgerBtn.classList.remove("is-active");
+            document.body.style.overflow = "";
+        }
+    }
+
+    if (hamburgerBtn) hamburgerBtn.addEventListener("click", openDrawer);
+    if (drawerCloseBtn) drawerCloseBtn.addEventListener("click", closeDrawer);
+    if (drawerOverlay) drawerOverlay.addEventListener("click", closeDrawer);
+
+    // Close on Escape key
+    document.addEventListener("keydown", (e) => {
+        if (e.key === "Escape" && navDrawer && navDrawer.classList.contains("open")) {
+            closeDrawer();
+        }
+    });
+
+    // Drawer Navigation Buttons
+    document.querySelectorAll(".drawer-nav-btn").forEach(btn => {
+        btn.addEventListener("click", () => {
+            const target = btn.getAttribute("data-tab");
+            const topTabBtn = document.querySelector(`.tab-btn[data-tab="${target}"]`);
+            if (topTabBtn) {
+                topTabBtn.click();
+            }
+            document.querySelectorAll(".drawer-nav-btn").forEach(b => b.classList.remove("active"));
+            btn.classList.add("active");
+            closeDrawer();
+            window.scrollTo({ top: 0, behavior: "smooth" });
+        });
+    });
+
+    // Sync Drawer District Selector with Main District Selector
+    const mainSelect = document.getElementById("districtSelect");
+    const drawerSelect = document.getElementById("drawerDistrictSelect");
+    if (mainSelect && drawerSelect) {
+        drawerSelect.innerHTML = mainSelect.innerHTML;
+        drawerSelect.value = mainSelect.value;
+
+        drawerSelect.addEventListener("change", (e) => {
+            mainSelect.value = e.target.value;
+            loadDistrictData(e.target.value);
+            closeDrawer();
+        });
+
+        mainSelect.addEventListener("change", (e) => {
+            drawerSelect.value = e.target.value;
+        });
+    }
+
+    // Keep drawer active tab synced when top tab changes
+    document.querySelectorAll(".tab-btn").forEach(btn => {
+        btn.addEventListener("click", () => {
+            const target = btn.getAttribute("data-tab");
+            document.querySelectorAll(".drawer-nav-btn").forEach(b => {
+                if (b.getAttribute("data-tab") === target) {
+                    b.classList.add("active");
+                } else {
+                    b.classList.remove("active");
+                }
+            });
+        });
+    });
+}
 
 // Theme Management (Dark / Light Mode)
 function initTheme() {
@@ -188,6 +273,7 @@ function initMap() {
 // Select district from map or UI
 function selectDistrict(name) {
     const select = document.getElementById("districtSelect");
+    const drawerSelect = document.getElementById("drawerDistrictSelect");
     let found = false;
     for (let i = 0; i < select.options.length; i++) {
         if (select.options[i].value === name) {
@@ -203,6 +289,10 @@ function selectDistrict(name) {
         newOpt.text = `Punjab - ${name}`;
         newOpt.selected = true;
         optGroup.appendChild(newOpt);
+    }
+    if (drawerSelect) {
+        drawerSelect.innerHTML = select.innerHTML;
+        drawerSelect.value = name;
     }
     loadDistrictData(name);
 }

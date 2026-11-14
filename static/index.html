@@ -12,12 +12,118 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
+    <!-- Slide-out Side Drawer Navigation -->
+    <div id="drawerOverlay" class="drawer-overlay"></div>
+    <aside id="navDrawer" class="nav-drawer" aria-label="Side Navigation Drawer">
+        <div class="drawer-header">
+            <div class="drawer-title">
+                <span>🛰️</span>
+                <span>Water Watch</span>
+            </div>
+            <button id="drawerCloseBtn" class="drawer-close-btn" aria-label="Close Navigation Menu">✕</button>
+        </div>
+
+        <!-- Drawer Region Switcher -->
+        <div class="drawer-section">
+            <div class="drawer-section-label">Active Region</div>
+            <select id="drawerDistrictSelect" class="region-select drawer-select">
+                <optgroup label="Punjab Districts">
+                    <option value="Bathinda" selected>Punjab - Bathinda</option>
+                    <option value="Sangrur">Punjab - Sangrur</option>
+                    <option value="Patiala">Punjab - Patiala</option>
+                    <option value="Ludhiana">Punjab - Ludhiana</option>
+                    <option value="Amritsar">Punjab - Amritsar</option>
+                </optgroup>
+                <optgroup label="Global Hotspots">
+                    <option value="Central Valley (California, USA)">Global - Central Valley (USA)</option>
+                    <option value="Nile Delta (Egypt)">Global - Nile Delta (Egypt)</option>
+                    <option value="Murray-Darling Basin (Australia)">Global - Murray-Darling (Australia)</option>
+                </optgroup>
+            </select>
+        </div>
+
+        <!-- Drawer Navigation Links -->
+        <div class="drawer-section" style="flex:1;">
+            <div class="drawer-section-label">Platform Tools</div>
+            <ul class="drawer-nav-list">
+                <li>
+                    <button class="drawer-nav-btn active" data-tab="tab-overview">
+                        <span>🛰️</span>
+                        <span>Live Mission Control</span>
+                    </button>
+                </li>
+                <li>
+                    <button class="drawer-nav-btn" data-tab="tab-dashboard">
+                        <span>📊</span>
+                        <span>Analytics &amp; Graphs Dashboard</span>
+                    </button>
+                </li>
+                <li>
+                    <button class="drawer-nav-btn" data-tab="tab-forecast">
+                        <span>📈</span>
+                        <span>7-Day ML Forecast &amp; Calendar</span>
+                    </button>
+                </li>
+                <li>
+                    <button class="drawer-nav-btn" data-tab="tab-simulator">
+                        <span>💧</span>
+                        <span>Water &amp; Crop Simulator</span>
+                    </button>
+                </li>
+                <li>
+                    <button class="drawer-nav-btn" data-tab="tab-soil">
+                        <span>🧪</span>
+                        <span>Soil Health &amp; PAU Lab</span>
+                    </button>
+                </li>
+                <li>
+                    <button class="drawer-nav-btn" data-tab="tab-report">
+                        <span>📋</span>
+                        <span>District Officer Dossier</span>
+                    </button>
+                </li>
+                <li>
+                    <button class="drawer-nav-btn" data-tab="tab-team">
+                        <span>👥</span>
+                        <span>Project &amp; Team Hub</span>
+                    </button>
+                </li>
+                <li>
+                    <button class="drawer-nav-btn" data-tab="tab-about">
+                        <span>📖</span>
+                        <span>About &amp; NASA Science</span>
+                    </button>
+                </li>
+            </ul>
+        </div>
+
+        <!-- Drawer Footer Branding -->
+        <div class="drawer-footer">
+            <div class="drawer-team-badge">
+                <div>Team <b>The SMAP Squad</b></div>
+                <div style="font-size:0.75rem; color:var(--text-muted); margin-top:2px;">NASA Space Apps 2026 · Delhi NCR</div>
+            </div>
+            <div class="nasa-live-pill" style="margin-top:10px; width:100%; justify-content:center;">
+                <div class="pulsing-dot"></div>
+                <span>NASA Earthdata Live</span>
+            </div>
+        </div>
+    </aside>
+
     <div class="container">
         <!-- Top Navigation Bar -->
         <header class="top-navbar">
-            <div class="app-title">
-                <span>🛰️</span>
-                <span>Punjab Farm Water Watch</span>
+            <div class="nav-left">
+                <!-- Hamburger Menu Button in Left Corner -->
+                <button id="hamburgerBtn" class="hamburger-btn" aria-label="Open Navigation Menu" title="Open Navigation Menu">
+                    <span class="hamburger-line"></span>
+                    <span class="hamburger-line"></span>
+                    <span class="hamburger-line"></span>
+                </button>
+                <div class="app-title">
+                    <span>🛰️</span>
+                    <span>Punjab Farm Water Watch</span>
+                </div>
             </div>
             <div class="nav-controls">
                 <select id="districtSelect" class="region-select">
