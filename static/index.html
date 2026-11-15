@@ -2,14 +2,20 @@
 <html lang="en" data-theme="light">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes, viewport-fit=cover">
+    <meta name="theme-color" content="#0369A1">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <title>Punjab Farm Water Watch | NASA Space Apps 2026</title>
-    <!-- Favicon -->
+    <!-- Web App Manifest & Favicons -->
+    <link rel="manifest" href="/manifest.json">
     <link rel="icon" type="image/png" href="/favicon.png">
     <link rel="shortcut icon" href="/favicon.ico">
+    <link rel="apple-touch-icon" href="/logo.png">
     <!-- Leaflet CSS -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-    <link rel="stylesheet" href="/style.css?v=2026.11.15.v7">
+    <link rel="stylesheet" href="/style.css?v=2026.11.15.v8">
     <!-- Chart.js & Leaflet JS -->
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -150,6 +156,12 @@
                 <div class="nasa-live-pill" id="nasaPill" title="NASA API Authenticated &amp; Connected (nkcn...HpdH)">
                     <div class="pulsing-dot"></div>
                     <span id="nasaPillText">NASA API Live</span>
+                </div>
+
+                <!-- 2G / Live Network Indicator Pill -->
+                <div class="network-status-pill network-online" id="networkPill" title="Network Connection Status">
+                    <div class="network-dot" id="networkDot"></div>
+                    <span id="networkText">Live Synced</span>
                 </div>
 
                 <div class="lang-toggle">
@@ -1536,6 +1548,30 @@
         </div>
     </div>
 
-    <script src="/app.js?v=2026.11.15.v7"></script>
+    <!-- Mobile Bottom Thumb Navigation Bar -->
+    <nav class="mobile-bottom-nav" id="mobileBottomNav" aria-label="Mobile Navigation">
+        <button type="button" class="mobile-nav-btn active" data-tab="tab-overview" title="Mission Control Map">
+            <span class="mobile-nav-icon">🛰️</span>
+            <span class="mobile-nav-text" data-i18n="mob_nav_map">Mission</span>
+        </button>
+        <button type="button" class="mobile-nav-btn" data-tab="tab-dashboard" title="Hydrological Analytics">
+            <span class="mobile-nav-icon">📊</span>
+            <span class="mobile-nav-text" data-i18n="mob_nav_dash">Analytics</span>
+        </button>
+        <button type="button" class="mobile-nav-btn" data-tab="tab-forecast" title="7-Day Advisory & Irrigation Planner">
+            <span class="mobile-nav-icon">📅</span>
+            <span class="mobile-nav-text" data-i18n="mob_nav_plan">7-Day</span>
+        </button>
+        <button type="button" class="mobile-nav-btn" data-tab="tab-agrisense" title="Soil Health & Salinity Scanner">
+            <span class="mobile-nav-icon">🧪</span>
+            <span class="mobile-nav-text" data-i18n="mob_nav_soil">AgriSense</span>
+        </button>
+        <button type="button" class="mobile-nav-btn" data-tab="tab-report" title="Digital Farmer Water Pass">
+            <span class="mobile-nav-icon">🪪</span>
+            <span class="mobile-nav-text" data-i18n="mob_nav_pass">Water Pass</span>
+        </button>
+    </nav>
+
+    <script src="/app.js?v=2026.11.15.v8"></script>
 </body>
 </html>

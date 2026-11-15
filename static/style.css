@@ -3384,3 +3384,371 @@ body.auth-locked #drawerOverlay {
         color: #0F172A !important;
     }
 }
+
+/* ==========================================================================
+   2G & NETWORK CONNECTIVITY INDICATOR PILL
+   ========================================================================== */
+.network-status-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.3px;
+    transition: all 0.25s ease;
+    user-select: none;
+    white-space: nowrap;
+}
+
+.network-status-pill.network-online {
+    background: rgba(16, 185, 129, 0.15);
+    border: 1px solid rgba(16, 185, 129, 0.4);
+    color: #10B981;
+}
+
+[data-theme="light"] .network-status-pill.network-online {
+    background: #ECFDF5;
+    border-color: #A7F3D0;
+    color: #047857;
+}
+
+.network-status-pill.network-2g {
+    background: rgba(245, 158, 11, 0.15);
+    border: 1px solid rgba(245, 158, 11, 0.5);
+    color: #F59E0B;
+}
+
+[data-theme="light"] .network-status-pill.network-2g {
+    background: #FFFBEB;
+    border-color: #FDE68A;
+    color: #B45309;
+}
+
+.network-status-pill.network-offline {
+    background: rgba(239, 68, 68, 0.15);
+    border: 1px solid rgba(239, 68, 68, 0.5);
+    color: #EF4444;
+}
+
+[data-theme="light"] .network-status-pill.network-offline {
+    background: #FEF2F2;
+    border-color: #FECACA;
+    color: #B91C1C;
+}
+
+.network-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+}
+
+.network-online .network-dot {
+    background: #10B981;
+    box-shadow: 0 0 6px #10B981;
+}
+
+.network-2g .network-dot {
+    background: #F59E0B;
+    box-shadow: 0 0 6px #F59E0B;
+}
+
+.network-offline .network-dot {
+    background: #EF4444;
+    box-shadow: 0 0 6px #EF4444;
+}
+
+/* ==========================================================================
+   MOBILE BOTTOM THUMB-NAVIGATION BAR (NATIVE APP FEEL)
+   ========================================================================== */
+.mobile-bottom-nav {
+    display: none; /* Hidden on desktop screens */
+}
+
+/* ==========================================================================
+   MOBILE-FIRST RESPONSIVE BREAKPOINTS (SMARTPHONES 360px - 768px)
+   ========================================================================== */
+@media (max-width: 768px) {
+    body {
+        padding-bottom: 74px !important;
+        overflow-x: hidden !important;
+    }
+
+    .container {
+        padding: 8px 10px !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        box-sizing: border-box !important;
+    }
+
+    /* Fixed Bottom Thumb-Nav Bar */
+    .mobile-bottom-nav {
+        position: fixed !important;
+        bottom: 0 !important;
+        left: 0 !important;
+        right: 0 !important;
+        height: 62px !important;
+        background: rgba(15, 23, 42, 0.95) !important;
+        backdrop-filter: blur(14px) !important;
+        -webkit-backdrop-filter: blur(14px) !important;
+        border-top: 1px solid rgba(255, 255, 255, 0.1) !important;
+        display: flex !important;
+        justify-content: space-around !important;
+        align-items: center !important;
+        z-index: 9999 !important;
+        padding: 4px 6px env(safe-area-inset-bottom, 0px) 6px !important;
+        box-shadow: 0 -4px 18px rgba(0, 0, 0, 0.35) !important;
+        box-sizing: border-box !important;
+    }
+
+    [data-theme="light"] .mobile-bottom-nav {
+        background: rgba(255, 255, 255, 0.96) !important;
+        border-top-color: #E2E8F0 !important;
+        box-shadow: 0 -4px 18px rgba(0, 0, 0, 0.08) !important;
+    }
+
+    .mobile-nav-btn {
+        flex: 1 !important;
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: center !important;
+        justify-content: center !important;
+        gap: 3px !important;
+        background: transparent !important;
+        border: none !important;
+        color: #94A3B8 !important;
+        padding: 6px 2px !important;
+        cursor: pointer !important;
+        border-radius: 8px !important;
+        transition: all 0.2s ease !important;
+        -webkit-tap-highlight-color: transparent !important;
+    }
+
+    [data-theme="light"] .mobile-nav-btn {
+        color: #64748B !important;
+    }
+
+    .mobile-nav-btn.active {
+        color: #38BDF8 !important;
+        font-weight: 800 !important;
+        background: rgba(56, 189, 248, 0.12) !important;
+    }
+
+    [data-theme="light"] .mobile-nav-btn.active {
+        color: #0284C7 !important;
+        background: #E0F2FE !important;
+    }
+
+    .mobile-nav-icon {
+        font-size: 1.25rem !important;
+        line-height: 1 !important;
+    }
+
+    .mobile-nav-text {
+        font-size: 0.68rem !important;
+        letter-spacing: 0.2px !important;
+        white-space: nowrap !important;
+    }
+
+    /* Top Navbar Mobile Stacking */
+    .top-navbar {
+        flex-direction: column !important;
+        align-items: stretch !important;
+        gap: 10px !important;
+        padding: 10px 12px !important;
+        border-radius: 10px !important;
+    }
+
+    .nav-left {
+        display: flex !important;
+        justify-content: space-between !important;
+        align-items: center !important;
+        width: 100% !important;
+    }
+
+    .app-title {
+        font-size: 0.96rem !important;
+        gap: 8px !important;
+    }
+
+    .brand-logo-img {
+        width: 28px !important;
+        height: 28px !important;
+    }
+
+    .nav-controls {
+        display: flex !important;
+        flex-wrap: wrap !important;
+        align-items: center !important;
+        gap: 8px !important;
+        width: 100% !important;
+    }
+
+    .hotspot-cascading-control {
+        width: 100% !important;
+        display: grid !important;
+        grid-template-columns: 1fr 1fr !important;
+        gap: 6px !important;
+    }
+
+    .region-select {
+        width: 100% !important;
+        min-height: 42px !important;
+        font-size: 0.85rem !important;
+        box-sizing: border-box !important;
+    }
+
+    /* Live Mission Control Layout on Mobile */
+    .grid-top {
+        grid-template-columns: 1fr !important;
+        gap: 12px !important;
+    }
+
+    #map {
+        height: 285px !important;
+        min-height: 260px !important;
+        max-height: 320px !important;
+        width: 100% !important;
+        border-radius: 8px !important;
+    }
+
+    .map-layer-toolbar {
+        flex-direction: column !important;
+        align-items: flex-start !important;
+        gap: 6px !important;
+    }
+
+    .layer-pill-group {
+        overflow-x: auto !important;
+        flex-wrap: nowrap !important;
+        -webkit-overflow-scrolling: touch !important;
+        width: 100% !important;
+        padding-bottom: 4px !important;
+    }
+
+    .layer-pill-btn {
+        flex-shrink: 0 !important;
+        font-size: 0.76rem !important;
+        padding: 6px 10px !important;
+        min-height: 34px !important;
+    }
+
+    .cards-stack {
+        width: 100% !important;
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 10px !important;
+    }
+
+    .delta-grid {
+        grid-template-columns: 1fr !important;
+        gap: 8px !important;
+    }
+
+    /* Analytics Dashboard on Mobile */
+    .dash-hero-header {
+        flex-direction: column !important;
+        align-items: flex-start !important;
+        gap: 10px !important;
+    }
+
+    .dash-kpi-row {
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: 8px !important;
+    }
+
+    .dash-grid-2col {
+        grid-template-columns: 1fr !important;
+        gap: 12px !important;
+    }
+
+    .formula-card {
+        padding: 12px !important;
+        overflow-x: auto !important;
+    }
+
+    .formula-display {
+        font-size: 0.82rem !important;
+        word-break: break-word !important;
+    }
+
+    /* Mobile Inputs - Prevent iOS Auto-Zoom */
+    input, select, textarea {
+        font-size: 16px !important;
+    }
+
+    /* Responsive Mobile Modals */
+    .auth-modal-card,
+    .profile-card-modal,
+    .guide-modal-card {
+        width: 95% !important;
+        max-width: 480px !important;
+        max-height: 88vh !important;
+        overflow-y: auto !important;
+        padding: 16px 14px !important;
+        margin: auto !important;
+        box-sizing: border-box !important;
+    }
+
+    /* Thumb-friendly Touch Targets (Min 44px) */
+    .btn-whatsapp, .btn-voice, .btn-pass-action, .btn-auth-primary, .auth-switch-btn {
+        min-height: 44px !important;
+        font-size: 0.9rem !important;
+    }
+
+    /* Digital Farmer Water Pass Mobile Card */
+    #tabFarmPassPrintable, #farmPassPrintable {
+        width: 100% !important;
+        max-width: 100% !important;
+        padding: 12px !important;
+        box-sizing: border-box !important;
+    }
+
+    .pass-body {
+        flex-direction: column-reverse !important;
+        align-items: center !important;
+        gap: 12px !important;
+    }
+
+    .pass-grid {
+        grid-template-columns: 1fr !important;
+        gap: 8px !important;
+        width: 100% !important;
+    }
+
+    .pass-qr-box {
+        align-items: center !important;
+        width: 100% !important;
+    }
+
+    .pass-metrics-strip {
+        grid-template-columns: 1fr 1fr !important;
+        gap: 8px !important;
+    }
+
+    .pass-modal-actions {
+        flex-direction: column !important;
+        width: 100% !important;
+        gap: 8px !important;
+    }
+
+    .btn-pass-action {
+        width: 100% !important;
+        justify-content: center !important;
+    }
+}
+
+@media (max-width: 480px) {
+    .hotspot-cascading-control {
+        grid-template-columns: 1fr !important;
+    }
+
+    .dash-kpi-row {
+        grid-template-columns: 1fr !important;
+    }
+
+    .pass-metrics-strip {
+        grid-template-columns: 1fr !important;
+    }
+}

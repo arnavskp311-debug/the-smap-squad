@@ -24,11 +24,63 @@ document.addEventListener("DOMContentLoaded", () => {
     initTabs();
     initMap();
     initNasaStatus();
+    initNetworkMonitor();
+    initServiceWorker();
     initAuth();
     populateHotspotDistricts("Punjab", currentDistrict || "Bathinda");
     setupEventListeners();
     loadDistrictData(currentDistrict);
 });
+
+// 2G & Live Network Connectivity Monitor
+function initNetworkMonitor() {
+    const pill = document.getElementById("networkPill");
+    const text = document.getElementById("networkText");
+
+    function updateStatus() {
+        if (!pill || !text) return;
+        const isOnline = navigator.onLine;
+        const conn = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+        const effectiveType = conn ? conn.effectiveType : null;
+        const is2G = effectiveType === "2g" || effectiveType === "slow-2g";
+
+        pill.classList.remove("network-online", "network-2g", "network-offline");
+
+        if (!isOnline) {
+            pill.classList.add("network-offline");
+            text.innerText = currentLang === "pa" ? "ਆਫਲਾਈਨ (ਕੈਸ਼)" : (currentLang === "hi" ? "ऑफ़लाइन (कैश)" : "Offline (Cached)");
+            pill.title = "Offline Mode: Telemetry rendered from local cached storage.";
+        } else if (is2G) {
+            pill.classList.add("network-2g");
+            text.innerText = currentLang === "pa" ? "2G ਮੋਡ (ਸੇਵ)" : (currentLang === "hi" ? "2G मोड (डेटा बचत)" : "2G Mode (Data Saved)");
+            pill.title = "2G Network Detected: Ultra-compressed instant satellite telemetry loaded.";
+        } else {
+            pill.classList.add("network-online");
+            text.innerText = currentLang === "pa" ? "ਲਾਈਵ ਸਿੰਕ" : (currentLang === "hi" ? "लाइव सिंक" : "Live Synced");
+            pill.title = "NASA Earthdata Satellite Telemetry Live Synced.";
+        }
+    }
+
+    window.addEventListener("online", updateStatus);
+    window.addEventListener("offline", updateStatus);
+    if (navigator.connection) {
+        navigator.connection.addEventListener("change", updateStatus);
+    }
+    updateStatus();
+}
+
+// Offline PWA Service Worker Registration
+function initServiceWorker() {
+    if ("serviceWorker" in navigator) {
+        window.addEventListener("load", () => {
+            navigator.serviceWorker.register("/sw.js").then(reg => {
+                console.log("[PWW SW] Active with scope:", reg.scope);
+            }).catch(err => {
+                console.warn("[PWW SW] Registration failed:", err);
+            });
+        });
+    }
+}
 
 // NASA API Key & Live Status
 function initNasaStatus() {
@@ -274,6 +326,15 @@ function switchTab(target) {
             b.classList.remove("active");
         }
     });
+
+    // Keep mobile bottom nav active state synced
+    document.querySelectorAll(".mobile-nav-btn").forEach(b => {
+        if (b.getAttribute("data-tab") === target) {
+            b.classList.add("active");
+        } else {
+            b.classList.remove("active");
+        }
+    });
 }
 
 // Theme Management (Dark / Light Mode)
@@ -394,7 +455,12 @@ const I18N_DICTIONARY = {
         "guide_c6_f1": "<b>Language Selector:</b> Choose English (EN), हिन्दी (HI), or ਪੰਜਾਬੀ (PA) before or after sign-in.",
         "guide_c6_f2": "<b>Light / Dark Mode:</b> High-contrast light mode for bright sunlight; dark mode for mission control.",
         "guide_c6_f3": "<b>Persistence:</b> Your language and theme preferences are automatically saved on your device.",
-        "guide_c6_tip": "💡 <b>Tip:</b> Use the top navbar buttons to toggle language or theme with a single click."
+        "guide_c6_tip": "💡 <b>Tip:</b> Use the top navbar buttons to toggle language or theme with a single click.",
+        "mob_nav_map": "Mission",
+        "mob_nav_dash": "Analytics",
+        "mob_nav_plan": "7-Day",
+        "mob_nav_soil": "AgriSense",
+        "mob_nav_pass": "Water Pass"
     },
     "hi": {
         "nav_guide": "यूज़र गाइड",
@@ -479,7 +545,12 @@ const I18N_DICTIONARY = {
         "guide_c6_f1": "<b>भाषा चयन:</b> साइन-इन से पहले या बाद में कभी भी अंग्रेजी, हिन्दी या पंजाबी चुनें।",
         "guide_c6_f2": "<b>लाइट / डार्क मोड:</b> तेज़ धूप के लिए उच्च-कंट्रास्ट लाइट मोड और रात के लिए डार्क मोड।",
         "guide_c6_f3": "<b>सुरक्षित चयन:</b> आपकी चुनी हुई भाषा और थीम आपके ब्राउज़र में सुरक्षित रूप से याद रखी जाती है।",
-        "guide_c6_tip": "💡 <b>टिप:</b> ऊपर नेविगेशन बार में दिए गए बटनों से एक क्लिक में भाषा या थीम बदलें।"
+        "guide_c6_tip": "💡 <b>टिप:</b> ऊपर नेविगेशन बार में दिए गए बटनों से एक क्लिक में भाषा या थीम बदलें।",
+        "mob_nav_map": "मिशन",
+        "mob_nav_dash": "विश्लेषण",
+        "mob_nav_plan": "7-दिन",
+        "mob_nav_soil": "मृदा टेस्ट",
+        "mob_nav_pass": "जल पास"
     },
     "pa": {
         "nav_guide": "ਯੂਜ਼ਰ ਗਾਈਡ",
@@ -564,7 +635,12 @@ const I18N_DICTIONARY = {
         "guide_c6_f1": "<b>ਭਾਸ਼ਾ ਚੋਣ:</b> ਸਾਈਨ-ਇਨ ਤੋਂ ਪਹਿਲਾਂ ਜਾਂ ਬਾਅਦ ਵਿੱਚ ਕਦੇ ਵੀ ਅੰਗਰੇਜ਼ੀ, ਹਿੰਦੀ ਜਾਂ ਪੰਜਾਬੀ ਚੁਣੋ।",
         "guide_c6_f2": "<b>ਲਾਈਟ / ਡਾਰਕ ਮੋਡ:</b> ਤੇਜ਼ ਧੁੱਪ ਲਈ ਹਾਈ-ਕੰਟ੍ਰਾਸਟ ਲਾਈਟ ਮੋਡ ਅਤੇ ਰਾਤ ਲਈ ਡਾਰਕ ਮੋਡ।",
         "guide_c6_f3": "<b>ਸੁਰੱਖਿਅਤ ਪਸੰਦ:</b> ਤੁਹਾਡੀ ਚੁਣੀ ਗਈ ਭਾਸ਼ਾ ਅਤੇ ਥੀਮ ਤੁਹਾਡੇ ਮੋਬਾਈਲ/ਕੰਪਿਊਟਰ 'ਤੇ ਹਮੇਸ਼ਾ ਯਾਦ ਰਹਿੰਦੀ ਹੈ।",
-        "guide_c6_tip": "💡 <b>ਸੁਝਾਅ:</b> ਉੱਪਰਲੇ ਨੈਵੀਗੇਸ਼ਨ ਬਾਰ ਵਿੱਚ ਦਿੱਤੇ ਬਟਨਾਂ ਤੋਂ ਇੱਕ ਕਲਿੱਕ ਵਿੱਚ ਭਾਸ਼ਾ ਜਾਂ ਥੀਮ ਬਦਲੋ।"
+        "guide_c6_tip": "💡 <b>ਸੁਝਾਅ:</b> ਉੱਪਰਲੇ ਨੈਵੀਗੇਸ਼ਨ ਬਾਰ ਵਿੱਚ ਦਿੱਤੇ ਬਟਨਾਂ ਤੋਂ ਇੱਕ ਕਲਿੱਕ ਵਿੱਚ ਭਾਸ਼ਾ ਜਾਂ ਥੀਮ ਬਦਲੋ।",
+        "mob_nav_map": "ਮਿਸ਼ਨ",
+        "mob_nav_dash": "ਵਿਸ਼ਲੇਸ਼ਣ",
+        "mob_nav_plan": "7-ਦਿਨ",
+        "mob_nav_soil": "ਮਿੱਟੀ ਟੈਸਟ",
+        "mob_nav_pass": "ਜਲ ਪਾਸ"
     }
 };
 
@@ -658,6 +734,17 @@ function initTabs() {
             const target = link.getAttribute("data-tab");
             switchTab(target);
             window.scrollTo({ top: 0, behavior: "smooth" });
+        });
+    });
+
+    // Mobile Bottom Nav buttons
+    document.querySelectorAll(".mobile-nav-btn").forEach(btn => {
+        btn.addEventListener("click", () => {
+            const target = btn.getAttribute("data-tab");
+            if (target) {
+                switchTab(target);
+                window.scrollTo({ top: 0, behavior: "smooth" });
+            }
         });
     });
 
@@ -931,46 +1018,78 @@ function setupEventListeners() {
 // Static Telemetry Dataset Cache per Language
 window._telemetryCacheByLang = window._telemetryCacheByLang || {};
 
-// Load District Telemetry
+// Load District Telemetry with Instant 2G/Offline Cache
 async function loadDistrictData(district) {
     currentDistrict = district;
     const lang = (currentLang === "hi" || currentLang === "pa") ? currentLang : "en";
     let loaded = false;
 
-    // 1. Try live API (FastAPI backend when running locally)
-    try {
-        const res = await fetch(`/api/telemetry?district=${encodeURIComponent(district)}&lang=${lang}`);
-        if (res.ok) {
-            const data = await res.json();
-            lastTelemetryData = data;
-            renderTelemetry(data);
-            loaded = true;
+    // Helper to find clean key in dataset
+    function findDistrictInDataset(ds, dName) {
+        if (!ds) return null;
+        let clean = dName || "Bathinda";
+        if (!ds[clean] && clean.includes(" - ")) {
+            clean = clean.split(" - ").pop().trim();
         }
-    } catch (e) {
-        // Fallback to static precomputed localized JSON
+        return ds[clean] || ds[dName] || ds["Bathinda"] || Object.values(ds)[0] || null;
     }
 
-    // 2. Static Precomputed Fallback (100% resilient on Netlify static host)
-    if (!loaded) {
-        try {
-            if (!window._telemetryCacheByLang[lang]) {
-                const r = await fetch(`data/telemetry_${lang}.json`);
-                if (r.ok) {
-                    window._telemetryCacheByLang[lang] = await r.json();
-                } else {
-                    const fallbackR = await fetch("data/telemetry_all.json");
-                    window._telemetryCacheByLang[lang] = await fallbackR.json();
-                }
+    // 0. Zero-Latency Instant Render from Local Cache (Crucial for 2G / Offline speed)
+    const localCacheKey = `pww_telemetry_${lang}`;
+    try {
+        if (!window._telemetryCacheByLang[lang]) {
+            const raw = localStorage.getItem(localCacheKey);
+            if (raw) {
+                window._telemetryCacheByLang[lang] = JSON.parse(raw);
             }
-            const dataset = window._telemetryCacheByLang[lang];
-            const fallbackData = dataset[district] || dataset["Bathinda"] || Object.values(dataset)[0];
-            if (fallbackData) {
-                lastTelemetryData = fallbackData;
-                renderTelemetry(fallbackData);
-            }
-        } catch (staticErr) {
-            console.error("Static telemetry fallback error:", staticErr);
         }
+        if (window._telemetryCacheByLang[lang]) {
+            const instantData = findDistrictInDataset(window._telemetryCacheByLang[lang], district);
+            if (instantData) {
+                lastTelemetryData = instantData;
+                renderTelemetry(instantData);
+                loaded = true;
+            }
+        }
+    } catch (e) {}
+
+    // 1. Background Network Sync with 5-second AbortController (prevents 2G hanging)
+    try {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 5000);
+
+        if (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1") {
+            try {
+                const res = await fetch(`/api/telemetry?district=${encodeURIComponent(district)}&lang=${lang}`, { signal: controller.signal });
+                if (res.ok) {
+                    const data = await res.json();
+                    clearTimeout(timeoutId);
+                    lastTelemetryData = data;
+                    renderTelemetry(data);
+                    return;
+                }
+            } catch (apiErr) {}
+        }
+
+        // Fetch compressed static telemetry dataset
+        const r = await fetch(`/data/telemetry_${lang}.json`, { signal: controller.signal });
+        clearTimeout(timeoutId);
+        if (r.ok) {
+            const dataset = await r.json();
+            window._telemetryCacheByLang[lang] = dataset;
+            try {
+                localStorage.setItem(localCacheKey, JSON.stringify(dataset));
+            } catch (stErr) {}
+
+            const freshData = findDistrictInDataset(dataset, district);
+            if (freshData) {
+                lastTelemetryData = freshData;
+                renderTelemetry(freshData);
+                loaded = true;
+            }
+        }
+    } catch (netErr) {
+        console.log("[PWW 2G Network Sync] Rendered from persistent offline storage.");
     }
 }
 
@@ -1656,23 +1775,41 @@ function initAuth() {
         unlockAuthGate();
     }
 
-    // Check for email verification redirect from backend link
+    // Check for email verification URL parameters: ?verify_email=... or ?verified=true
     const urlParams = new URLSearchParams(window.location.search);
-    if (urlParams.get("verified") === "true") {
-        const verifiedEmail = urlParams.get("email");
+    const verifyEmail = urlParams.get("verify_email") || (urlParams.get("verified") === "true" ? urlParams.get("email") : null);
+    const token = urlParams.get("token");
+
+    if (verifyEmail) {
+        // Activate user in persistent storage
+        try {
+            const localUsers = JSON.parse(localStorage.getItem("pww_local_users") || "{}");
+            const lowerEmail = verifyEmail.toLowerCase();
+            if (localUsers[lowerEmail]) {
+                localUsers[lowerEmail].is_active = true;
+                localUsers[lowerEmail].email_verified = true;
+                localStorage.setItem("pww_local_users", JSON.stringify(localUsers));
+            }
+        } catch(e) {}
+
+        // Also notify backend if online
+        if (token) {
+            fetch(`/api/auth/verify?email=${encodeURIComponent(verifyEmail)}&token=${encodeURIComponent(token)}`).catch(() => {});
+        }
+
         setTimeout(() => {
             const tabLoginAuth = document.getElementById("tabLoginAuth");
             const loginFeedback = document.getElementById("loginFeedback");
             const loginEmail = document.getElementById("loginEmail");
 
             if (tabLoginAuth) tabLoginAuth.click();
-            if (loginEmail && verifiedEmail) loginEmail.value = verifiedEmail;
+            if (loginEmail) loginEmail.value = verifyEmail;
             if (loginFeedback) {
                 loginFeedback.style.display = "block";
                 loginFeedback.className = "auth-feedback auth-feedback-success";
                 loginFeedback.innerHTML = `
-                    <div class="feedback-title">✅ ईमेल सफलतापूर्वक सत्यापित हुआ!</div>
-                    <div class="feedback-desc">आपका किसान खाता अब सक्रिय (Active) हो चुका है। कृपया नीचे अपना पासवर्ड दर्ज करें और पोर्टल में प्रवेश करें।</div>
+                    <div class="feedback-title">✅ खाता सफलतापूर्वक सक्रिय (Activated) हुआ!</div>
+                    <div class="feedback-desc">आपका किसान खाता <b>${verifyEmail}</b> अब सक्रिय हो चुका है। कृपया नीचे अपना सही पासवर्ड दर्ज करके लॉगिन करें।</div>
                 `;
             }
         }, 350);
@@ -1742,7 +1879,10 @@ function updateUserUI(user) {
             const farmerName = user.name || "Punjab Water Sentinel";
             const district = user.district || "Bathinda";
             const waterSaved = `${savedMillions}M L`;
-            const qrData = `https://punjab-water-watch.gov.in/verify?member_id=${encodeURIComponent(memberId)}&farmer=${encodeURIComponent(farmerName)}&district=${encodeURIComponent(district)}&water_saved=${encodeURIComponent(waterSaved)}`;
+            const baseOrigin = window.location.origin.includes("localhost") 
+                ? "https://punjab-farm-water-watch.netlify.app" 
+                : window.location.origin;
+            const qrData = `${baseOrigin}/verify.html?member_id=${encodeURIComponent(memberId)}&farmer=${encodeURIComponent(farmerName)}&district=${encodeURIComponent(district)}&water_saved=${encodeURIComponent(waterSaved)}&power_saved=${encodeURIComponent((user.electricity_saved_kwh || 1420) + " kWh")}&soil_grade=${encodeURIComponent(user.soil_health_grade || "Grade A")}&crop=${encodeURIComponent(user.primary_crop || "Wheat & Rice")}`;
             qrDataUrl = `https://api.qrserver.com/v1/create-qr-code/?size=180x180&margin=4&data=${encodeURIComponent(qrData)}`;
             passQrImg.src = qrDataUrl;
         }
@@ -1955,7 +2095,8 @@ function setupAuthListeners() {
                 console.warn("API registration failed, checking Netlify fallback:", err);
                 const isNetlify = window.location.hostname.includes("netlify.app") || err.message.includes("404") || err.name === "TypeError";
                 if (isNetlify) {
-                    // Netlify Cloud Client-Side Registration
+                    // Netlify Cloud Client-Side Registration (STRICT: Pending Activation, NO DIRECT LOGIN)
+                    const token = "tok_" + Math.random().toString(36).substring(2, 15);
                     const mockUser = {
                         name: name || "Farmer",
                         email: email,
@@ -1971,26 +2112,34 @@ function setupAuthListeners() {
                         member_id: `PWW-2026-PB-${Math.floor(1000 + Math.random() * 9000)}`,
                         provider: "email",
                         avatar_initials: (name || "Farmer").split(" ").map(p => p[0]).join("").toUpperCase().slice(0, 2),
-                        is_active: true,
-                        email_verified: true,
+                        is_active: false,
+                        email_verified: false,
+                        verification_token: token,
                         created_at: new Date().toISOString()
                     };
                     const localUsers = JSON.parse(localStorage.getItem("pww_local_users") || "{}");
                     localUsers[email.toLowerCase()] = { ...mockUser, password };
                     localStorage.setItem("pww_local_users", JSON.stringify(localUsers));
 
-                    currentUser = mockUser;
-                    localStorage.setItem("pww_user", JSON.stringify(currentUser));
-                    updateUserUI(currentUser);
-                    unlockAuthGate();
-                    if (currentUser.district) {
-                        const select = document.getElementById("districtSelect");
-                        if (select) {
-                            select.value = currentUser.district;
-                            loadDistrictData(currentUser.district);
-                        }
+                    // DO NOT LOGIN DIRECTLY! Require Account Activation!
+                    const verifyUrl = `${window.location.origin}/?verify_email=${encodeURIComponent(email)}&token=${token}`;
+                    if (feedback) {
+                        feedback.style.display = "block";
+                        feedback.className = "auth-feedback auth-feedback-warning";
+                        feedback.innerHTML = `
+                            <div class="feedback-title">✉️ खाता पंजीकरण सफल! एक्टिवेशन आवश्यक</div>
+                            <div class="feedback-desc">
+                                आपका खाता <b>${email}</b> सफलतापूर्वक पंजीकृत कर लिया गया है।<br>
+                                <b>सुरक्षा नियम:</b> जब तक खाता सक्रिय (Activate) नहीं होगा, <b>सीधे लॉगिन की अनुमति नहीं है</b>।<br>
+                                कृपया नीचे दिए गए एक्टिवेशन लिंक पर क्लिक करके अपना खाता सक्रिय करें:
+                            </div>
+                            <div style="margin-top:12px; text-align:center;">
+                                <a href="${verifyUrl}" id="linkActivateAccount" style="display:inline-block; font-weight:800; background:#0284C7; color:white; padding:10px 18px; border-radius:8px; text-decoration:none; font-size:0.88rem; box-shadow:0 4px 12px rgba(2,132,199,0.3);">
+                                    🔗 खाता सक्रिय करें (Click to Activate Account)
+                                </a>
+                            </div>
+                        `;
                     }
-                    openProfileModal();
                     return;
                 }
                 if (feedback) {
@@ -2072,7 +2221,38 @@ function setupAuthListeners() {
                 if (isNetlify) {
                     const localUsers = JSON.parse(localStorage.getItem("pww_local_users") || "{}");
                     const matched = localUsers[email.toLowerCase()];
-                    if (matched && matched.password === password) {
+                    if (matched) {
+                        if (matched.password !== password) {
+                            if (feedback) {
+                                feedback.style.display = "block";
+                                feedback.className = "auth-feedback auth-feedback-error";
+                                feedback.innerHTML = `
+                                    <div class="feedback-title">❌ गलत पासवर्ड (Invalid Password)</div>
+                                    <div class="feedback-desc">दर्ज किया गया पासवर्ड अमान्य है। कृपया सही पासवर्ड दर्ज करें।</div>
+                                `;
+                            }
+                            return;
+                        }
+                        if (!matched.email_verified) {
+                            const verifyUrl = `${window.location.origin}/?verify_email=${encodeURIComponent(email)}&token=${matched.verification_token || "tok"}`;
+                            if (feedback) {
+                                feedback.style.display = "block";
+                                feedback.className = "auth-feedback auth-feedback-warning";
+                                feedback.innerHTML = `
+                                    <div class="feedback-title">⚠️ खाता सक्रिय नहीं है (Account Not Active)</div>
+                                    <div class="feedback-desc">
+                                        आपका खाता पंजीकृत है लेकिन अभी सक्रिय नहीं हुआ है। सीधे लॉगिन से पहले खाता सक्रिय करें:
+                                    </div>
+                                    <div style="margin-top:10px; text-align:center;">
+                                        <a href="${verifyUrl}" style="display:inline-block; font-weight:700; background:#0284C7; color:white; padding:8px 14px; border-radius:6px; text-decoration:none; font-size:0.84rem;">
+                                            🔗 खाता सक्रिय करें (Activate Account)
+                                        </a>
+                                    </div>
+                                `;
+                            }
+                            return;
+                        }
+
                         currentUser = matched;
                         localStorage.setItem("pww_user", JSON.stringify(currentUser));
                         updateUserUI(currentUser);
