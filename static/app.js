@@ -228,6 +228,17 @@ function initLocationBottomSheet() {
             else switchTab("tab-panchayat");
         });
     }
+
+    // Desktop Location Pill Click Helper
+    const desktopLocPill = document.getElementById("desktopLocationPill");
+    if (desktopLocPill) {
+        desktopLocPill.addEventListener("click", (e) => {
+            if (e.target.tagName !== "SELECT") {
+                const districtSelect = document.getElementById("districtSelect");
+                if (districtSelect) districtSelect.focus();
+            }
+        });
+    }
 }
 
 // Hero Description Clamping & Read More Toggle

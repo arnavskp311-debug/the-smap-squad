@@ -15,15 +15,15 @@
     <link rel="apple-touch-icon" href="/logo.png">
     <!-- Leaflet CSS -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-    <link rel="stylesheet" href="/style.css?v=2026.11.15.v22">
-    <!-- Immediate Cache Purge for Version v22 -->
+    <link rel="stylesheet" href="/style.css?v=2026.11.15.v23">
+    <!-- Immediate Cache Purge for Version v23 -->
     <script>
-        if (localStorage.getItem("pww_cache_v") !== "2026.11.15.v22") {
-            localStorage.setItem("pww_cache_v", "2026.11.15.v22");
+        if (localStorage.getItem("pww_cache_v") !== "2026.11.15.v23") {
+            localStorage.setItem("pww_cache_v", "2026.11.15.v23");
             if ("caches" in window) {
                 caches.keys().then(keys => {
                     keys.forEach(k => {
-                        if (!k.includes("v2026.11.15.v22")) caches.delete(k);
+                        if (!k.includes("v2026.11.15.v23")) caches.delete(k);
                     });
                 });
             }
@@ -209,7 +209,7 @@
         </div>
 
         <!-- Top Navigation Bar (Desktop >= 768px) -->
-        <header class="top-navbar">
+        <header class="top-navbar" id="desktopTopNavbar">
             <div class="nav-left">
                 <!-- Hamburger Menu Button in Left Corner -->
                 <button id="hamburgerBtn" class="hamburger-btn" aria-label="Open Navigation Menu" title="Open Navigation Menu">
@@ -222,21 +222,27 @@
                     <span>Punjab Farm Water Watch</span>
                 </div>
             </div>
-            <div class="nav-controls">
-                <!-- 5 Global Hotspots with Dynamic Expanding Districts -->
-                <div class="hotspot-cascading-control">
-                    <select id="hotspotSelect" class="region-select hotspot-select" title="Select Global Aquifer Hotspot" aria-label="Global Aquifer Hotspot">
+
+            <!-- Center: One Combined Location Selector Pill -->
+            <div class="nav-center">
+                <div class="desktop-location-pill" id="desktopLocationPill" title="Select Global Hotspot &amp; District">
+                    <span class="loc-pill-pin">📍</span>
+                    <select id="hotspotSelect" class="pill-select hotspot-select" title="Select Global Aquifer Hotspot" aria-label="Global Aquifer Hotspot">
                         <option value="Punjab" selected>🌾 Punjab (India)</option>
                         <option value="Central Valley">🏜️ Central Valley (USA)</option>
                         <option value="Nile Delta">🌊 Nile Delta (Egypt)</option>
                         <option value="Murray-Darling">🚜 Murray-Darling (Australia)</option>
                         <option value="Indo-Gangetic">🏔️ Indo-Gangetic Basin (South Asia)</option>
                     </select>
-                    <select id="districtSelect" class="region-select district-select" title="Select District / County in Hotspot" aria-label="District or County in Hotspot">
+                    <span class="loc-pill-divider">·</span>
+                    <select id="districtSelect" class="pill-select district-select" title="Select District / County in Hotspot" aria-label="District or County in Hotspot">
                         <!-- Dynamically populated based on chosen Hotspot -->
                     </select>
                 </div>
+            </div>
 
+            <!-- Right: Live Synced + EN|HI|PA + Dark toggle + Leaderboard + User chip -->
+            <div class="nav-controls">
                 <!-- 2G / Live Network Indicator Pill -->
                 <div class="network-status-pill network-online" id="networkPill" title="Network Connection Status">
                     <div class="network-dot" id="networkDot"></div>
@@ -262,7 +268,7 @@
                 </button>
 
                 <!-- Farmer / User Profile Button -->
-                <button id="userProfileBtn" class="profile-nav-btn" title="Farmer Profile & Digital Water Pass">
+                <button id="userProfileBtn" class="profile-nav-btn" title="Farmer Profile &amp; Digital Water Pass">
                     <div class="profile-nav-avatar" id="navAvatar">
                         <img src="/default_avatar.png" alt="Profile" class="avatar-img">
                     </div>
@@ -291,29 +297,51 @@
                     <div id="map"></div>
                 </div>
                 <div class="cards-stack">
-                    <div class="bento-metrics-row">
-                        <!-- Water Stress Score Card -->
-                        <div class="dark-card bento-metric-card">
-                            <div class="card-title">
-                                <span data-i18n="lbl_water_stress_score">Water Stress</span>
-                                <span class="badge" id="stressBadge">Loading...</span>
+                    <!-- Integrated Diagnostic & Telemetry Card -->
+                    <div class="diagnostic-main-card">
+                        <div class="bento-metrics-row">
+                            <!-- Water Stress Score Card -->
+                            <div class="dark-card bento-metric-card">
+                                <div class="card-title">
+                                    <span data-i18n="lbl_water_stress_score">Water Stress</span>
+                                    <span class="badge" id="stressBadge">Loading...</span>
+                                </div>
+                                <div style="text-align: center; margin: 4px 0;">
+                                    <div style="font-size: 2.2rem; font-weight: 800; color: var(--text-main);" id="stressScoreVal">--</div>
+                                    <div style="font-size: 0.72rem; color: var(--text-muted);" data-i18n="lbl_comp_water_stress">Composite Stress Index (0–100)</div>
+                                </div>
                             </div>
-                            <div style="text-align: center; margin: 4px 0;">
-                                <div style="font-size: 2.2rem; font-weight: 800; color: var(--text-main);" id="stressScoreVal">--</div>
-                                <div style="font-size: 0.72rem; color: var(--text-muted);" data-i18n="lbl_comp_water_stress">Composite Stress Index (0–100)</div>
+
+                            <!-- Soil Quality Card -->
+                            <div class="dark-card bento-metric-card">
+                                <div class="card-title">
+                                    <span data-i18n="lbl_soil_quality_status">Soil Quality</span>
+                                    <span class="badge" id="soilBadge">Optimal</span>
+                                </div>
+                                <div style="font-size: 0.85rem; font-weight: 700; color: var(--text-main); margin-bottom: 4px;" id="soilStatusText">
+                                    Checking dual-diagnosis...
+                                </div>
+                                <div style="font-size: 0.72rem; color: var(--text-muted);" data-i18n="lbl_smap_landsat_corr">SMAP vs Landsat Health</div>
                             </div>
                         </div>
 
-                        <!-- Soil Quality Card -->
-                        <div class="dark-card bento-metric-card">
-                            <div class="card-title">
-                                <span data-i18n="lbl_soil_quality_status">Soil Quality</span>
-                                <span class="badge" id="soilBadge">Optimal</span>
+                        <!-- Integrated 3-column Telemetry Delta Metrics (Soil Moisture, Canopy NDVI, 30d Trend) -->
+                        <div class="delta-grid">
+                            <div class="delta-box">
+                                <div class="delta-label" data-i18n="lbl_delta_sm">SMAP Rootzone Soil Moisture</div>
+                                <div class="delta-current" id="deltaSmNow">--</div>
+                                <div class="delta-sub" id="deltaSmSub">30d Ago: --</div>
                             </div>
-                            <div style="font-size: 0.85rem; font-weight: 700; color: var(--text-main); margin-bottom: 4px;" id="soilStatusText">
-                                Checking dual-diagnosis...
+                            <div class="delta-box">
+                                <div class="delta-label" data-i18n="lbl_delta_ndvi">Landsat 8/9 Canopy NDVI</div>
+                                <div class="delta-current" id="deltaNdviNow">--</div>
+                                <div class="delta-sub" id="deltaNdviSub">30d Ago: --</div>
                             </div>
-                            <div style="font-size: 0.72rem; color: var(--text-muted);" data-i18n="lbl_smap_landsat_corr">SMAP vs Landsat Health</div>
+                            <div class="delta-box">
+                                <div class="delta-label" data-i18n="lbl_delta_score">Water Stress Index (0–100)</div>
+                                <div class="delta-current" id="deltaScoreNow">--</div>
+                                <div class="delta-sub" id="deltaScoreSub">30d Ago: --</div>
+                            </div>
                         </div>
                     </div>
 
@@ -330,25 +358,6 @@
                             <button id="btnVoice" class="btn-voice" data-i18n="btn_listen_voice">🔊 Listen Voice</button>
                         </div>
                     </div>
-                </div>
-            </div>
-
-            <!-- Delta 30 Days Ago vs Today -->
-            <div class="delta-grid">
-                <div class="delta-box">
-                    <div class="delta-label" data-i18n="lbl_delta_sm">SMAP Rootzone Soil Moisture</div>
-                    <div class="delta-current" id="deltaSmNow">--</div>
-                    <div class="delta-sub" id="deltaSmSub">30d Ago: --</div>
-                </div>
-                <div class="delta-box">
-                    <div class="delta-label" data-i18n="lbl_delta_ndvi">Landsat 8/9 Canopy NDVI</div>
-                    <div class="delta-current" id="deltaNdviNow">--</div>
-                    <div class="delta-sub" id="deltaNdviSub">30d Ago: --</div>
-                </div>
-                <div class="delta-box">
-                    <div class="delta-label" data-i18n="lbl_delta_score">Water Stress Index (0–100)</div>
-                    <div class="delta-current" id="deltaScoreNow">--</div>
-                    <div class="delta-sub" id="deltaScoreSub">30d Ago: --</div>
                 </div>
             </div>
         </section>
@@ -2189,6 +2198,6 @@
         </button>
     </nav>
 
-    <script src="/app.js?v=2026.11.15.v22"></script>
+    <script src="/app.js?v=2026.11.15.v23"></script>
 </body>
 </html>
