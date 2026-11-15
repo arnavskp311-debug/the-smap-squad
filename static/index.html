@@ -15,7 +15,20 @@
     <link rel="apple-touch-icon" href="/logo.png">
     <!-- Leaflet CSS -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-    <link rel="stylesheet" href="/style.css?v=2026.11.15.v12">
+    <link rel="stylesheet" href="/style.css?v=2026.11.15.v13">
+    <!-- Immediate Cache Purge for Version v13 -->
+    <script>
+        if (localStorage.getItem("pww_cache_v") !== "2026.11.15.v13") {
+            localStorage.setItem("pww_cache_v", "2026.11.15.v13");
+            if ("caches" in window) {
+                caches.keys().then(keys => {
+                    keys.forEach(k => {
+                        if (!k.includes("v2026.11.15.v13")) caches.delete(k);
+                    });
+                });
+            }
+        }
+    </script>
     <!-- Chart.js & Leaflet JS -->
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -1719,6 +1732,40 @@
                     </div>
                 </div>
 
+                <div class="form-row-2">
+                    <div class="auth-input-group">
+                        <label for="authDistrict" data-i18n="auth_lbl_district">Farm Location / District *</label>
+                        <select id="authDistrict" class="auth-input" required>
+                            <option value="Bathinda" selected>Bathinda (Groundwater Hotspot)</option>
+                            <option value="Amritsar">Amritsar</option>
+                            <option value="Barnala">Barnala</option>
+                            <option value="Fatehgarh Sahib">Fatehgarh Sahib</option>
+                            <option value="Fazilka">Fazilka</option>
+                            <option value="Faridkot">Faridkot</option>
+                            <option value="Firozpur">Firozpur</option>
+                            <option value="Gurdaspur">Gurdaspur</option>
+                            <option value="Hoshiarpur">Hoshiarpur</option>
+                            <option value="Jalandhar">Jalandhar</option>
+                            <option value="Kapurthala">Kapurthala</option>
+                            <option value="Ludhiana">Ludhiana</option>
+                            <option value="Mansa">Mansa</option>
+                            <option value="Moga">Moga</option>
+                            <option value="Muktsar">Muktsar</option>
+                            <option value="Pathankot">Pathankot</option>
+                            <option value="Patiala">Patiala</option>
+                            <option value="Rupnagar">Rupnagar</option>
+                            <option value="SAS Nagar (Mohali)">SAS Nagar (Mohali)</option>
+                            <option value="SBS Nagar">SBS Nagar</option>
+                            <option value="Sangrur">Sangrur</option>
+                            <option value="Tarn Taran">Tarn Taran</option>
+                        </select>
+                    </div>
+                    <div class="auth-input-group">
+                        <label for="authAvatarFile" data-i18n="auth_lbl_photo">Profile Photo (From Device)</label>
+                        <input type="file" id="authAvatarFile" class="auth-input" accept="image/*" style="padding:6px 10px; font-size:0.82rem;">
+                    </div>
+                </div>
+
                 <div class="form-row-3">
                     <div class="auth-input-group">
                         <label for="authAcres" data-i18n="auth_lbl_acres">Farm Holding (Acres) *</label>
@@ -1882,11 +1929,128 @@
                     <span>🖨️</span>
                     <span>Print / Download Pass</span>
                 </button>
+                <button type="button" class="btn-pass-action" id="btnEditProfileFromPass" style="background:var(--accent-teal); color:#fff; border-color:var(--accent-teal);">
+                    <span>✏️</span>
+                    <span>Edit Profile &amp; Photo</span>
+                </button>
                 <button type="button" class="btn-pass-action btn-signout-pass" id="btnSignOutBtn">
                     <span>🚪</span>
                     <span>Sign Out</span>
                 </button>
             </div>
+        </div>
+    </div>
+
+    <!-- MANAGE FARMER PROFILE MODAL -->
+    <div class="auth-modal-backdrop" id="manageProfileModal" style="display: none;">
+        <div class="auth-modal-card" style="max-width: 580px; padding: 26px;">
+            <button class="auth-modal-close" id="closeManageProfileModalBtn" aria-label="Close">&times;</button>
+            <div style="margin-bottom: 20px;">
+                <h2 style="font-size: 1.3rem; font-weight: 800; color: var(--text-main); margin-bottom: 4px; display:flex; align-items:center; gap:8px;">
+                    <span>👤</span>
+                    <span>Manage Farmer Profile &amp; Location</span>
+                </h2>
+                <p style="font-size: 0.84rem; color: var(--text-muted); margin: 0;">
+                    Update your official identity details, choose your district location, or upload your photograph from this device.
+                </p>
+            </div>
+
+            <!-- Avatar Preview & Upload -->
+            <div style="display:flex; align-items:center; gap:18px; margin-bottom:20px; background:rgba(255,255,255,0.03); border:1px solid var(--border-color); border-radius:12px; padding:16px;">
+                <div style="width:72px; height:72px; border-radius:50%; overflow:hidden; border:2px solid var(--accent-mint); flex-shrink:0; background:rgba(0,0,0,0.2);">
+                    <img id="manageAvatarPreview" src="/default_avatar.png" alt="Avatar Preview" style="width:100%; height:100%; object-fit:cover;">
+                </div>
+                <div style="flex:1;">
+                    <div style="font-size:0.86rem; font-weight:700; color:var(--text-main); margin-bottom:6px;">Farmer Profile Photo</div>
+                    <div style="display:flex; gap:8px; flex-wrap:wrap;">
+                        <label for="manageAvatarInput" class="btn-auth-primary" style="display:inline-flex; align-items:center; gap:6px; width:auto; padding:6px 14px; font-size:0.78rem; cursor:pointer;">
+                            <span>📸</span>
+                            <span>Choose from Device</span>
+                        </label>
+                        <input type="file" id="manageAvatarInput" accept="image/*" style="display:none;">
+                        <button type="button" id="btnRemoveManageAvatar" class="btn-download" style="padding:6px 12px; font-size:0.78rem; border-color:rgba(239,68,68,0.4); color:#EF4444;">
+                            🗑️ Remove Photo
+                        </button>
+                    </div>
+                    <div style="font-size:0.72rem; color:var(--text-muted); margin-top:4px;">Supports JPG, PNG or WebP from your mobile or PC.</div>
+                </div>
+            </div>
+
+            <form id="formManageProfile">
+                <div class="form-row-2">
+                    <div class="auth-input-group">
+                        <label for="manageNameInput">Full Name *</label>
+                        <input type="text" id="manageNameInput" class="auth-input" required>
+                    </div>
+                    <div class="auth-input-group">
+                        <label for="manageDistrictSelect">Farm Location / District *</label>
+                        <select id="manageDistrictSelect" class="auth-input" required>
+                            <option value="Bathinda">Bathinda (Groundwater Hotspot)</option>
+                            <option value="Amritsar">Amritsar</option>
+                            <option value="Barnala">Barnala</option>
+                            <option value="Fatehgarh Sahib">Fatehgarh Sahib</option>
+                            <option value="Fazilka">Fazilka</option>
+                            <option value="Faridkot">Faridkot</option>
+                            <option value="Firozpur">Firozpur</option>
+                            <option value="Gurdaspur">Gurdaspur</option>
+                            <option value="Hoshiarpur">Hoshiarpur</option>
+                            <option value="Jalandhar">Jalandhar</option>
+                            <option value="Kapurthala">Kapurthala</option>
+                            <option value="Ludhiana">Ludhiana</option>
+                            <option value="Mansa">Mansa</option>
+                            <option value="Moga">Moga</option>
+                            <option value="Muktsar">Muktsar</option>
+                            <option value="Pathankot">Pathankot</option>
+                            <option value="Patiala">Patiala</option>
+                            <option value="Rupnagar">Rupnagar</option>
+                            <option value="SAS Nagar (Mohali)">SAS Nagar (Mohali)</option>
+                            <option value="SBS Nagar">SBS Nagar</option>
+                            <option value="Sangrur">Sangrur</option>
+                            <option value="Tarn Taran">Tarn Taran</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-row-2">
+                    <div class="auth-input-group">
+                        <label for="managePhoneInput">Mobile / WhatsApp No. *</label>
+                        <input type="tel" id="managePhoneInput" class="auth-input" required>
+                    </div>
+                    <div class="auth-input-group">
+                        <label for="manageAcresInput">Farm Holding (Acres) *</label>
+                        <input type="number" id="manageAcresInput" class="auth-input" min="0.5" max="500" step="0.5" required>
+                    </div>
+                </div>
+
+                <div class="form-row-2">
+                    <div class="auth-input-group">
+                        <label for="manageCropSelect">Primary Cropping Cycle *</label>
+                        <select id="manageCropSelect" class="auth-input">
+                            <option value="Wheat & Direct Seeded Rice (DSR)">Wheat &amp; DSR Rice</option>
+                            <option value="Conventional Puddled Rice">Conventional Rice</option>
+                            <option value="Cotton & Mustard">Cotton &amp; Mustard</option>
+                            <option value="Sugarcane & Maize">Sugarcane &amp; Maize</option>
+                            <option value="Vegetables & Kinnow Citrus">Vegetables &amp; Citrus</option>
+                        </select>
+                    </div>
+                    <div class="auth-input-group">
+                        <label for="manageSourceSelect">Tubewell / Irrigation Type *</label>
+                        <select id="manageSourceSelect" class="auth-input">
+                            <option value="Deep Submersible Tubewell">Deep Submersible Tubewell</option>
+                            <option value="Canal Lift + Tubewell">Canal Lift + Tubewell</option>
+                            <option value="Solar Powered Drip System">Solar Powered Drip</option>
+                            <option value="Centrifugal Shallow Pump">Centrifugal Shallow Pump</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div id="manageProfileFeedback" style="display:none; margin-top:12px;"></div>
+
+                <div style="display:flex; gap:12px; margin-top:20px;">
+                    <button type="button" class="btn-download" id="btnCancelManageProfile" style="flex:1;">Cancel</button>
+                    <button type="submit" class="btn-auth-primary" id="btnSaveProfileChanges" style="flex:2;">💾 Save Profile Changes</button>
+                </div>
+            </form>
         </div>
     </div>
 
@@ -1914,6 +2078,6 @@
         </button>
     </nav>
 
-    <script src="/app.js?v=2026.11.15.v12"></script>
+    <script src="/app.js?v=2026.11.15.v13"></script>
 </body>
 </html>

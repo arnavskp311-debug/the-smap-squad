@@ -1,12 +1,12 @@
 // Punjab Farm Water Watch - Offline & 2G Resilient Service Worker
-const CACHE_NAME = 'pww-cache-v2026.11.15.v12';
+const CACHE_NAME = 'pww-cache-v2026.11.15.v13';
 
 const CORE_ASSETS = [
     '/',
     '/index.html',
     '/verify.html',
-    '/style.css?v=2026.11.15.v12',
-    '/app.js?v=2026.11.15.v12',
+    '/style.css?v=2026.11.15.v13',
+    '/app.js?v=2026.11.15.v13',
     '/logo.png',
     '/default_avatar.png',
     '/favicon.png',
@@ -45,7 +45,7 @@ self.addEventListener('activate', event => {
     );
 });
 
-// Fetch with Stale-While-Revalidate for local files & Cache-First for maps/CDNs
+// Fetch handler: Network-First for HTML/Navigation, Stale-While-Revalidate for Versioned Assets
 self.addEventListener('fetch', event => {
     const req = event.request;
     const url = new URL(req.url);
@@ -53,8 +53,27 @@ self.addEventListener('fetch', event => {
     // Only handle GET requests
     if (req.method !== 'GET') return;
 
-    // 1. Same-origin assets (HTML, CSS, JS, JSON telemetry): Stale-While-Revalidate
+    // 1. Same-origin HTML / Navigation requests: Network-First (Never serve stale HTML when online)
     if (url.origin === self.location.origin) {
+        if (req.mode === 'navigate' || req.destination === 'document' || url.pathname === '/' || url.pathname === '/index.html') {
+            event.respondWith(
+                fetch(req)
+                    .then(networkRes => {
+                        if (networkRes && networkRes.status === 200) {
+                            const copy = networkRes.clone();
+                            caches.open(CACHE_NAME).then(cache => cache.put(req, copy));
+                        }
+                        return networkRes;
+                    })
+                    .catch(async () => {
+                        const cache = await caches.open(CACHE_NAME);
+                        return (await cache.match(req)) || (await cache.match('/index.html'));
+                    })
+            );
+            return;
+        }
+
+        // Other local assets (CSS, JS, JSON, images): Stale-While-Revalidate
         event.respondWith(
             caches.open(CACHE_NAME).then(async cache => {
                 const cached = await cache.match(req);

@@ -422,6 +422,8 @@ const I18N_DICTIONARY = {
         "auth_lbl_acres": "Farm Holding (Acres) *",
         "auth_lbl_crop": "Primary Cropping Cycle *",
         "auth_lbl_source": "Tubewell / Irrigation Type *",
+        "auth_lbl_district": "Farm Location / District *",
+        "auth_lbl_photo": "Profile Photo (From Device)",
         "auth_btn_register": "Register Account &amp; Unlock Water Pass",
         "auth_note": "🔒 All farm information is securely cataloged into Punjab Ag-Stack for authentic telemetry.",
         "login_lbl_email": "Registered Email Address *",
@@ -529,6 +531,8 @@ const I18N_DICTIONARY = {
         "auth_lbl_acres": "खेत का आकार (एकड़) *",
         "auth_lbl_crop": "मुख्य फसल चक्र *",
         "auth_lbl_source": "ट्यूबवेल / सिंचाई का साधन *",
+        "auth_lbl_district": "खेत का स्थान / जिला *",
+        "auth_lbl_photo": "प्रोफाइल फोटो (डिवाइस से)",
         "auth_btn_register": "खाता पंजीकृत करें व वाटर पास प्राप्त करें",
         "auth_note": "🔒 सभी कृषि जानकारी प्रामाणिक टेलीमेट्री हेतु पंजाब एग-स्टैक में सुरक्षित दर्ज की जाती है।",
         "login_lbl_email": "पंजीकृत ईमेल पता *",
@@ -636,6 +640,8 @@ const I18N_DICTIONARY = {
         "auth_lbl_acres": "ਖੇਤ ਦਾ ਆਕਾਰ (ਏਕੜ) *",
         "auth_lbl_crop": "ਮੁੱਖ ਫਸਲ ਚੱਕਰ *",
         "auth_lbl_source": "ਟਿਊਬਵੈੱਲ / ਸਿੰਚਾਈ ਦਾ ਸਾਧਨ *",
+        "auth_lbl_district": "ਖੇਤ ਦਾ ਸਥਾਨ / ਜ਼ਿਲ੍ਹਾ *",
+        "auth_lbl_photo": "ਪ੍ਰੋਫਾਈਲ ਫੋਟੋ (ਡਿਵਾਈਸ ਤੋਂ)",
         "auth_btn_register": "ਖਾਤਾ ਰਜਿਸਟਰ ਕਰੋ ਅਤੇ ਵਾਟਰ ਪਾਸ ਪ੍ਰਾਪਤ ਕਰੋ",
         "auth_note": "🔒 ਸਾਰੀ ਖੇਤੀ ਜਾਣਕਾਰੀ ਪ੍ਰਮਾਣਿਕ ਟੈਲੀਮੈਟਰੀ ਲਈ ਪੰਜਾਬ ਐਗ-ਸਟੈਕ ਵਿੱਚ ਸੁਰੱਖਿਅਤ ਦਰਜ ਕੀਤੀ ਜਾਂਦੀ ਹੈ।",
         "login_lbl_email": "ਰਜਿਸਟਰਡ ਈਮੇਲ ਪਤਾ *",
@@ -1991,14 +1997,14 @@ function updateUserUI(user) {
     const drawerPassBadge = document.getElementById("drawerPassBadge");
     const drawerAuthBtnLabel = document.getElementById("drawerAuthBtnLabel");
 
-    // Strict Blank Avatar for all user profiles and digital pass as requested
-    const userAvatarSrc = "/default_avatar.png";
+    // Custom Avatar if uploaded, otherwise fallback to default avatar
+    const userAvatarSrc = (user && user.avatar) ? user.avatar : "/default_avatar.png";
 
     if (user && user.email) {
-        if (navAvatar) navAvatar.innerHTML = `<img src="${userAvatarSrc}" alt="Profile" class="avatar-img">`;
+        if (navAvatar) navAvatar.innerHTML = `<img src="${userAvatarSrc}" alt="Profile" class="avatar-img" style="object-fit:cover; width:100%; height:100%; border-radius:50%;">`;
         if (navText) navText.innerText = user.name || "Farmer Profile";
 
-        if (drawerAvatar) drawerAvatar.innerHTML = `<img src="${userAvatarSrc}" alt="Profile" class="avatar-img">`;
+        if (drawerAvatar) drawerAvatar.innerHTML = `<img src="${userAvatarSrc}" alt="Profile" class="avatar-img" style="object-fit:cover; width:100%; height:100%; border-radius:50%;">`;
         if (drawerUserName) drawerUserName.innerText = user.name || "Lead Farmer";
         if (drawerUserRole) drawerUserRole.innerText = `${user.role || "Sentinel"} · ${user.district || "Punjab"}`;
         if (drawerPassBadge) {
@@ -2022,7 +2028,7 @@ function updateUserUI(user) {
         const passPowerSaved = document.getElementById("passPowerSaved");
         const passSoilGrade = document.getElementById("passSoilGrade");
 
-        if (passAvatar) passAvatar.innerHTML = `<img src="${userAvatarSrc}" alt="Profile" class="avatar-img">`;
+        if (passAvatar) passAvatar.innerHTML = `<img src="${userAvatarSrc}" alt="Profile" class="avatar-img" style="object-fit:cover; width:100%; height:100%; border-radius:50%;">`;
         if (passMemberId) passMemberId.innerText = user.member_id || "PWW-2026-PB-0482";
         if (passName) passName.innerText = user.name;
         if (passRole) passRole.innerText = user.role || "Registered Farmer & Water Sentinel";
@@ -2066,7 +2072,7 @@ function updateUserUI(user) {
         const tabPassSoilGrade = document.getElementById("tabPassSoilGrade");
         const tabPassQrImg = document.getElementById("tabPassQrImg");
 
-        if (tabPassAvatar) tabPassAvatar.innerHTML = `<img src="${userAvatarSrc}" alt="Profile" class="avatar-img">`;
+        if (tabPassAvatar) tabPassAvatar.innerHTML = `<img src="${userAvatarSrc}" alt="Profile" class="avatar-img" style="object-fit:cover; width:100%; height:100%; border-radius:50%;">`;
         if (tabPassMemberId) tabPassMemberId.innerText = user.member_id || "PWW-2026-PB-0482";
         if (tabPassName) tabPassName.innerText = user.name;
         if (tabPassRole) tabPassRole.innerText = user.role || "Registered Farmer & Water Sentinel";
@@ -2317,6 +2323,22 @@ function setupAuthListeners() {
             const primary_crop = document.getElementById("authCrop") ? document.getElementById("authCrop").value : "Wheat & Rice";
             const irrigation_source = document.getElementById("authSource") ? document.getElementById("authSource").value : "Submersible Tubewell";
 
+            // Support user avatar picture from device
+            let avatarDataUrl = null;
+            const avatarFileInput = document.getElementById("authAvatarFile");
+            if (avatarFileInput && avatarFileInput.files && avatarFileInput.files[0]) {
+                try {
+                    avatarDataUrl = await new Promise((resolve) => {
+                        const reader = new FileReader();
+                        reader.onload = (re) => resolve(re.target.result);
+                        reader.onerror = () => resolve(null);
+                        reader.readAsDataURL(avatarFileInput.files[0]);
+                    });
+                } catch(e) {
+                    console.warn("Avatar read error:", e);
+                }
+            }
+
             try {
                 const res = await fetch("/api/auth/signup", {
                     method: "POST",
@@ -2330,6 +2352,7 @@ function setupAuthListeners() {
                         farm_acres,
                         primary_crop,
                         irrigation_source,
+                        avatar: avatarDataUrl,
                         provider: "email",
                         role: "Registered Farmer & Water Sentinel"
                     })
@@ -2424,6 +2447,7 @@ function setupAuthListeners() {
                         member_id: `PWW-2026-PB-${Math.floor(1000 + Math.random() * 9000)}`,
                         provider: "email",
                         avatar_initials: (name || "Farmer").split(" ").map(p => p[0]).join("").toUpperCase().slice(0, 2),
+                        avatar: avatarDataUrl,
                         is_active: false,
                         email_verified: false,
                         verification_token: token,
@@ -2703,10 +2727,126 @@ function setupAuthListeners() {
     if (btnManageTabPassBtn) {
         btnManageTabPassBtn.addEventListener("click", () => {
             if (currentUser && currentUser.email) {
-                openProfileModal();
+                openManageProfileModal();
             } else {
                 openAuthModal();
             }
+        });
+    }
+
+    const btnEditProfileFromPass = document.getElementById("btnEditProfileFromPass");
+    if (btnEditProfileFromPass) {
+        btnEditProfileFromPass.addEventListener("click", () => {
+            closeProfileModal();
+            openManageProfileModal();
+        });
+    }
+
+    const closeManageProfileModalBtn = document.getElementById("closeManageProfileModalBtn");
+    const btnCancelManageProfile = document.getElementById("btnCancelManageProfile");
+    const manageProfileModal = document.getElementById("manageProfileModal");
+
+    if (closeManageProfileModalBtn) closeManageProfileModalBtn.addEventListener("click", closeManageProfileModal);
+    if (btnCancelManageProfile) btnCancelManageProfile.addEventListener("click", closeManageProfileModal);
+    if (manageProfileModal) {
+        manageProfileModal.addEventListener("click", (e) => {
+            if (e.target === manageProfileModal) closeManageProfileModal();
+        });
+    }
+
+    const manageAvatarInput = document.getElementById("manageAvatarInput");
+    const manageAvatarPreview = document.getElementById("manageAvatarPreview");
+    const btnRemoveManageAvatar = document.getElementById("btnRemoveManageAvatar");
+
+    if (manageAvatarInput && manageAvatarPreview) {
+        manageAvatarInput.addEventListener("change", () => {
+            if (manageAvatarInput.files && manageAvatarInput.files[0]) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    manageAvatarPreview.src = e.target.result;
+                    manageAvatarPreview.dataset.newAvatar = e.target.result;
+                };
+                reader.readAsDataURL(manageAvatarInput.files[0]);
+            }
+        });
+    }
+
+    if (btnRemoveManageAvatar && manageAvatarPreview) {
+        btnRemoveManageAvatar.addEventListener("click", () => {
+            manageAvatarPreview.src = "/default_avatar.png";
+            manageAvatarPreview.dataset.newAvatar = "";
+            if (manageAvatarInput) manageAvatarInput.value = "";
+        });
+    }
+
+    const formManageProfile = document.getElementById("formManageProfile");
+    if (formManageProfile) {
+        formManageProfile.addEventListener("submit", (e) => {
+            e.preventDefault();
+            if (!currentUser) return;
+
+            const nameInput = document.getElementById("manageNameInput");
+            const districtSelect = document.getElementById("manageDistrictSelect");
+            const phoneInput = document.getElementById("managePhoneInput");
+            const acresInput = document.getElementById("manageAcresInput");
+            const cropSelect = document.getElementById("manageCropSelect");
+            const sourceSelect = document.getElementById("manageSourceSelect");
+            const preview = document.getElementById("manageAvatarPreview");
+            const feedback = document.getElementById("manageProfileFeedback");
+
+            if (nameInput) currentUser.name = nameInput.value.trim();
+            if (districtSelect) currentUser.district = districtSelect.value;
+            if (phoneInput) currentUser.phone = phoneInput.value.trim();
+            if (acresInput) {
+                const ac = parseFloat(acresInput.value) || 10;
+                currentUser.farm_acres = ac;
+                currentUser.water_saved_litres = Math.round(ac * 180000);
+                currentUser.electricity_saved_kwh = Math.round(ac * 142);
+            }
+            if (cropSelect) currentUser.primary_crop = cropSelect.value;
+            if (sourceSelect) currentUser.irrigation_source = sourceSelect.value;
+
+            if (preview && preview.dataset.newAvatar !== undefined) {
+                currentUser.avatar = preview.dataset.newAvatar || null;
+            }
+
+            // Save to localStorage
+            localStorage.setItem("pww_user", JSON.stringify(currentUser));
+            try {
+                const localUsers = JSON.parse(localStorage.getItem("pww_local_users") || "{}");
+                if (currentUser.email && localUsers[currentUser.email.toLowerCase()]) {
+                    localUsers[currentUser.email.toLowerCase()] = {
+                        ...localUsers[currentUser.email.toLowerCase()],
+                        ...currentUser
+                    };
+                    localStorage.setItem("pww_local_users", JSON.stringify(localUsers));
+                }
+            } catch(err) {}
+
+            // Update UI across all tabs, modals, and QR codes
+            updateUserUI(currentUser);
+
+            // Synchronize map telemetry if district was changed
+            if (currentUser.district) {
+                const mainDistrictSelect = document.getElementById("districtSelect");
+                if (mainDistrictSelect) {
+                    mainDistrictSelect.value = currentUser.district;
+                    loadDistrictData(currentUser.district);
+                }
+            }
+
+            if (feedback) {
+                feedback.style.display = "block";
+                feedback.className = "auth-feedback auth-feedback-success";
+                feedback.innerHTML = `
+                    <div class="feedback-title">✅ प्रोफाइल सफलतापूर्वक अपडेट हुई!</div>
+                    <div class="feedback-desc">आपकी प्रोफाइल फोटो, स्थान और विवरण डिजिटल वाटर पास और सभी टैब्स में अपडेट कर दिए गए हैं।</div>
+                `;
+            }
+
+            setTimeout(() => {
+                closeManageProfileModal();
+            }, 800);
         });
     }
 
@@ -2772,6 +2912,43 @@ function openProfileModal() {
 
 function closeProfileModal() {
     const modal = document.getElementById("profileModal");
+    if (modal) modal.style.display = "none";
+}
+
+function openManageProfileModal() {
+    if (!currentUser || !currentUser.email) {
+        openAuthModal();
+        return;
+    }
+    const modal = document.getElementById("manageProfileModal");
+    if (!modal) return;
+
+    const nameInput = document.getElementById("manageNameInput");
+    const districtSelect = document.getElementById("manageDistrictSelect");
+    const phoneInput = document.getElementById("managePhoneInput");
+    const acresInput = document.getElementById("manageAcresInput");
+    const cropSelect = document.getElementById("manageCropSelect");
+    const sourceSelect = document.getElementById("manageSourceSelect");
+    const preview = document.getElementById("manageAvatarPreview");
+    const feedback = document.getElementById("manageProfileFeedback");
+
+    if (nameInput) nameInput.value = currentUser.name || "";
+    if (districtSelect) districtSelect.value = currentUser.district || "Bathinda";
+    if (phoneInput) phoneInput.value = currentUser.phone || "";
+    if (acresInput) acresInput.value = currentUser.farm_acres || 10;
+    if (cropSelect) cropSelect.value = currentUser.primary_crop || "Wheat & Direct Seeded Rice (DSR)";
+    if (sourceSelect) sourceSelect.value = currentUser.irrigation_source || "Deep Submersible Tubewell";
+    if (preview) {
+        preview.src = currentUser.avatar || "/default_avatar.png";
+        preview.dataset.newAvatar = currentUser.avatar || "";
+    }
+    if (feedback) feedback.style.display = "none";
+
+    modal.style.display = "flex";
+}
+
+function closeManageProfileModal() {
+    const modal = document.getElementById("manageProfileModal");
     if (modal) modal.style.display = "none";
 }
 

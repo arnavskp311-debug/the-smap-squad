@@ -201,6 +201,7 @@ class AuthRequest(BaseModel):
     role: Optional[str] = "Farmer & Water Sentinel"
     primary_crop: Optional[str] = "Wheat & Direct Seeded Rice (DSR)"
     irrigation_source: Optional[str] = "Submersible Tubewell"
+    avatar: Optional[str] = None
 
 
 class VerifyOtpRequest(BaseModel):
@@ -528,6 +529,7 @@ def signup_user(req: AuthRequest):
         "member_id": member_id,
         "provider": "email",
         "avatar_initials": initials,
+        "avatar": req.avatar or None,
         "password_hash": hash_password(password),
         "is_active": False,
         "email_verified": False,
