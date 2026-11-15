@@ -365,9 +365,10 @@ function applyTheme(theme) {
 
     updateThemeButtonText();
 
-    // Immediately re-render forecast chart with theme-aligned colors
+    // Immediately re-render forecast chart & dashboard charts with theme-aligned palette
     if (lastTelemetryData && lastTelemetryData.chart_data) {
         renderForecastChart(lastTelemetryData.chart_data);
+        renderDashboard(lastTelemetryData);
     }
 }
 
@@ -1358,6 +1359,55 @@ function renderTelemetry(data) {
     updateCropSimulator();
 }
 
+// ==========================================
+// USER 5-COLOR PALETTE FOR CHARTS & VISUALS
+// 1. #3E7D60 (Forest Sage Green)
+// 2. #F7F7D5 (Vanilla Cream)
+// 3. #C7E1D4 (Soft Mint)
+// 4. #EFF8FF (Ice White)
+// 5. #1C2D5B (Midnight Navy)
+// ==========================================
+function getChartThemeColors() {
+    const isLight = document.documentElement.getAttribute("data-theme") === "light";
+    if (isLight) {
+        return {
+            isLight: true,
+            text: "#1C2D5B",
+            muted: "#3E7D60",
+            grid: "rgba(28, 45, 91, 0.08)",
+            primary: "#3E7D60",          // Forest Sage
+            secondary: "#C7E1D4",        // Soft Mint
+            accent: "#8C7B20",           // Contrast Warm Gold/Cream
+            cream: "#F7F7D5",
+            navy: "#1C2D5B",
+            ice: "#EFF8FF",
+            fillPrimary: "rgba(62, 125, 96, 0.15)",
+            tooltipBg: "#FFFFFF",
+            tooltipBorder: "#C7E1D4",
+            barWater: "rgba(62, 125, 96, 0.85)",
+            barPower: "rgba(28, 45, 91, 0.80)"
+        };
+    } else {
+        return {
+            isLight: false,
+            text: "#EFF8FF",
+            muted: "#C7E1D4",
+            grid: "rgba(199, 225, 212, 0.12)",
+            primary: "#3E7D60",          // Forest Sage
+            secondary: "#C7E1D4",        // Soft Mint
+            accent: "#F7F7D5",           // Vanilla Cream
+            cream: "#F7F7D5",
+            navy: "#1C2D5B",
+            ice: "#EFF8FF",
+            fillPrimary: "rgba(62, 125, 96, 0.25)",
+            tooltipBg: "rgba(28, 45, 91, 0.95)",
+            tooltipBorder: "#C7E1D4",
+            barWater: "rgba(62, 125, 96, 0.85)",
+            barPower: "rgba(247, 247, 213, 0.85)"
+        };
+    }
+}
+
 // Chart.js Forecast Line Chart
 function renderForecastChart(chartData) {
     const canvas = document.getElementById("forecastChart");
@@ -1367,14 +1417,7 @@ function renderForecastChart(chartData) {
         forecastChart.destroy();
     }
 
-    const isLight = document.documentElement.getAttribute("data-theme") === "light";
-    const textColor = isLight ? "#0F172A" : "#F1F5F9";
-    const mutedColor = isLight ? "#475569" : "#94A3B8";
-    const gridColor = isLight ? "rgba(0, 0, 0, 0.06)" : "rgba(255, 255, 255, 0.08)";
-    const smapBorder = isLight ? "#0284C7" : "#38BDF8";
-    const smapFill = isLight ? "rgba(2, 132, 199, 0.12)" : "rgba(56, 189, 248, 0.12)";
-    const fcBorder = isLight ? "#D97706" : "#F59E0B";
-
+    const c = getChartThemeColors();
     const labels = [...chartData.history_dates, ...chartData.forecast_dates];
     const histPoints = [...chartData.history_sm];
     while (histPoints.length < labels.length) histPoints.push(null);
@@ -1391,8 +1434,8 @@ function renderForecastChart(chartData) {
                 {
                     label: "30-Day SMAP Soil Moisture",
                     data: histPoints,
-                    borderColor: smapBorder,
-                    backgroundColor: smapFill,
+                    borderColor: c.primary,
+                    backgroundColor: c.fillPrimary,
                     borderWidth: 2.5,
                     pointRadius: 0,
                     tension: 0.25,
@@ -1401,11 +1444,11 @@ function renderForecastChart(chartData) {
                 {
                     label: "7-Day Random Forest Forecast",
                     data: fcPoints,
-                    borderColor: fcBorder,
+                    borderColor: c.accent,
                     borderWidth: 2.5,
                     borderDash: [5, 5],
                     pointRadius: 3.5,
-                    pointBackgroundColor: fcBorder,
+                    pointBackgroundColor: c.accent,
                     tension: 0.25
                 }
             ]
@@ -1417,31 +1460,31 @@ function renderForecastChart(chartData) {
                 legend: {
                     position: "top",
                     labels: {
-                        color: textColor,
+                        color: c.text,
                         font: { weight: "700", size: 12 },
                         boxWidth: 14,
                         padding: 12
                     }
                 },
                 tooltip: {
-                    backgroundColor: isLight ? "rgba(255, 255, 255, 0.96)" : "rgba(7, 25, 36, 0.95)",
-                    titleColor: isLight ? "#0F172A" : "#F8FAFC",
-                    bodyColor: isLight ? "#334155" : "#E2E8F0",
-                    borderColor: isLight ? "#CBD5E1" : "rgba(56, 189, 248, 0.3)",
+                    backgroundColor: c.tooltipBg,
+                    titleColor: c.text,
+                    bodyColor: c.muted,
+                    borderColor: c.tooltipBorder,
                     borderWidth: 1
                 }
             },
             scales: {
                 x: {
-                    grid: { color: gridColor },
-                    ticks: { color: mutedColor, maxTicksLimit: 7, font: { size: 11 } }
+                    grid: { color: c.grid },
+                    ticks: { color: c.muted, maxTicksLimit: 7, font: { size: 11 } }
                 },
                 y: {
                     min: 0.0,
                     max: 0.65,
-                    grid: { color: gridColor },
-                    ticks: { color: mutedColor, font: { size: 11 } },
-                    title: { display: true, text: "Soil Moisture (m³/m³)", color: mutedColor, font: { weight: "600", size: 11 } }
+                    grid: { color: c.grid },
+                    ticks: { color: c.muted, font: { size: 11 } },
+                    title: { display: true, text: "Soil Moisture (m³/m³)", color: c.muted, font: { weight: "600", size: 11 } }
                 }
             }
         }
@@ -1579,6 +1622,7 @@ function renderDashMoistureChart(cd) {
     if (!ctx) return;
     if (dashMoistureChart) dashMoistureChart.destroy();
 
+    const c = getChartThemeColors();
     const labels = [...cd.history_dates, ...cd.forecast_dates];
     const rzPoints = [...cd.history_sm];
     while (rzPoints.length < labels.length) rzPoints.push(null);
@@ -1598,7 +1642,8 @@ function renderDashMoistureChart(cd) {
                 {
                     label: "Rootzone SM (0–100cm)",
                     data: rzPoints,
-                    borderColor: "#0284C7",
+                    borderColor: c.primary,
+                    backgroundColor: c.fillPrimary,
                     borderWidth: 2.5,
                     pointRadius: 0,
                     tension: 0.2
@@ -1606,25 +1651,25 @@ function renderDashMoistureChart(cd) {
                 {
                     label: "Surface SM (0–5cm)",
                     data: surfPoints,
-                    borderColor: "#0D9488",
-                    borderWidth: 1.8,
+                    borderColor: c.secondary,
+                    borderWidth: 2.0,
                     pointRadius: 0,
                     tension: 0.2
                 },
                 {
                     label: "7-Day RF Outlook",
                     data: fcPoints,
-                    borderColor: "#F59E0B",
+                    borderColor: c.accent,
                     borderDash: [5, 5],
                     borderWidth: 2.5,
                     pointRadius: 3,
-                    pointBackgroundColor: "#F59E0B",
+                    pointBackgroundColor: c.accent,
                     tension: 0.2
                 },
                 {
                     label: "Field Capacity (0.36)",
                     data: new Array(labels.length).fill(0.36),
-                    borderColor: "rgba(16, 185, 129, 0.6)",
+                    borderColor: "rgba(62, 125, 96, 0.6)",
                     borderDash: [3, 3],
                     borderWidth: 1.5,
                     pointRadius: 0
@@ -1632,7 +1677,7 @@ function renderDashMoistureChart(cd) {
                 {
                     label: "Wilting Point (0.10)",
                     data: new Array(labels.length).fill(0.10),
-                    borderColor: "rgba(239, 68, 68, 0.6)",
+                    borderColor: "rgba(224, 82, 82, 0.6)",
                     borderDash: [3, 3],
                     borderWidth: 1.5,
                     pointRadius: 0
@@ -1642,10 +1687,13 @@ function renderDashMoistureChart(cd) {
         options: {
             responsive: true,
             maintainAspectRatio: false,
-            plugins: { legend: { position: "top", labels: { color: "#94A3B8", font: { size: 10 } } } },
+            plugins: {
+                legend: { position: "top", labels: { color: c.text, font: { size: 10 } } },
+                tooltip: { backgroundColor: c.tooltipBg, titleColor: c.text, bodyColor: c.muted, borderColor: c.tooltipBorder, borderWidth: 1 }
+            },
             scales: {
-                x: { grid: { color: "rgba(255,255,255,0.06)" }, ticks: { color: "#94A3B8", maxTicksLimit: 7 } },
-                y: { min: 0.05, max: 0.42, grid: { color: "rgba(255,255,255,0.06)" }, ticks: { color: "#94A3B8" }, title: { display: true, text: "m³/m³", color: "#94A3B8" } }
+                x: { grid: { color: c.grid }, ticks: { color: c.muted, maxTicksLimit: 7 } },
+                y: { min: 0.05, max: 0.42, grid: { color: c.grid }, ticks: { color: c.muted }, title: { display: true, text: "m³/m³", color: c.muted } }
             }
         }
     });
@@ -1656,6 +1704,7 @@ function renderDashRainChart(cd) {
     if (!ctx) return;
     if (dashRainChart) dashRainChart.destroy();
 
+    const c = getChartThemeColors();
     dashRainChart = new Chart(ctx.getContext("2d"), {
         type: "bar",
         data: {
@@ -1664,16 +1713,16 @@ function renderDashRainChart(cd) {
                 {
                     label: "Daily Precipitation (mm)",
                     data: cd.history_rain,
-                    backgroundColor: "rgba(56, 189, 248, 0.6)",
-                    borderColor: "#38BDF8",
-                    borderWidth: 1,
+                    backgroundColor: c.fillPrimary,
+                    borderColor: c.primary,
+                    borderWidth: 1.5,
                     yAxisID: "y"
                 },
                 {
                     type: "line",
                     label: "30d Cumulative Rain (mm)",
                     data: cd.history_cum_rain,
-                    borderColor: "#10B981",
+                    borderColor: c.isLight ? c.navy : c.secondary,
                     borderWidth: 2.2,
                     pointRadius: 0,
                     tension: 0.1,
@@ -1683,7 +1732,7 @@ function renderDashRainChart(cd) {
                     type: "line",
                     label: "50mm Buffer Threshold",
                     data: new Array(cd.history_dates.length).fill(50),
-                    borderColor: "rgba(239, 68, 68, 0.6)",
+                    borderColor: "rgba(224, 82, 82, 0.6)",
                     borderDash: [4, 4],
                     borderWidth: 1.5,
                     pointRadius: 0,
@@ -1694,11 +1743,14 @@ function renderDashRainChart(cd) {
         options: {
             responsive: true,
             maintainAspectRatio: false,
-            plugins: { legend: { position: "top", labels: { color: "#94A3B8", font: { size: 10 } } } },
+            plugins: {
+                legend: { position: "top", labels: { color: c.text, font: { size: 10 } } },
+                tooltip: { backgroundColor: c.tooltipBg, titleColor: c.text, bodyColor: c.muted, borderColor: c.tooltipBorder, borderWidth: 1 }
+            },
             scales: {
-                x: { grid: { color: "rgba(255,255,255,0.06)" }, ticks: { color: "#94A3B8", maxTicksLimit: 7 } },
-                y: { type: "linear", position: "left", min: 0, max: 20, grid: { color: "rgba(255,255,255,0.06)" }, ticks: { color: "#94A3B8" }, title: { display: true, text: "Daily mm", color: "#94A3B8" } },
-                y1: { type: "linear", position: "right", min: 0, max: 65, grid: { drawOnChartArea: false }, ticks: { color: "#10B981" }, title: { display: true, text: "Cumul mm", color: "#10B981" } }
+                x: { grid: { color: c.grid }, ticks: { color: c.muted, maxTicksLimit: 7 } },
+                y: { type: "linear", position: "left", min: 0, max: 20, grid: { color: c.grid }, ticks: { color: c.muted }, title: { display: true, text: "Daily mm", color: c.muted } },
+                y1: { type: "linear", position: "right", min: 0, max: 65, grid: { drawOnChartArea: false }, ticks: { color: c.primary }, title: { display: true, text: "Cumul mm", color: c.primary } }
             }
         }
     });
@@ -1709,6 +1761,7 @@ function renderDashVigorChart(cd) {
     if (!ctx) return;
     if (dashVigorChart) dashVigorChart.destroy();
 
+    const c = getChartThemeColors();
     dashVigorChart = new Chart(ctx.getContext("2d"), {
         type: "line",
         data: {
@@ -1717,8 +1770,8 @@ function renderDashVigorChart(cd) {
                 {
                     label: "NDVI (Greenness)",
                     data: cd.history_ndvi,
-                    borderColor: "#16A34A",
-                    backgroundColor: "rgba(22, 163, 74, 0.1)",
+                    borderColor: c.primary,
+                    backgroundColor: c.fillPrimary,
                     fill: true,
                     borderWidth: 2.2,
                     pointRadius: 0,
@@ -1727,16 +1780,16 @@ function renderDashVigorChart(cd) {
                 {
                     label: "SAVI (Soil-Adjusted)",
                     data: cd.history_savi,
-                    borderColor: "#84CC16",
-                    borderWidth: 1.8,
+                    borderColor: c.secondary,
+                    borderWidth: 2.0,
                     pointRadius: 0,
                     tension: 0.25
                 },
                 {
                     label: "NDWI (Canopy Water)",
                     data: cd.history_ndwi,
-                    borderColor: "#06B6D4",
-                    borderWidth: 1.8,
+                    borderColor: c.accent,
+                    borderWidth: 2.0,
                     pointRadius: 0,
                     tension: 0.25
                 }
@@ -1745,10 +1798,13 @@ function renderDashVigorChart(cd) {
         options: {
             responsive: true,
             maintainAspectRatio: false,
-            plugins: { legend: { position: "top", labels: { color: "#94A3B8", font: { size: 10 } } } },
+            plugins: {
+                legend: { position: "top", labels: { color: c.text, font: { size: 10 } } },
+                tooltip: { backgroundColor: c.tooltipBg, titleColor: c.text, bodyColor: c.muted, borderColor: c.tooltipBorder, borderWidth: 1 }
+            },
             scales: {
-                x: { grid: { color: "rgba(255,255,255,0.06)" }, ticks: { color: "#94A3B8", maxTicksLimit: 7 } },
-                y: { min: 0.15, max: 0.65, grid: { color: "rgba(255,255,255,0.06)" }, ticks: { color: "#94A3B8" }, title: { display: true, text: "Spectral Index", color: "#94A3B8" } }
+                x: { grid: { color: c.grid }, ticks: { color: c.muted, maxTicksLimit: 7 } },
+                y: { min: 0.15, max: 0.65, grid: { color: c.grid }, ticks: { color: c.muted }, title: { display: true, text: "Spectral Index", color: c.muted } }
             }
         }
     });
@@ -1759,6 +1815,7 @@ function renderDashEtLstChart(cd) {
     if (!ctx) return;
     if (dashEtLstChart) dashEtLstChart.destroy();
 
+    const c = getChartThemeColors();
     dashEtLstChart = new Chart(ctx.getContext("2d"), {
         type: "bar",
         data: {
@@ -1768,8 +1825,8 @@ function renderDashEtLstChart(cd) {
                     type: "bar",
                     label: "MODIS ET (mm/day)",
                     data: cd.history_et,
-                    backgroundColor: "rgba(245, 158, 11, 0.45)",
-                    borderColor: "#F59E0B",
+                    backgroundColor: c.isLight ? "rgba(28, 45, 91, 0.45)" : "rgba(247, 247, 213, 0.50)",
+                    borderColor: c.isLight ? c.navy : c.accent,
                     borderWidth: 1,
                     yAxisID: "y"
                 },
@@ -1777,7 +1834,7 @@ function renderDashEtLstChart(cd) {
                     type: "line",
                     label: "Landsat LST (°C)",
                     data: cd.history_lst,
-                    borderColor: "#EF4444",
+                    borderColor: c.primary,
                     borderWidth: 2.2,
                     pointRadius: 1,
                     tension: 0.2,
@@ -1788,11 +1845,14 @@ function renderDashEtLstChart(cd) {
         options: {
             responsive: true,
             maintainAspectRatio: false,
-            plugins: { legend: { position: "top", labels: { color: "#94A3B8", font: { size: 10 } } } },
+            plugins: {
+                legend: { position: "top", labels: { color: c.text, font: { size: 10 } } },
+                tooltip: { backgroundColor: c.tooltipBg, titleColor: c.text, bodyColor: c.muted, borderColor: c.tooltipBorder, borderWidth: 1 }
+            },
             scales: {
-                x: { grid: { color: "rgba(255,255,255,0.06)" }, ticks: { color: "#94A3B8", maxTicksLimit: 7 } },
-                y: { type: "linear", position: "left", min: 0, max: 8, grid: { color: "rgba(255,255,255,0.06)" }, ticks: { color: "#94A3B8" }, title: { display: true, text: "ET mm/day", color: "#94A3B8" } },
-                y1: { type: "linear", position: "right", min: 20, max: 45, grid: { drawOnChartArea: false }, ticks: { color: "#EF4444" }, title: { display: true, text: "LST °C", color: "#EF4444" } }
+                x: { grid: { color: c.grid }, ticks: { color: c.muted, maxTicksLimit: 7 } },
+                y: { type: "linear", position: "left", min: 0, max: 8, grid: { color: c.grid }, ticks: { color: c.muted }, title: { display: true, text: "ET mm/day", color: c.muted } },
+                y1: { type: "linear", position: "right", min: 20, max: 45, grid: { drawOnChartArea: false }, ticks: { color: c.primary }, title: { display: true, text: "LST °C", color: c.primary } }
             }
         }
     });
@@ -1804,14 +1864,15 @@ function renderDashStressDonut(sc) {
     if (dashStressDonutChart) dashStressDonutChart.destroy();
     if (!sc) sc = { smap_contrib: 40, rain_contrib: 30, et_contrib: 20, lst_contrib: 10 };
 
+    const c = getChartThemeColors();
     dashStressDonutChart = new Chart(ctx.getContext("2d"), {
         type: "doughnut",
         data: {
             labels: ["SMAP Moisture (40%)", "GPM Rain (30%)", "MODIS ET (20%)", "Landsat LST (10%)"],
             datasets: [{
                 data: [sc.smap_contrib, sc.rain_contrib, sc.et_contrib, sc.lst_contrib],
-                backgroundColor: ["#0284C7", "#38BDF8", "#F59E0B", "#EF4444"],
-                borderColor: "#0C2933",
+                backgroundColor: [c.primary, c.secondary, c.accent, c.navy],
+                borderColor: c.isLight ? "#FFFFFF" : "#101C38",
                 borderWidth: 2
             }]
         },
@@ -1820,7 +1881,8 @@ function renderDashStressDonut(sc) {
             maintainAspectRatio: false,
             cutout: "62%",
             plugins: {
-                legend: { position: "bottom", labels: { color: "#94A3B8", font: { size: 10 }, boxWidth: 10 } }
+                legend: { position: "bottom", labels: { color: c.text, font: { size: 10 }, boxWidth: 10 } },
+                tooltip: { backgroundColor: c.tooltipBg, titleColor: c.text, bodyColor: c.muted, borderColor: c.tooltipBorder, borderWidth: 1 }
             }
         }
     });
@@ -1832,6 +1894,7 @@ function renderDashBenchmark(benchmarks) {
     if (dashBenchmarkChart) dashBenchmarkChart.destroy();
     if (!benchmarks || !benchmarks.length) return;
 
+    const c = getChartThemeColors();
     dashBenchmarkChart = new Chart(ctx.getContext("2d"), {
         type: "bar",
         data: {
@@ -1839,7 +1902,7 @@ function renderDashBenchmark(benchmarks) {
             datasets: [{
                 label: "Stress Score",
                 data: benchmarks.map(b => b.score),
-                backgroundColor: benchmarks.map(b => b.color || (b.score > 60 ? "#DC2626" : (b.score > 30 ? "#F59E0B" : "#16A34A"))),
+                backgroundColor: benchmarks.map((b, i) => [c.primary, c.secondary, c.accent, c.navy][i % 4]),
                 borderRadius: 4
             }]
         },
@@ -1847,10 +1910,13 @@ function renderDashBenchmark(benchmarks) {
             indexAxis: "y",
             responsive: true,
             maintainAspectRatio: false,
-            plugins: { legend: { display: false } },
+            plugins: {
+                legend: { display: false },
+                tooltip: { backgroundColor: c.tooltipBg, titleColor: c.text, bodyColor: c.muted, borderColor: c.tooltipBorder, borderWidth: 1 }
+            },
             scales: {
-                x: { min: 0, max: 100, grid: { color: "rgba(255,255,255,0.06)" }, ticks: { color: "#94A3B8" } },
-                y: { grid: { display: false }, ticks: { color: "#CBD5E1", font: { weight: "600" } } }
+                x: { min: 0, max: 100, grid: { color: c.grid }, ticks: { color: c.muted } },
+                y: { grid: { display: false }, ticks: { color: c.text, font: { weight: "600" } } }
             }
         }
     });
@@ -1861,6 +1927,7 @@ function renderDashScenario() {
     if (!ctx) return;
     if (dashScenarioChart) dashScenarioChart.destroy();
 
+    const c = getChartThemeColors();
     dashScenarioChart = new Chart(ctx.getContext("2d"), {
         type: "bar",
         data: {
@@ -1869,14 +1936,14 @@ function renderDashScenario() {
                 {
                     label: "Water (M Litres)",
                     data: [9.0, 7.2, 7.65, 3.6],
-                    backgroundColor: "rgba(56, 189, 248, 0.7)",
+                    backgroundColor: c.barWater,
                     borderRadius: 4,
                     yAxisID: "y"
                 },
                 {
                     label: "Power Saved (kWh)",
                     data: [0, 1420, 1065, 4260],
-                    backgroundColor: "rgba(245, 158, 11, 0.7)",
+                    backgroundColor: c.barPower,
                     borderRadius: 4,
                     yAxisID: "y1"
                 }
@@ -1885,11 +1952,14 @@ function renderDashScenario() {
         options: {
             responsive: true,
             maintainAspectRatio: false,
-            plugins: { legend: { position: "top", labels: { color: "#94A3B8", font: { size: 9 }, boxWidth: 10 } } },
+            plugins: {
+                legend: { position: "top", labels: { color: c.text, font: { size: 9 }, boxWidth: 10 } },
+                tooltip: { backgroundColor: c.tooltipBg, titleColor: c.text, bodyColor: c.muted, borderColor: c.tooltipBorder, borderWidth: 1 }
+            },
             scales: {
-                x: { grid: { display: false }, ticks: { color: "#CBD5E1", font: { size: 9 } } },
-                y: { min: 0, max: 10, ticks: { color: "#38BDF8", font: { size: 9 } }, title: { display: true, text: "M Litres", color: "#38BDF8", font: { size: 9 } } },
-                y1: { position: "right", min: 0, max: 5000, grid: { drawOnChartArea: false }, ticks: { color: "#F59E0B", font: { size: 9 } }, title: { display: true, text: "kWh", color: "#F59E0B", font: { size: 9 } } }
+                x: { grid: { display: false }, ticks: { color: c.text, font: { size: 9 } } },
+                y: { min: 0, max: 10, ticks: { color: c.primary, font: { size: 9 } }, title: { display: true, text: "M Litres", color: c.primary, font: { size: 9 } }, grid: { color: c.grid } },
+                y1: { position: "right", min: 0, max: 5000, grid: { drawOnChartArea: false }, ticks: { color: c.accent, font: { size: 9 } }, title: { display: true, text: "kWh", color: c.accent, font: { size: 9 } } }
             }
         }
     });
