@@ -19,6 +19,7 @@ let dashScenarioChart = null;
 // Initialize when DOM loads
 document.addEventListener("DOMContentLoaded", () => {
     initTheme();
+    initLanguage();
     initDrawer();
     initTabs();
     initMap();
@@ -245,6 +246,221 @@ function applyTheme(theme) {
     }
 }
 
+// Multilingual i18n Dictionary (English, Hindi, Punjabi)
+const I18N_DICTIONARY = {
+    "en": {
+        "nav_guide": "User Guide",
+        "nav_mission": "Mission Control",
+        "nav_dashboard": "Dashboard",
+        "nav_forecast": "7-Day Forecast",
+        "nav_agrisense": "AgriSense",
+        "nav_report": "Farmer Identity Card",
+        "nav_team": "Team",
+        "nav_about": "About",
+        "pre_lang_title": "🌐 Choose Your Language / भाषा चुनें / ਭਾਸ਼ਾ ਚੁਣੋ:",
+        "auth_title": "Mandatory Farmer & Sentinel Access",
+        "auth_subtitle": "Access to Punjab's live NASA SMAP telemetry, GIS spatial maps, and groundwater advisories requires verified farmer registration or direct sign-in.",
+        "guide_hero_title": "📘 Punjab Farm Water Watch · User Guide",
+        "guide_hero_subtitle": "Complete operational manual for farmers, agricultural officers, and water stewards to monitor groundwater, plan precision irrigation, and save power using NASA satellite data.",
+        "guide_nav_1": "🛰️ Satellite Map",
+        "guide_nav_2": "⚠️ Stress Index",
+        "guide_nav_3": "📅 7-Day Plan",
+        "guide_nav_4": "💡 Simulator",
+        "guide_nav_5": "🪪 Water Pass",
+        "guide_c1_title": "🛰️ NASA SMAP Satellite &amp; GIS Map",
+        "guide_c1_desc": "Explore high-resolution district-level soil moisture and irrigation hotspots across Punjab and major global food-basket aquifer basins.",
+        "guide_c1_f1": "<b>Hotspot Selector:</b> Toggle between Punjab, Central Valley, Nile Delta, and Murray-Darling.",
+        "guide_c1_f2": "<b>District Dropdown:</b> Select any of Punjab's 22 districts (e.g. Bathinda, Sangrur, Ludhiana).",
+        "guide_c1_f3": "<b>Satellite Basemaps:</b> Switch between Dark Matter, Esri High-Res Satellite, NASA GIBS Live TrueColor, and Black Marble.",
+        "guide_c1_tip": "💡 <b>Tip:</b> Click any district boundary directly on the map to inspect live water metrics!",
+        "guide_c2_title": "⚠️ Water Stress Score &amp; Soil Diagnosis",
+        "guide_c2_desc": "Understand composite aquifer stress scores combining NASA SMAP, GPM Precipitation, Landsat LST, and MODIS ET.",
+        "guide_c2_f1": "<b>Green (0–39):</b> Safe moisture levels; no immediate pumping needed.",
+        "guide_c2_f2": "<b>Yellow (40–69):</b> Moderate stress; schedule light, precision morning irrigation.",
+        "guide_c2_f3": "<b>Red (70–100):</b> Critical over-extraction risk; follow strict tubewell runtime limits.",
+        "guide_c2_f4": "<b>Dual Soil Diagnosis:</b> Detects soil moisture salinity, hardpan compaction, or low organic carbon.",
+        "guide_c2_tip": "💡 <b>Action:</b> Read the Soil Testing &amp; Remedy Guide under the AgriSense tab for laboratory correction steps.",
+        "guide_c3_title": "📅 7-Day Forecast &amp; Irrigation Calendar",
+        "guide_c3_desc": "AI-powered autoregressive moisture forecaster plans daily irrigation and avoids pumping before rain events.",
+        "guide_c3_f1": "<b>7-Day Trend Chart:</b> Visualizes forecasted rootzone volumetric soil moisture (m³/m³).",
+        "guide_c3_f2": "<b>Tubewell Pumping Hours:</b> Recommended motor operation (e.g. 2.0 hrs/day instead of 8 hrs).",
+        "guide_c3_f3": "<b>Voice Broadcast:</b> Click 'Broadcast Audio Advisory' to hear your farm's advisory in Hindi/Punjabi!",
+        "guide_c3_f4": "<b>WhatsApp Alert:</b> Instant one-click dispatch to share farm guidance with local village groups.",
+        "guide_c3_tip": "💡 <b>Tip:</b> Rain predicted days display zero irrigation hours to conserve groundwater.",
+        "guide_c4_title": "💡 Crop Budget &amp; Power Simulator",
+        "guide_c4_desc": "Simulate direct financial and environmental savings by adopting water-conserving agronomic practices.",
+        "guide_c4_f1": "<b>Farm Size Slider:</b> Adjust your land acreage (1 to 50 acres) to dynamically calculate savings.",
+        "guide_c4_f2": "<b>Practice Comparison:</b> Compare Direct Seeded Rice (DSR), Alternate Wetting &amp; Drying (AWD), and Drip.",
+        "guide_c4_f3": "<b>Energy Savings:</b> View tubewell electricity units (kWh) and carbon emissions saved.",
+        "guide_c4_tip": "💡 <b>Benefit:</b> Qualifying farms earn water stewardship points reflected on their Water Pass!",
+        "guide_c5_title": "🪪 Digital Farmer Water Pass",
+        "guide_c5_desc": "Your official Punjab Agri-Hydrology digital identity verifying water-saving stewardship and farm credentials.",
+        "guide_c5_f1": "<b>Member ID &amp; Serial:</b> Official identification number tied to your district and farm profile.",
+        "guide_c5_f2": "<b>Cumulative Metrics:</b> Total groundwater liters and power saved tracked live.",
+        "guide_c5_f3": "<b>Print / Download:</b> Export your high-contrast Water Pass for official subsidy and canal credit applications.",
+        "guide_c5_tip": "💡 <b>Access:</b> Click your profile avatar in the top-right corner anytime to view or print your pass.",
+        "guide_c6_title": "🌐 Language &amp; Theme Customization",
+        "guide_c6_desc": "Customize your viewing experience for outdoor field use or desktop research.",
+        "guide_c6_f1": "<b>Language Selector:</b> Choose English (EN), हिन्दी (HI), or ਪੰਜਾਬੀ (PA) before or after sign-in.",
+        "guide_c6_f2": "<b>Light / Dark Mode:</b> High-contrast light mode for bright sunlight; dark mode for mission control.",
+        "guide_c6_f3": "<b>Persistence:</b> Your language and theme preferences are automatically saved on your device.",
+        "guide_c6_tip": "💡 <b>Tip:</b> Use the top navbar buttons to toggle language or theme with a single click."
+    },
+    "hi": {
+        "nav_guide": "मार्गदर्शिका",
+        "nav_mission": "मिशन कंट्रोल",
+        "nav_dashboard": "डैशबोर्ड",
+        "nav_forecast": "7-दिवसीय पूर्वानुमान",
+        "nav_agrisense": "एग्रीसेंस",
+        "nav_report": "किसान पहचान पत्र",
+        "nav_team": "टीम",
+        "nav_about": "के बारे में",
+        "pre_lang_title": "🌐 अपनी पसंदीदा भाषा चुनें / Choose Language:",
+        "auth_title": "किसान एवं प्रहरी आधिकारिक पोर्टल",
+        "auth_subtitle": "पंजाब की लाइव नासा SMAP टेलीमेट्री, उपग्रह नक्शे और सटीक भूजल सलाहकारों तक पहुंच के लिए किसान पंजीकरण या सीधा साइन-इन अनिवार्य है।",
+        "guide_hero_title": "📘 पंजाब फार्म वाटर वॉच · उपयोगकर्ता मार्गदर्शिका",
+        "guide_hero_subtitle": "नासा उपग्रह डेटा का उपयोग करके भूजल की निगरानी, सटीक सिंचाई योजना और बिजली बचाने के लिए किसानों और कृषि अधिकारियों हेतु संपूर्ण मार्गदर्शिका।",
+        "guide_nav_1": "🛰️ उपग्रह नक्शा",
+        "guide_nav_2": "⚠️ तनाव स्कोर",
+        "guide_nav_3": "📅 7-दिवसीय योजना",
+        "guide_nav_4": "💡 कैलकुलेटर",
+        "guide_nav_5": "🪪 वाटर पास",
+        "guide_c1_title": "🛰️ नासा SMAP उपग्रह एवं भूजल नक्शा",
+        "guide_c1_desc": "पंजाब के सभी 22 जिलों और वैश्विक जल-संकट क्षेत्रों की उच्च-सटीक उपग्रह नमी और भूमि स्थिति का निरीक्षण करें।",
+        "guide_c1_f1": "<b>हॉटस्पॉट चयन:</b> पंजाब, सेंट्रल वैली (USA), नील डेल्टा और मरे-डार्लिंग के बीच स्विच करें।",
+        "guide_c1_f2": "<b>जिला ड्रॉपडाउन:</b> बठिंडा, संगरूर, लुधियाना सहित पंजाब का कोई भी जिला चुनें।",
+        "guide_c1_f3": "<b>सैटेलाइट बेस-मैप:</b> डार्क मैटर, एज़री हाई-रेज़ोल्यूशन सैटेलाइट, नासा GIBS लाइव और ब्लैक मार्बल चुनें।",
+        "guide_c1_tip": "💡 <b>टिप:</b> लाइव डेटा देखने के लिए नक्शे पर किसी भी जिले की सीमा पर सीधे क्लिक करें!",
+        "guide_c2_title": "⚠️ जल तनाव स्कोर व मिट्टी की सेहत",
+        "guide_c2_desc": "नासा SMAP नमी, वर्षा, लैंडसैट तापमान और MODIS वाष्पोत्सर्जन के संयुक्त स्कोर को समझें।",
+        "guide_c2_f1": "<b>हरा (0–39):</b> सुरक्षित नमी स्तर; तुरंत सिंचाई की आवश्यकता नहीं।",
+        "guide_c2_f2": "<b>पीला (40–69):</b> मध्यम तनाव; सुबह के समय हल्की व सटीक सिंचाई करें।",
+        "guide_c2_f3": "<b>लाल (70–100):</b> गंभीर भूजल संकट; ट्यूबवेल चलने के समय पर सख्त नियंत्रण रखें।",
+        "guide_c2_f4": "<b>दोहरी मिट्टी जांच:</b> खारेपन, कड़ेपन (Hardpan) और कम जैविक कार्बन की पहचान करता है।",
+        "guide_c2_tip": "💡 <b>सलाह:</b> प्रयोगशाला उपचार के लिए 'एग्रीसेंस' टैब में 'मृदा परीक्षण गाइड' देखें।",
+        "guide_c3_title": "📅 7-दिवसीय पूर्वानुमान व 30-दिवसीय सिंचाई कैलेंडर",
+        "guide_c3_desc": "AI नमी पूर्वानुमानकर्ता दैनिक सिंचाई की योजना बनाता है और बारिश से पहले व्यर्थ ट्यूबवेल चलाने से रोकता है।",
+        "guide_c3_f1": "<b>7-दिवसीय चार्ट:</b> आने वाले 7 दिनों की जड़-क्षेत्रीय नमी का सटीक रुझान।",
+        "guide_c3_f2": "<b>ट्यूबवेल संचालन घंटे:</b> प्रतिदिन मोटर चलाने का अनुशंसित समय (उदा. 8 घंटे के बजाय केवल 2 घंटे)।",
+        "guide_c3_f3": "<b>ध्वनि प्रसारण:</b> अपने जिले की कृषि सलाह हिंदी या पंजाबी में सुनने के लिए 'ऑडियो प्रसारण' पर क्लिक करें।",
+        "guide_c3_f4": "<b>व्हाट्सएप अलर्ट:</b> एक क्लिक में गांव के किसान समूहों के साथ दैनिक सलाह साझा करें।",
+        "guide_c3_tip": "💡 <b>टिप:</b> वर्षा पूर्वानुमान वाले दिनों में स्वतः 0 घंटे की सिफारिश होती है ताकि पानी बच सके।",
+        "guide_c4_title": "💡 फसल बजट व सौर/ट्यूबवेल बचत कैलकुलेटर",
+        "guide_c4_desc": "पानी की बचत करने वाली आधुनिक कृषि पद्धतियों को अपनाकर आर्थिक व बिजली की बचत का आंकलन करें।",
+        "guide_c4_f1": "<b>खेत का आकार:</b> एकड़ (1 से 50) स्लाइडर को हिलाकर तुरंत बचत देखें।",
+        "guide_c4_f2": "<b>पद्धति तुलना:</b> सीधी बिजाई (DSR), अल्टरनेट वेटिंग (AWD) और ड्रिप की तुलना करें।",
+        "guide_c4_f3": "<b>ऊर्जा बचत:</b> बचाई गई बिजली यूनिट्स (kWh) और कम हुए कार्बन उत्सर्जन को जानें।",
+        "guide_c4_tip": "💡 <b>लाभ:</b> पानी बचाने वाले किसानों को वाटर पास पर विशेष स्टार रेटिंग मिलती है!",
+        "guide_c5_title": "🪪 डिजिटल किसान वाटर पास",
+        "guide_c5_desc": "पंजाब कृषि-जलविज्ञान द्वारा प्रमाणित आपकी आधिकारिक डिजिटल पहचान, जो जल संरक्षण योगदान प्रमाणित करती है।",
+        "guide_c5_f1": "<b>सदस्य आईडी व सीरियल:</b> आपके जिले और खेत से जुड़ी विशिष्ट पहचान संख्या।",
+        "guide_c5_f2": "<b>कुल संचयी बचत:</b> आपके द्वारा बचाए गए लाखों लीटर भूजल और बिजली का लाइव रिकॉर्ड।",
+        "guide_c5_f3": "<b>प्रिंट / डाउनलोड:</b> सरकारी सब्सिडी और सोलर ट्यूबवेल योजनाओं के लिए वाटर पास डाउनलोड करें।",
+        "guide_c5_tip": "💡 <b>खोलने का तरीका:</b> अपना पास देखने या प्रिंट करने के लिए ऊपर दाईं ओर अपनी प्रोफ़ाइल पर क्लिक करें।",
+        "guide_c6_title": "🌐 भाषा चयन व डार्क/लाइट मोड",
+        "guide_c6_desc": "धूप में खेत में उपयोग के लिए या घर पर अनुसंधान के लिए स्क्रीन को अनुकूलित करें।",
+        "guide_c6_f1": "<b>भाषा चयन:</b> साइन-इन से पहले या बाद में कभी भी अंग्रेजी, हिन्दी या पंजाबी चुनें।",
+        "guide_c6_f2": "<b>लाइट / डार्क मोड:</b> तेज़ धूप के लिए उच्च-कंट्रास्ट लाइट मोड और रात के लिए डार्क मोड।",
+        "guide_c6_f3": "<b>सुरक्षित चयन:</b> आपकी चुनी हुई भाषा और थीम आपके ब्राउज़र में सुरक्षित रूप से याद रखी जाती है।",
+        "guide_c6_tip": "💡 <b>टिप:</b> ऊपर नेविगेशन बार में दिए गए बटनों से एक क्लिक में भाषा या थीम बदलें।"
+    },
+    "pa": {
+        "nav_guide": "ਯੂਜ਼ਰ ਗਾਈਡ",
+        "nav_mission": "ਮਿਸ਼ਨ ਕੰਟਰੋਲ",
+        "nav_dashboard": "ਡੈਸ਼ਬੋਰਡ",
+        "nav_forecast": "7-ਦਿਨਾਂ ਭਵਿੱਖਬਾਣੀ",
+        "nav_agrisense": "ਐਗਰੀਸੈਂਸ",
+        "nav_report": "ਕਿਸਾਨ ਪਛਾਣ ਪੱਤਰ",
+        "nav_team": "ਟੀਮ",
+        "nav_about": "ਬਾਰੇ",
+        "pre_lang_title": "🌐 ਆਪਣੀ ਪਸੰਦੀਦਾ ਭਾਸ਼ਾ ਚੁਣੋ / Choose Language:",
+        "auth_title": "ਕਿਸਾਨ ਅਤੇ ਪਹਿਰੇਦਾਰ ਅਧਿਕਾਰਤ ਪੋਰਟਲ",
+        "auth_subtitle": "ਪੰਜਾਬ ਦੀ ਲਾਈਵ ਨਾਸਾ SMAP ਟੈਲੀਮੈਟਰੀ, ਉਪਗ੍ਰਹਿ ਨਕਸ਼ੇ ਅਤੇ ਧਰਤੀ ਹੇਠਲੇ ਪਾਣੀ ਦੀਆਂ ਸਲਾਹਾਂ ਲਈ ਕਿਸਾਨ ਰਜਿਸਟ੍ਰੇਸ਼ਨ ਜਾਂ ਸਿੱਧਾ ਸਾਈਨ-ਇਨ ਲਾਜ਼ਮੀ ਹੈ।",
+        "guide_hero_title": "📘 ਪੰਜਾਬ ਫਾਰਮ ਵਾਟਰ ਵਾਚ · ਯੂਜ਼ਰ ਗਾਈਡ",
+        "guide_hero_subtitle": "ਨਾਸਾ ਉਪਗ੍ਰਹਿ ਡੇਟਾ ਦੀ ਵਰਤੋਂ ਕਰਕੇ ਧਰਤੀ ਹੇਠਲੇ ਪਾਣੀ ਦੀ ਨਿਗਰਾਨੀ, ਸਹੀ ਸਿੰਚਾਈ ਯੋਜਨਾ ਅਤੇ ਬਿਜਲੀ ਬਚਾਉਣ ਲਈ ਕਿਸਾਨਾਂ ਅਤੇ ਖੇਤੀਬਾੜੀ ਅਧਿਕਾਰੀਆਂ ਲਈ ਸੰਪੂਰਨ ਗਾਈਡ।",
+        "guide_nav_1": "🛰️ ਉਪਗ੍ਰਹਿ ਨਕਸ਼ਾ",
+        "guide_nav_2": "⚠️ ਪਾਣੀ ਤਣਾਅ",
+        "guide_nav_3": "📅 7-ਦਿਨਾਂ ਯੋਜਨਾ",
+        "guide_nav_4": "💡 ਕੈਲਕੁਲੇਟਰ",
+        "guide_nav_5": "🪪 ਵਾਟਰ ਪਾਸ",
+        "guide_c1_title": "🛰️ ਨਾਸਾ SMAP ਉਪਗ੍ਰਹਿ ਤੇ ਜ਼ਮੀਨੀ ਨਕਸ਼ਾ",
+        "guide_c1_desc": "ਪੰਜਾਬ ਦੇ ਸਾਰੇ 22 ਜ਼ਿਲ੍ਹਿਆਂ ਅਤੇ ਵਿਸ਼ਵ ਦੇ ਮੁੱਖ ਖੇਤੀਬਾੜੀ ਖੇਤਰਾਂ ਦੀ ਉਪਗ੍ਰਹਿ ਨਮੀ ਅਤੇ ਜ਼ਮੀਨੀ ਸਥਿਤੀ ਦੇਖੋ।",
+        "guide_c1_f1": "<b>ਹਾਟਸਪਾਟ ਚੋਣ:</b> ਪੰਜਾਬ, ਸੈਂਟਰਲ ਵੈਲੀ (USA), ਨੀਲ ਡੈਲਟਾ ਅਤੇ ਮਰੇ-ਡਾਰਲਿੰਗ ਵਿਚਕਾਰ ਬਦਲੋ।",
+        "guide_c1_f2": "<b>ਜ਼ਿਲ੍ਹਾ ਡ੍ਰੌਪਡਾਊਨ:</b> ਬਠਿੰਡਾ, ਸੰਗਰੂਰ, ਲੁਧਿਆਣਾ ਸਮੇਤ ਪੰਜਾਬ ਦਾ ਕੋਈ ਵੀ ਜ਼ਿਲ੍ਹਾ ਚੁਣੋ।",
+        "guide_c1_f3": "<b>ਸੈਟੇਲਾਈਟ ਬੇਸ-ਮੈਪ:</b> ਡਾਰਕ ਮੈਟਰ, ਐਸਰੀ ਹਾਈ-ਰੈਜ਼ੋਲਿਊਸ਼ਨ ਸੈਟੇਲਾਈਟ, ਨਾਸਾ GIBS ਲਾਈਵ ਅਤੇ ਬਲੈਕ ਮਾਰਬਲ ਚੁਣੋ।",
+        "guide_c1_tip": "💡 <b>ਸੁਝਾਅ:</b> ਲਾਈਵ ਅੰਕੜੇ ਦੇਖਣ ਲਈ ਨਕਸ਼ੇ 'ਤੇ ਕਿਸੇ ਵੀ ਜ਼ਿਲ੍ਹੇ ਦੀ ਸੀਮਾ 'ਤੇ ਸਿੱਧਾ ਕਲਿੱਕ ਕਰੋ!",
+        "guide_c2_title": "⚠️ ਪਾਣੀ ਤਣਾਅ ਸਕੋਰ ਤੇ ਮਿੱਟੀ ਦੀ ਪਰਖ",
+        "guide_c2_desc": "ਨਾਸਾ SMAP ਨਮੀ, ਵਰਖਾ, ਲੈਂਡਸੈੱਟ ਤਾਪਮਾਨ ਅਤੇ MODIS ਵਾਸ਼ਪੀਕਰਨ ਦੇ ਸਾਂਝੇ ਸਕੋਰ ਨੂੰ ਸਮਝੋ।",
+        "guide_c2_f1": "<b>ਹਰਾ (0–39):</b> ਸੁਰੱਖਿਅਤ ਨਮੀ ਪੱਧਰ; ਤੁਰੰਤ ਟਿਊਬਵੈੱਲ ਚਲਾਉਣ ਦੀ ਲੋੜ ਨਹੀਂ।",
+        "guide_c2_f2": "<b>ਪੀਲਾ (40–69):</b> ਦਰਮਿਆਨਾ ਤਣਾਅ; ਸਵੇਰ ਵੇਲੇ ਹਲਕੀ ਤੇ ਸੰਕੋਚਵੀਂ ਸਿੰਚਾਈ ਕਰੋ।",
+        "guide_c2_f3": "<b>ਲਾਲ (70–100):</b> ਗੰਭੀਰ ਪਾਣੀ ਸੰਕਟ; ਟਿਊਬਵੈੱਲ ਚਲਾਉਣ ਦੇ ਸਮੇਂ 'ਤੇ ਸਖ਼ਤ ਕੰਟਰੋਲ ਰੱਖੋ।",
+        "guide_c2_f4": "<b>ਦੋਹਰੀ ਮਿੱਟੀ ਪਰਖ:</b> ਖਾਰੇਪਣ, ਸਖ਼ਤਪਣ (Hardpan) ਅਤੇ ਘੱਟ ਜੈਵਿਕ ਕਾਰਬਨ ਦੀ ਪਛਾਣ ਕਰਦਾ ਹੈ।",
+        "guide_c2_tip": "💡 <b>ਕਾਰਵਾਈ:</b> ਲੈਬਾਰਟਰੀ ਇਲਾਜ ਲਈ 'ਐਗਰੀਸੈਂਸ' ਟੈਬ ਵਿੱਚ 'ਮਿੱਟੀ ਪਰਖ ਗਾਈਡ' ਪੜ੍ਹੋ।",
+        "guide_c3_title": "📅 7-ਦਿਨਾਂ ਭਵਿੱਖਬਾਣੀ ਤੇ 30-ਦਿਨਾਂ ਸਿੰਚਾਈ ਕੈਲੰਡਰ",
+        "guide_c3_desc": "AI ਨਮੀ ਭਵਿੱਖਬਾਣੀ ਕਰਤਾ ਰੋਜ਼ਾਨਾ ਸਿੰਚਾਈ ਦੀ ਯੋਜਨਾ ਬਣਾਉਂਦਾ ਹੈ ਅਤੇ ਮੀਂਹ ਤੋਂ ਪਹਿਲਾਂ ਟਿਊਬਵੈੱਲ ਚਲਾਉਣ ਤੋਂ ਰੋਕਦਾ ਹੈ।",
+        "guide_c3_f1": "<b>7-ਦਿਨਾਂ ਚਾਰਟ:</b> ਆਉਣ ਵਾਲੇ 7 ਦਿਨਾਂ ਦੀ ਜੜ੍ਹ-ਖੇਤਰੀ ਨਮੀ ਦਾ ਸਹੀ ਰੁਝਾਨ।",
+        "guide_c3_f2": "<b>ਟਿਊਬਵੈੱਲ ਚਲਾਉਣ ਦੇ ਘੰਟੇ:</b> ਰੋਜ਼ਾਨਾ ਮੋਟਰ ਚਲਾਉਣ ਦਾ ਸਿਫਾਰਸ਼ੀ ਸਮਾਂ (ਜਿਵੇਂ 8 ਘੰਟਿਆਂ ਦੀ ਬਜਾਏ ਸਿਰਫ 2 ਘੰਟੇ)।",
+        "guide_c3_f3": "<b>ਆਵਾਜ਼ ਪ੍ਰਸਾਰਣ:</b> ਆਪਣੇ ਖੇਤ ਦੀ ਸਲਾਹ ਪੰਜਾਬੀ ਜਾਂ ਹਿੰਦੀ ਵਿੱਚ ਸੁਣਨ ਲਈ 'ਆਡੀਓ ਪ੍ਰਸਾਰਣ' 'ਤੇ ਕਲਿੱਕ ਕਰੋ।",
+        "guide_c3_f4": "<b>ਵਟਸਐਪ ਅਲਰਟ:</b> ਇੱਕ ਕਲਿੱਕ ਵਿੱਚ ਪਿੰਡ ਦੇ ਕਿਸਾਨ ਗਰੁੱਪਾਂ ਨਾਲ ਖੇਤੀ ਸਲਾਹ ਸਾਂਝੀ ਕਰੋ।",
+        "guide_c3_tip": "💡 <b>ਸੁਝਾਅ:</b> ਮੀਂਹ ਵਾਲੇ ਦਿਨਾਂ ਵਿੱਚ ਜ਼ੀਰੋ ਘੰਟੇ ਦੀ ਸਿਫਾਰਸ਼ ਹੁੰਦੀ ਹੈ ਤਾਂ ਜੋ ਧਰਤੀ ਹੇਠਲਾ ਪਾਣੀ ਬਚ ਸਕੇ।",
+        "guide_c4_title": "💡 ਫਸਲ ਬਜਟ ਤੇ ਸੌਰ/ਟਿਊਬਵੈੱਲ ਬੱਚਤ ਕੈਲਕੁਲੇਟਰ",
+        "guide_c4_desc": "ਪਾਣੀ ਬਚਾਉਣ ਵਾਲੀਆਂ ਨਵੀਆਂ ਖੇਤੀ ਤਕਨੀਕਾਂ ਅਪਣਾ ਕੇ ਵਿੱਤੀ ਅਤੇ ਬਿਜਲੀ ਬੱਚਤ ਦਾ ਅੰਦਾਜ਼ਾ ਲਗਾਓ।",
+        "guide_c4_f1": "<b>ਖੇਤ ਦਾ ਆਕਾਰ:</b> ਏਕੜ (1 ਤੋਂ 50) ਸਲਾਈਡਰ ਹਿਲਾ ਕੇ ਤੁਰੰਤ ਬੱਚਤ ਦੇਖੋ।",
+        "guide_c4_f2": "<b>ਤਕਨੀਕ ਤੁਲਨਾ:</b> ਝੋਨੇ ਦੀ ਸਿੱਧੀ ਬਿਜਾਈ (DSR), ਔਲਟਰਨੇਟ ਵੈਟਿੰਗ (AWD) ਅਤੇ ਤੁਪਕਾ ਸਿੰਚਾਈ ਦੀ ਤੁਲਨਾ ਕਰੋ।",
+        "guide_c4_f3": "<b>ਊਰਜਾ ਬੱਚਤ:</b> ਬਚਾਈਆਂ ਗਈਆਂ ਬਿਜਲੀ ਯੂਨਿਟਾਂ (kWh) ਅਤੇ ਘਟੇ ਕਾਰਬਨ ਪ੍ਰਦੂਸ਼ਣ ਬਾਰੇ ਜਾਣੋ।",
+        "guide_c4_tip": "💡 <b>ਲਾਭ:</b> ਪਾਣੀ ਬਚਾਉਣ ਵਾਲੇ ਕਿਸਾਨਾਂ ਨੂੰ ਵਾਟਰ ਪਾਸ 'ਤੇ ਵਿਸ਼ੇਸ਼ ਸਟਾਰ ਰੇਟਿੰਗ ਮਿਲਦੀ ਹੈ!",
+        "guide_c5_title": "🪪 ਡਿਜੀਟਲ ਕਿਸਾਨ ਵਾਟਰ ਪਾਸ",
+        "guide_c5_desc": "ਪੰਜਾਬ ਖੇਤੀ-ਜਲਵਿਗਿਆਨ ਦੁਆਰਾ ਪ੍ਰਮਾਣਿਤ ਤੁਹਾਡੀ ਅਧਿਕਾਰਤ ਡਿਜੀਟਲ ਪਛਾਣ, ਜੋ ਪਾਣੀ ਸੰਭਾਲ ਯੋਗਦਾਨ ਦਰਸਾਉਂਦੀ ਹੈ।",
+        "guide_c5_f1": "<b>ਮੈਂਬਰ ਆਈਡੀ ਤੇ ਸੀਰੀਅਲ:</b> ਤੁਹਾਡੇ ਜ਼ਿਲ੍ਹੇ ਅਤੇ ਖੇਤ ਨਾਲ ਜੁੜਿਆ ਖਾਸ ਪਛਾਣ ਨੰਬਰ।",
+        "guide_c5_f2": "<b>ਕੁੱਲ ਬੱਚਤ:</b> ਤੁਹਾਡੇ ਵੱਲੋਂ ਬਚਾਏ ਗਏ ਲੱਖਾਂ ਲੀਟਰ ਪਾਣੀ ਅਤੇ ਬਿਜਲੀ ਦਾ ਲਾਈਵ ਰਿਕਾਰਡ।",
+        "guide_c5_f3": "<b>ਪ੍ਰਿੰਟ / ਡਾਊਨਲੋਡ:</b> ਸਰਕਾਰੀ ਸਬਸਿਡੀਆਂ ਅਤੇ ਸੋਲਰ ਟਿਊਬਵੈੱਲ ਸਕੀਮਾਂ ਲਈ ਵਾਟਰ ਪਾਸ ਡਾਊਨਲੋਡ ਕਰੋ।",
+        "guide_c5_tip": "💡 <b>ਖੋਲ੍ਹਣ ਦਾ ਤਰੀਕਾ:</b> ਆਪਣਾ ਪਾਸ ਦੇਖਣ ਜਾਂ ਪ੍ਰਿੰਟ ਕਰਨ ਲਈ ਉੱਪਰ ਸੱਜੇ ਪਾਸੇ ਆਪਣੀ ਪ੍ਰੋਫਾਈਲ 'ਤੇ ਕਲਿੱਕ ਕਰੋ।",
+        "guide_c6_title": "🌐 ਭਾਸ਼ਾ ਚੋਣ ਤੇ ਡਾਰਕ/ਲਾਈਟ ਮੋਡ",
+        "guide_c6_desc": "ਖੇਤ ਵਿੱਚ ਧੁੱਪ ਵੇਲੇ ਜਾਂ ਦਫ਼ਤਰ ਵਿੱਚ ਵਰਤੋਂ ਲਈ ਸਕ੍ਰੀਨ ਨੂੰ ਆਪਣੀ ਮਰਜ਼ੀ ਅਨੁਸਾਰ ਸੈੱਟ ਕਰੋ।",
+        "guide_c6_f1": "<b>ਭਾਸ਼ਾ ਚੋਣ:</b> ਸਾਈਨ-ਇਨ ਤੋਂ ਪਹਿਲਾਂ ਜਾਂ ਬਾਅਦ ਵਿੱਚ ਕਦੇ ਵੀ ਅੰਗਰੇਜ਼ੀ, ਹਿੰਦੀ ਜਾਂ ਪੰਜਾਬੀ ਚੁਣੋ।",
+        "guide_c6_f2": "<b>ਲਾਈਟ / ਡਾਰਕ ਮੋਡ:</b> ਤੇਜ਼ ਧੁੱਪ ਲਈ ਹਾਈ-ਕੰਟ੍ਰਾਸਟ ਲਾਈਟ ਮੋਡ ਅਤੇ ਰਾਤ ਲਈ ਡਾਰਕ ਮੋਡ।",
+        "guide_c6_f3": "<b>ਸੁਰੱਖਿਅਤ ਪਸੰਦ:</b> ਤੁਹਾਡੀ ਚੁਣੀ ਗਈ ਭਾਸ਼ਾ ਅਤੇ ਥੀਮ ਤੁਹਾਡੇ ਮੋਬਾਈਲ/ਕੰਪਿਊਟਰ 'ਤੇ ਹਮੇਸ਼ਾ ਯਾਦ ਰਹਿੰਦੀ ਹੈ।",
+        "guide_c6_tip": "💡 <b>ਸੁਝਾਅ:</b> ਉੱਪਰਲੇ ਨੈਵੀਗੇਸ਼ਨ ਬਾਰ ਵਿੱਚ ਦਿੱਤੇ ਬਟਨਾਂ ਤੋਂ ਇੱਕ ਕਲਿੱਕ ਵਿੱਚ ਭਾਸ਼ਾ ਜਾਂ ਥੀਮ ਬਦਲੋ।"
+    }
+};
+
+function initLanguage() {
+    const savedLang = localStorage.getItem("pww_lang") || "en";
+    applyLanguage(savedLang);
+}
+
+function applyLanguage(lang) {
+    if (!lang || !I18N_DICTIONARY[lang]) lang = "en";
+    currentLang = lang;
+    localStorage.setItem("pww_lang", lang);
+
+    // Sync navbar language toggle
+    document.querySelectorAll(".lang-btn").forEach(b => {
+        b.classList.toggle("active", b.getAttribute("data-lang") === lang);
+    });
+
+    // Sync pre-auth language buttons
+    document.querySelectorAll(".pre-lang-btn").forEach(b => {
+        b.classList.toggle("active", b.getAttribute("data-lang") === lang);
+    });
+
+    // Apply translations to all data-i18n elements
+    const dict = I18N_DICTIONARY[lang];
+    if (dict) {
+        document.querySelectorAll("[data-i18n]").forEach(el => {
+            const key = el.getAttribute("data-i18n");
+            if (dict[key]) {
+                el.innerHTML = dict[key];
+            }
+        });
+    }
+
+    // Refresh telemetry in new language
+    if (currentDistrict) {
+        loadDistrictData(currentDistrict);
+    }
+}
+
 // Tab navigation
 function initTabs() {
     // Support footer navigation links
@@ -256,6 +472,15 @@ function initTabs() {
             window.scrollTo({ top: 0, behavior: "smooth" });
         });
     });
+
+    // Top Navbar Guide Button
+    const navGuideBtn = document.getElementById("navGuideBtn");
+    if (navGuideBtn) {
+        navGuideBtn.addEventListener("click", () => {
+            switchTab("tab-guide");
+            window.scrollTo({ top: 0, behavior: "smooth" });
+        });
+    }
 }
 
 // Leaflet Map setup
@@ -474,13 +699,11 @@ function setupEventListeners() {
         });
     }
 
-    // Language Toggle
-    document.querySelectorAll(".lang-btn").forEach(btn => {
+    // Language Toggle (Navbar & Pre-Auth Modal)
+    document.querySelectorAll(".lang-btn, .pre-lang-btn").forEach(btn => {
         btn.addEventListener("click", () => {
-            document.querySelectorAll(".lang-btn").forEach(b => b.classList.remove("active"));
-            btn.classList.add("active");
-            currentLang = btn.getAttribute("data-lang");
-            loadDistrictData(currentDistrict);
+            const lang = btn.getAttribute("data-lang");
+            applyLanguage(lang);
         });
     });
 

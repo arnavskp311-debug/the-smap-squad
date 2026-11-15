@@ -9,7 +9,7 @@
     <link rel="shortcut icon" href="/favicon.ico">
     <!-- Leaflet CSS -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-    <link rel="stylesheet" href="/style.css?v=2026.11.15.v4">
+    <link rel="stylesheet" href="/style.css?v=2026.11.15.v5">
     <!-- Chart.js & Leaflet JS -->
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -86,13 +86,19 @@
                 <li>
                     <button class="drawer-nav-btn" data-tab="tab-team">
                         <span>👥</span>
-                        <span>Team</span>
+                        <span data-i18n="nav_team">Team</span>
                     </button>
                 </li>
                 <li>
                     <button class="drawer-nav-btn" data-tab="tab-about">
                         <span>📖</span>
-                        <span>About</span>
+                        <span data-i18n="nav_about">About</span>
+                    </button>
+                </li>
+                <li>
+                    <button class="drawer-nav-btn" data-tab="tab-guide">
+                        <span>📘</span>
+                        <span data-i18n="nav_guide">User Guide</span>
                     </button>
                 </li>
             </ul>
@@ -156,6 +162,12 @@
                 <button id="themeToggleBtn" class="theme-toggle-btn" title="Toggle Dark/Light Mode" aria-label="Toggle Dark/Light Mode">
                     <span class="theme-icon" id="themeIcon">☀️</span>
                     <span class="theme-label" id="themeText">Light</span>
+                </button>
+
+                <!-- Dedicated User Guide Navbar Pill -->
+                <button id="navGuideBtn" class="guide-nav-pill" data-tab="tab-guide" title="User Guide & System Manual">
+                    <span>📘</span>
+                    <span id="navGuideText" data-i18n="nav_guide">User Guide</span>
                 </button>
 
                 <!-- Farmer / User Profile Button -->
@@ -1009,6 +1021,129 @@
             </div>
         </section>
 
+        <!-- TAB 8: DEDICATED USER GUIDE & SYSTEM MANUAL -->
+        <section id="tab-guide" class="tab-content">
+            <div class="guide-hero">
+                <div class="guide-hero-content">
+                    <h2 data-i18n="guide_hero_title">📘 Punjab Farm Water Watch · User Guide</h2>
+                    <p data-i18n="guide_hero_subtitle">Complete operational manual for farmers, agricultural officers, and water stewards to monitor groundwater, plan precision irrigation, and save power using NASA satellite data.</p>
+                </div>
+                <div class="guide-quick-nav">
+                    <a href="#guide-mod1" class="guide-jump-btn" data-i18n="guide_nav_1">🛰️ Satellite Map</a>
+                    <a href="#guide-mod2" class="guide-jump-btn" data-i18n="guide_nav_2">⚠️ Stress Index</a>
+                    <a href="#guide-mod3" class="guide-jump-btn" data-i18n="guide_nav_3">📅 7-Day Plan</a>
+                    <a href="#guide-mod4" class="guide-jump-btn" data-i18n="guide_nav_4">💡 Simulator</a>
+                    <a href="#guide-mod5" class="guide-jump-btn" data-i18n="guide_nav_5">🪪 Water Pass</a>
+                </div>
+            </div>
+
+            <div class="guide-grid">
+                <!-- Guide Card 1 -->
+                <div class="guide-card" id="guide-mod1">
+                    <div class="guide-card-header">
+                        <span class="guide-card-badge">Step 1</span>
+                        <div class="guide-card-title" data-i18n="guide_c1_title">🛰️ NASA SMAP Satellite &amp; GIS Map</div>
+                    </div>
+                    <div class="guide-card-body">
+                        <p data-i18n="guide_c1_desc">Explore high-resolution district-level soil moisture and irrigation hotspots across Punjab and major global food-basket aquifer basins.</p>
+                        <ul class="guide-feature-list">
+                            <li><span class="bullet">✓</span> <span data-i18n="guide_c1_f1"><b>Hotspot Selector:</b> Toggle between Punjab, Central Valley, Nile Delta, and Murray-Darling.</span></li>
+                            <li><span class="bullet">✓</span> <span data-i18n="guide_c1_f2"><b>District Dropdown:</b> Select any of Punjab's 22 districts (e.g. Bathinda, Sangrur, Ludhiana).</span></li>
+                            <li><span class="bullet">✓</span> <span data-i18n="guide_c1_f3"><b>Satellite Basemaps:</b> Switch between Dark Matter, Esri High-Res Satellite, NASA GIBS Live TrueColor, and Black Marble.</span></li>
+                        </ul>
+                        <div class="guide-card-tip" data-i18n="guide_c1_tip">💡 <b>Tip:</b> Click any district boundary directly on the map to inspect live water metrics!</div>
+                    </div>
+                </div>
+
+                <!-- Guide Card 2 -->
+                <div class="guide-card" id="guide-mod2">
+                    <div class="guide-card-header">
+                        <span class="guide-card-badge">Step 2</span>
+                        <div class="guide-card-title" data-i18n="guide_c2_title">⚠️ Water Stress Score &amp; Soil Diagnosis</div>
+                    </div>
+                    <div class="guide-card-body">
+                        <p data-i18n="guide_c2_desc">Understand composite aquifer stress scores combining NASA SMAP, GPM Precipitation, Landsat LST, and MODIS ET.</p>
+                        <ul class="guide-feature-list">
+                            <li><span class="bullet">✓</span> <span data-i18n="guide_c2_f1"><b>Green (0–39):</b> Safe moisture levels; no immediate pumping needed.</span></li>
+                            <li><span class="bullet">✓</span> <span data-i18n="guide_c2_f2"><b>Yellow (40–69):</b> Moderate stress; schedule light, precision morning irrigation.</span></li>
+                            <li><span class="bullet">✓</span> <span data-i18n="guide_c2_f3"><b>Red (70–100):</b> Critical over-extraction risk; follow strict tubewell runtime limits.</span></li>
+                            <li><span class="bullet">✓</span> <span data-i18n="guide_c2_f4"><b>Dual Soil Diagnosis:</b> Detects soil moisture salinity, hardpan compaction, or low organic carbon.</span></li>
+                        </ul>
+                        <div class="guide-card-tip" data-i18n="guide_c2_tip">💡 <b>Action:</b> Read the Soil Testing &amp; Remedy Guide under the AgriSense tab for laboratory correction steps.</div>
+                    </div>
+                </div>
+
+                <!-- Guide Card 3 -->
+                <div class="guide-card" id="guide-mod3">
+                    <div class="guide-card-header">
+                        <span class="guide-card-badge">Step 3</span>
+                        <div class="guide-card-title" data-i18n="guide_c3_title">📅 7-Day Forecast &amp; Irrigation Calendar</div>
+                    </div>
+                    <div class="guide-card-body">
+                        <p data-i18n="guide_c3_desc">AI-powered autoregressive moisture forecaster plans daily irrigation and avoids pumping before rain events.</p>
+                        <ul class="guide-feature-list">
+                            <li><span class="bullet">✓</span> <span data-i18n="guide_c3_f1"><b>7-Day Trend Chart:</b> Visualizes forecasted rootzone volumetric soil moisture (m³/m³).</span></li>
+                            <li><span class="bullet">✓</span> <span data-i18n="guide_c3_f2"><b>Tubewell Pumping Hours:</b> Recommended motor operation (e.g. 2.0 hrs/day instead of 8 hrs).</span></li>
+                            <li><span class="bullet">✓</span> <span data-i18n="guide_c3_f3"><b>Voice Broadcast:</b> Click "Broadcast Audio Advisory" to hear your farm's advisory in Hindi/Punjabi!</span></li>
+                            <li><span class="bullet">✓</span> <span data-i18n="guide_c3_f4"><b>WhatsApp Alert:</b> Instant one-click dispatch to share farm guidance with local village groups.</span></li>
+                        </ul>
+                        <div class="guide-card-tip" data-i18n="guide_c3_tip">💡 <b>Tip:</b> Rain predicted days display zero irrigation hours to conserve groundwater.</div>
+                    </div>
+                </div>
+
+                <!-- Guide Card 4 -->
+                <div class="guide-card" id="guide-mod4">
+                    <div class="guide-card-header">
+                        <span class="guide-card-badge">Step 4</span>
+                        <div class="guide-card-title" data-i18n="guide_c4_title">💡 Crop Budget &amp; Power Simulator</div>
+                    </div>
+                    <div class="guide-card-body">
+                        <p data-i18n="guide_c4_desc">Simulate direct financial and environmental savings by adopting water-conserving agronomic practices.</p>
+                        <ul class="guide-feature-list">
+                            <li><span class="bullet">✓</span> <span data-i18n="guide_c4_f1"><b>Farm Size Slider:</b> Adjust your land acreage (1 to 50 acres) to dynamically calculate savings.</span></li>
+                            <li><span class="bullet">✓</span> <span data-i18n="guide_c4_f2"><b>Practice Comparison:</b> Compare Direct Seeded Rice (DSR), Alternate Wetting &amp; Drying (AWD), and Drip.</span></li>
+                            <li><span class="bullet">✓</span> <span data-i18n="guide_c4_f3"><b>Energy Savings:</b> View tubewell electricity units (kWh) and carbon emissions saved.</span></li>
+                        </ul>
+                        <div class="guide-card-tip" data-i18n="guide_c4_tip">💡 <b>Benefit:</b> Qualifying farms earn water stewardship points reflected on their Water Pass!</div>
+                    </div>
+                </div>
+
+                <!-- Guide Card 5 -->
+                <div class="guide-card" id="guide-mod5">
+                    <div class="guide-card-header">
+                        <span class="guide-card-badge">Step 5</span>
+                        <div class="guide-card-title" data-i18n="guide_c5_title">🪪 Digital Farmer Water Pass</div>
+                    </div>
+                    <div class="guide-card-body">
+                        <p data-i18n="guide_c5_desc">Your official Punjab Agri-Hydrology digital identity verifying water-saving stewardship and farm credentials.</p>
+                        <ul class="guide-feature-list">
+                            <li><span class="bullet">✓</span> <span data-i18n="guide_c5_f1"><b>Member ID &amp; Serial:</b> Official identification number tied to your district and farm profile.</span></li>
+                            <li><span class="bullet">✓</span> <span data-i18n="guide_c5_f2"><b>Cumulative Metrics:</b> Total groundwater liters and power saved tracked live.</span></li>
+                            <li><span class="bullet">✓</span> <span data-i18n="guide_c5_f3"><b>Print / Download:</b> Export your high-contrast Water Pass for official subsidy and canal credit applications.</span></li>
+                        </ul>
+                        <div class="guide-card-tip" data-i18n="guide_c5_tip">💡 <b>Access:</b> Click your profile avatar in the top-right corner anytime to view or print your pass.</div>
+                    </div>
+                </div>
+
+                <!-- Guide Card 6 -->
+                <div class="guide-card" id="guide-mod6">
+                    <div class="guide-card-header">
+                        <span class="guide-card-badge">Step 6</span>
+                        <div class="guide-card-title" data-i18n="guide_c6_title">🌐 Language &amp; Theme Customization</div>
+                    </div>
+                    <div class="guide-card-body">
+                        <p data-i18n="guide_c6_desc">Customize your viewing experience for outdoor field use or desktop research.</p>
+                        <ul class="guide-feature-list">
+                            <li><span class="bullet">✓</span> <span data-i18n="guide_c6_f1"><b>Language Selector:</b> Choose English (EN), हिन्दी (HI), or ਪੰਜਾਬੀ (PA) before or after sign-in.</span></li>
+                            <li><span class="bullet">✓</span> <span data-i18n="guide_c6_f2"><b>Light / Dark Mode:</b> High-contrast light mode for bright sunlight; dark mode for mission control.</span></li>
+                            <li><span class="bullet">✓</span> <span data-i18n="guide_c6_f3"><b>Persistence:</b> Your language and theme preferences are automatically saved on your device.</span></li>
+                        </ul>
+                        <div class="guide-card-tip" data-i18n="guide_c6_tip">💡 <b>Tip:</b> Use the top navbar buttons to toggle language or theme with a single click.</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
         <!-- Global Enterprise Realistic Footer -->
         <footer class="main-footer">
             <div class="footer-grid">
@@ -1051,6 +1186,7 @@
                         <li><a href="#" class="footer-nav" data-tab="tab-report">🪪 Farmer Identity Card</a></li>
                         <li><a href="#" class="footer-nav" data-tab="tab-team">👥 Team</a></li>
                         <li><a href="#" class="footer-nav" data-tab="tab-about">📖 About</a></li>
+                        <li><a href="#" class="footer-nav" data-tab="tab-guide">📘 User Guide</a></li>
                     </ul>
                 </div>
 
@@ -1093,8 +1229,18 @@
                     <img src="/logo.png" alt="Punjab Farm Water Watch" class="auth-brand-logo">
                     <span>GOVERNMENT OF PUNJAB · AGRI-HYDROLOGY PORTAL</span>
                 </div>
-                <h2 class="auth-modal-title" id="authModalTitle">Mandatory Farmer &amp; Sentinel Access</h2>
-                <p class="auth-modal-subtitle">Access to Punjab's live NASA SMAP telemetry, GIS spatial maps, and groundwater advisories requires verified farmer registration or direct sign-in.</p>
+                <h2 class="auth-modal-title" id="authModalTitle" data-i18n="auth_title">Mandatory Farmer &amp; Sentinel Access</h2>
+                <p class="auth-modal-subtitle" id="authModalSubtitle" data-i18n="auth_subtitle">Access to Punjab's live NASA SMAP telemetry, GIS spatial maps, and groundwater advisories requires verified farmer registration or direct sign-in.</p>
+                
+                <!-- Pre-Sign-In Language Selection Option -->
+                <div class="pre-auth-lang-picker">
+                    <span class="pre-auth-lang-label" data-i18n="pre_lang_title">🌐 Choose Your Language / भाषा चुनें / ਭਾਸ਼ਾ ਚੁਣੋ:</span>
+                    <div class="pre-auth-lang-options">
+                        <button type="button" class="pre-lang-btn active" data-lang="en">🇬🇧 English</button>
+                        <button type="button" class="pre-lang-btn" data-lang="hi">🇮🇳 हिन्दी</button>
+                        <button type="button" class="pre-lang-btn" data-lang="pa">🌾 ਪੰਜਾਬੀ</button>
+                    </div>
+                </div>
             </div>
 
             <div class="auth-tabs">
@@ -1297,6 +1443,6 @@
         </div>
     </div>
 
-    <script src="/app.js?v=2026.11.15.v4"></script>
+    <script src="/app.js?v=2026.11.15.v5"></script>
 </body>
 </html>
