@@ -1080,15 +1080,12 @@ function renderTelemetry(data) {
 
     // 8. Download Dossier Button
     const btnDownload = document.getElementById("btnDownloadReport");
-    if (btnDownload) btnDownload.href = `/api/report/${encodeURIComponent(data.district)}`;
-
-    // 9. Update Report Preview
-    fetch(`/api/report/${encodeURIComponent(data.district)}`)
-        .then(res => res.text())
-        .then(txt => {
-            const reportEl = document.getElementById("reportPreview");
-            if (reportEl) reportEl.innerText = txt;
-        }).catch(() => {});
+    if (btnDownload) {
+        btnDownload.addEventListener("click", (e) => {
+            e.preventDefault();
+            window.print();
+        });
+    }
 
     updateCalculator();
     updateCropSimulator();
@@ -1739,14 +1736,43 @@ function updateUserUI(user) {
 
         // Generate Real Scannable High-Res QR Code for Farm Verification
         const passQrImg = document.getElementById("passQrImg");
+        let qrDataUrl = "/logo.png";
         if (passQrImg) {
             const memberId = user.member_id || "PWW-2026-PB-0482";
             const farmerName = user.name || "Punjab Water Sentinel";
             const district = user.district || "Bathinda";
             const waterSaved = `${savedMillions}M L`;
             const qrData = `https://punjab-water-watch.gov.in/verify?member_id=${encodeURIComponent(memberId)}&farmer=${encodeURIComponent(farmerName)}&district=${encodeURIComponent(district)}&water_saved=${encodeURIComponent(waterSaved)}`;
-            passQrImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=180x180&margin=4&data=${encodeURIComponent(qrData)}`;
+            qrDataUrl = `https://api.qrserver.com/v1/create-qr-code/?size=180x180&margin=4&data=${encodeURIComponent(qrData)}`;
+            passQrImg.src = qrDataUrl;
         }
+
+        // Also sync dedicated Farmer Identity Card Tab fields
+        const tabPassAvatar = document.getElementById("tabPassAvatar");
+        const tabPassMemberId = document.getElementById("tabPassMemberId");
+        const tabPassName = document.getElementById("tabPassName");
+        const tabPassRole = document.getElementById("tabPassRole");
+        const tabPassDistrict = document.getElementById("tabPassDistrict");
+        const tabPassAcres = document.getElementById("tabPassAcres");
+        const tabPassCrop = document.getElementById("tabPassCrop");
+        const tabPassAuthType = document.getElementById("tabPassAuthType");
+        const tabPassWaterSaved = document.getElementById("tabPassWaterSaved");
+        const tabPassPowerSaved = document.getElementById("tabPassPowerSaved");
+        const tabPassSoilGrade = document.getElementById("tabPassSoilGrade");
+        const tabPassQrImg = document.getElementById("tabPassQrImg");
+
+        if (tabPassAvatar) tabPassAvatar.innerHTML = `<img src="${userAvatarSrc}" alt="Profile" class="avatar-img">`;
+        if (tabPassMemberId) tabPassMemberId.innerText = user.member_id || "PWW-2026-PB-0482";
+        if (tabPassName) tabPassName.innerText = user.name;
+        if (tabPassRole) tabPassRole.innerText = user.role || "Registered Farmer & Water Sentinel";
+        if (tabPassDistrict) tabPassDistrict.innerText = user.district || "Bathinda";
+        if (tabPassAcres) tabPassAcres.innerText = `${user.farm_acres} Acres`;
+        if (tabPassCrop) tabPassCrop.innerText = user.primary_crop || "Wheat & Rice";
+        if (tabPassAuthType) tabPassAuthType.innerText = `Punjab Ag-Stack Verified · ${user.irrigation_source || "Tubewell"}`;
+        if (tabPassWaterSaved) tabPassWaterSaved.innerText = `${savedMillions}M L`;
+        if (tabPassPowerSaved) tabPassPowerSaved.innerText = `${(user.electricity_saved_kwh || 1420).toLocaleString()} kWh`;
+        if (tabPassSoilGrade) tabPassSoilGrade.innerText = user.soil_health_grade || "Grade A";
+        if (tabPassQrImg) tabPassQrImg.src = qrDataUrl;
     } else {
         if (navAvatar) navAvatar.innerHTML = `<img src="/default_avatar.png" alt="Profile" class="avatar-img">`;
         if (navText) navText.innerText = "Sign In";
@@ -1761,6 +1787,14 @@ function updateUserUI(user) {
             `;
         }
         if (drawerAuthBtnLabel) drawerAuthBtnLabel.innerText = "Register / Sign In";
+
+        // Tab card guest defaults
+        const tabPassName = document.getElementById("tabPassName");
+        if (tabPassName) tabPassName.innerText = "Guest Farmer (Unregistered)";
+        const tabPassRole = document.getElementById("tabPassRole");
+        if (tabPassRole) tabPassRole.innerText = "Register Farm to Activate Official Pass";
+        const tabPassMemberId = document.getElementById("tabPassMemberId");
+        if (tabPassMemberId) tabPassMemberId.innerText = "PENDING-REGISTRATION";
     }
 }
 
@@ -2052,11 +2086,13 @@ function setupAuthListeners() {
                         }
                         openProfileModal();
                         return;
-                    } else {
-                        // Instant demo access on Netlify
+                    }
+
+                    // Check if it's the verified official demo steward account
+                    if (email.toLowerCase() === "arnav@punjabfarms.gov.in" && password === "arnav1234") {
                         const stewardUser = {
                             name: "Arnav Sharma",
-                            email: email || "arnav@punjabfarms.gov.in",
+                            email: "arnav@punjabfarms.gov.in",
                             phone: "+91 98765 43210",
                             role: "Lead Farmer & Water Steward",
                             district: "Bathinda",
@@ -2071,15 +2107,43 @@ function setupAuthListeners() {
                             avatar_initials: "AS",
                             is_active: true,
                             email_verified: true,
-                            created_at: new Date().toISOString()
+                            created_at: "2026-11-14T16:11:20.076868"
                         };
                         currentUser = stewardUser;
                         localStorage.setItem("pww_user", JSON.stringify(currentUser));
                         updateUserUI(currentUser);
                         unlockAuthGate();
+                        if (currentUser.district) {
+                            const select = document.getElementById("districtSelect");
+                            if (select) {
+                                select.value = currentUser.district;
+                                loadDistrictData(currentUser.district);
+                            }
+                        }
                         openProfileModal();
                         return;
                     }
+
+                    // Strict rejection: Random credentials or incorrect password NEVER log in!
+                    if (feedback) {
+                        feedback.style.display = "block";
+                        feedback.className = "auth-feedback auth-feedback-error";
+                        const errTitle = currentLang === "pa" 
+                            ? "❌ ਗਲਤ ਪ੍ਰਮਾਣ ਪੱਤਰ (Login Failed)" 
+                            : (currentLang === "hi" 
+                                ? "❌ अमान्य क्रेडेंशियल (Login Failed)" 
+                                : "❌ Invalid Credentials (Login Failed)");
+                        const errDesc = currentLang === "pa" 
+                            ? "ਗਲਤ ਈਮੇਲ ਜਾਂ ਪਾਸਵਰਡ। ਜੇਕਰ ਤੁਹਾਡਾ ਖਾਤਾ ਨਹੀਂ ਹੈ, ਤਾਂ ਕਿਰਪਾ ਕਰਕੇ ਪਹਿਲਾਂ 'Register' ਟੈਬ ਵਿੱਚ ਜਾ ਕੇ ਰਜਿਸਟਰ ਕਰੋ।" 
+                            : (currentLang === "hi" 
+                                ? "गलत ईमेल अथवा पासवर्ड। यदि आपके पास खाता नहीं है, तो कृपया पहले 'Register' टैब में जाकर नया खाता बनाएं।" 
+                                : "Invalid email address or password. If you do not have an account yet, please register your farm first.");
+                        feedback.innerHTML = `
+                            <div class="feedback-title">${errTitle}</div>
+                            <div class="feedback-desc">${errDesc}</div>
+                        `;
+                    }
+                    return;
                 }
                 if (feedback) {
                     feedback.style.display = "block";
@@ -2106,6 +2170,24 @@ function setupAuthListeners() {
     if (btnPrintPassBtn) {
         btnPrintPassBtn.addEventListener("click", () => {
             window.print();
+        });
+    }
+
+    const btnPrintTabPassBtn = document.getElementById("btnPrintTabPassBtn");
+    if (btnPrintTabPassBtn) {
+        btnPrintTabPassBtn.addEventListener("click", () => {
+            window.print();
+        });
+    }
+
+    const btnManageTabPassBtn = document.getElementById("btnManageTabPassBtn");
+    if (btnManageTabPassBtn) {
+        btnManageTabPassBtn.addEventListener("click", () => {
+            if (currentUser && currentUser.email) {
+                openProfileModal();
+            } else {
+                openAuthModal();
+            }
         });
     }
 

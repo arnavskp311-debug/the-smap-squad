@@ -3361,3 +3361,26 @@ body.auth-locked #drawerOverlay {
     border-left-color: #D97706;
     color: #92400E;
 }
+
+/* Print Optimization for Farmer Water Pass */
+@media print {
+    body * {
+        visibility: hidden !important;
+    }
+    #tabFarmPassPrintable, #tabFarmPassPrintable *,
+    #farmPassPrintable, #farmPassPrintable * {
+        visibility: visible !important;
+    }
+    #tabFarmPassPrintable, #farmPassPrintable {
+        position: fixed !important;
+        left: 0 !important;
+        top: 0 !important;
+        width: 100% !important;
+        max-width: 800px !important;
+        margin: 20px auto !important;
+        box-shadow: none !important;
+        border: 2px solid #059669 !important;
+        background: #FFFFFF !important;
+        color: #0F172A !important;
+    }
+}

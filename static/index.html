@@ -9,7 +9,7 @@
     <link rel="shortcut icon" href="/favicon.ico">
     <!-- Leaflet CSS -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-    <link rel="stylesheet" href="/style.css?v=2026.11.15.v6">
+    <link rel="stylesheet" href="/style.css?v=2026.11.15.v7">
     <!-- Chart.js & Leaflet JS -->
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -523,16 +523,109 @@
             </div>
         </section>
 
-        <!-- TAB 4: FARMER IDENTITY CARD & EXECUTIVE DOSSIER -->
+        <!-- TAB 4: FARMER IDENTITY CARD & OFFICIAL DIGITAL WATER PASS -->
         <section id="tab-report" class="tab-content">
-            <div class="dark-card">
-                <div class="card-title">
-                    <span>🪪 Farmer Identity Card &amp; Executive Dossier</span>
-                    <a id="btnDownloadReport" href="/api/report/Bathinda" target="_blank" class="btn-download">📥 Download Official PDF / Dossier</a>
+            <div class="dark-card" style="margin-bottom: 24px;">
+                <div class="card-title" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; margin-bottom: 18px;">
+                    <div>
+                        <span style="font-size:1.15rem; font-weight:700;">🪪 Farmer Identity Card &amp; Official Digital Water Pass</span>
+                        <div style="font-size:0.8rem; color:var(--text-muted); margin-top:3px;">Government of Punjab Agri-Hydrology &amp; NASA SMAP Joint Sentinel Credential</div>
+                    </div>
+                    <div style="display:flex; gap:10px; align-items:center;">
+                        <button type="button" class="btn-download" id="btnPrintTabPassBtn">🖨️ Print / Download ID Card</button>
+                        <button type="button" class="btn-download" id="btnManageTabPassBtn" style="background:var(--accent-teal); color:#fff; border-color:var(--accent-teal);">👤 Manage Profile</button>
+                    </div>
                 </div>
-                <div class="report-preview-box" id="reportPreview">
-                    Loading farmer identity credentials and district telemetry report preview...
+
+                <!-- Live Printable Digital Farmer Identity Card -->
+                <div style="max-width: 820px; margin: 0 auto;">
+                    <div class="farm-pass-card" id="tabFarmPassPrintable">
+                        <div class="pass-watermark">PUNJAB FARM WATER WATCH</div>
+                        
+                        <!-- Pass Top Header -->
+                        <div class="pass-header">
+                            <div class="pass-gov-brand">
+                                <img src="/logo.png" alt="Punjab Water Watch" class="pass-logo">
+                                <div>
+                                    <div class="pass-gov-title">GOVERNMENT OF PUNJAB · AGRI-HYDROLOGY</div>
+                                    <div class="pass-gov-sub">NASA ESDIS · THE SMAP SQUAD JOINT STEWARDSHIP</div>
+                                </div>
+                            </div>
+                            <div class="pass-id-badge">
+                                <span class="pass-status-pill">ACTIVE SENTINEL</span>
+                                <span class="pass-serial" id="tabPassMemberId">PWW-2026-PB-0482</span>
+                            </div>
+                        </div>
+
+                        <!-- Farmer Profile Identity -->
+                        <div class="pass-body">
+                            <div class="pass-avatar-box">
+                                <div class="pass-large-avatar" id="tabPassAvatar">
+                                    <img src="/default_avatar.png" alt="Profile" class="avatar-img">
+                                </div>
+                                <span class="pass-verified-tag">✓ VERIFIED</span>
+                            </div>
+
+                            <div class="pass-info-grid">
+                                <div class="pass-field">
+                                    <span class="pass-label">SENTINEL / FARMER</span>
+                                    <span class="pass-value" id="tabPassName">Arnav Sharma</span>
+                                </div>
+                                <div class="pass-field">
+                                    <span class="pass-label">OFFICIAL ROLE</span>
+                                    <span class="pass-value" id="tabPassRole">Lead Farmer &amp; Water Steward</span>
+                                </div>
+                                <div class="pass-field">
+                                    <span class="pass-label">REGISTERED DISTRICT</span>
+                                    <span class="pass-value" id="tabPassDistrict">Bathinda</span>
+                                </div>
+                                <div class="pass-field">
+                                    <span class="pass-label">FARM HOLDING</span>
+                                    <span class="pass-value" id="tabPassAcres">12.5 Acres</span>
+                                </div>
+                                <div class="pass-field">
+                                    <span class="pass-label">PRIMARY CROPPING CYCLE</span>
+                                    <span class="pass-value" id="tabPassCrop">Wheat &amp; Direct Seeded Rice (DSR)</span>
+                                </div>
+                                <div class="pass-field">
+                                    <span class="pass-label">VERIFICATION SOURCE</span>
+                                    <span class="pass-value" id="tabPassAuthType">Punjab Ag-Stack · NASA SMAP Verified</span>
+                                </div>
+                            </div>
+
+                            <!-- Pass QR Code -->
+                            <div class="pass-qr-box">
+                                <div class="pass-qr-frame" id="tabPassQrCode">
+                                    <img id="tabPassQrImg" src="/logo.png" alt="Scannable Pass QR Code" style="width: 86px; height: 86px; display: block; border-radius: 4px; object-fit: contain; background: white; padding: 2px;">
+                                </div>
+                                <span class="pass-qr-caption">SCAN TO VERIFY</span>
+                            </div>
+                        </div>
+
+                        <!-- Impact Metrics Bar -->
+                        <div class="pass-metrics-strip">
+                            <div class="pass-metric-item">
+                                <span class="metric-num" id="tabPassWaterSaved">2.25M L</span>
+                                <span class="metric-title">Groundwater Conserved</span>
+                            </div>
+                            <div class="pass-metric-item">
+                                <span class="metric-num" id="tabPassPowerSaved">1,775 kWh</span>
+                                <span class="metric-title">Tubewell Power Saved</span>
+                            </div>
+                            <div class="pass-metric-item">
+                                <span class="metric-num" id="tabPassSoilGrade">Grade A</span>
+                                <span class="metric-title">NASA SMAP Soil Health</span>
+                            </div>
+                            <div class="pass-metric-item">
+                                <span class="metric-num" id="tabPassDossierAccess">UNLOCKED</span>
+                                <span class="metric-title">Full Sentinel Privileges</span>
+                            </div>
+                        </div>
+                    </div>
                 </div>
+
+                <!-- Hidden Code Box (Code completely hidden for clean UI) -->
+                <div class="report-preview-box" id="reportPreview" style="display: none !important;"></div>
             </div>
         </section>
 
@@ -1443,6 +1536,6 @@
         </div>
     </div>
 
-    <script src="/app.js?v=2026.11.15.v6"></script>
+    <script src="/app.js?v=2026.11.15.v7"></script>
 </body>
 </html>
