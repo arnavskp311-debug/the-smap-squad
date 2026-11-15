@@ -26,6 +26,8 @@ document.addEventListener("DOMContentLoaded", () => {
     initMapFullscreen();
     initNasaStatus();
     initNetworkMonitor();
+    initLocationBottomSheet();
+    initHeroClamps();
     initServiceWorker();
     initAuth();
     populateHotspotDistricts("Punjab", currentDistrict || "Bathinda");
@@ -38,6 +40,8 @@ document.addEventListener("DOMContentLoaded", () => {
 function initNetworkMonitor() {
     const pill = document.getElementById("networkPill");
     const text = document.getElementById("networkText");
+    const mobPill = document.getElementById("mobNetworkPill");
+    const mobText = document.getElementById("mobNetworkText");
 
     function updateStatus() {
         if (!pill || !text) return;
@@ -47,18 +51,28 @@ function initNetworkMonitor() {
         const is2G = effectiveType === "2g" || effectiveType === "slow-2g";
 
         pill.classList.remove("network-online", "network-2g", "network-offline");
+        if (mobPill) mobPill.classList.remove("network-online", "network-2g", "network-offline");
 
         if (!isOnline) {
             pill.classList.add("network-offline");
-            text.innerText = currentLang === "pa" ? "ਆਫਲਾਈਨ (ਕੈਸ਼)" : (currentLang === "hi" ? "ऑफ़लाइन (कैश)" : "Offline (Cached)");
+            if (mobPill) mobPill.classList.add("network-offline");
+            const str = currentLang === "pa" ? "ਆਫਲਾਈਨ (ਕੈਸ਼)" : (currentLang === "hi" ? "ऑफ़लाइन (कैश)" : "Offline (Cached)");
+            text.innerText = str;
+            if (mobText) mobText.innerText = str;
             pill.title = "Offline Mode: Telemetry rendered from local cached storage.";
         } else if (is2G) {
             pill.classList.add("network-2g");
-            text.innerText = currentLang === "pa" ? "2G ਮੋਡ (ਸੇਵ)" : (currentLang === "hi" ? "2G मोड (डेटा बचत)" : "2G Mode (Data Saved)");
+            if (mobPill) mobPill.classList.add("network-2g");
+            const str = currentLang === "pa" ? "2G ਮੋਡ (ਸੇਵ)" : (currentLang === "hi" ? "2G मोड (डेटा बचत)" : "2G Mode (Data Saved)");
+            text.innerText = str;
+            if (mobText) mobText.innerText = str;
             pill.title = "2G Network Detected: Ultra-compressed instant satellite telemetry loaded.";
         } else {
             pill.classList.add("network-online");
-            text.innerText = currentLang === "pa" ? "ਲਾਈਵ ਸਿੰਕ" : (currentLang === "hi" ? "लाइव सिंक" : "Live Synced");
+            if (mobPill) mobPill.classList.add("network-online");
+            const str = currentLang === "pa" ? "ਲਾਈਵ ਸਿੰਕ" : (currentLang === "hi" ? "लाइव सिंक" : "Live Synced");
+            text.innerText = str;
+            if (mobText) mobText.innerText = str;
             pill.title = "NASA Earthdata Satellite Telemetry Live Synced.";
         }
     }
@@ -69,6 +83,166 @@ function initNetworkMonitor() {
         navigator.connection.addEventListener("change", updateStatus);
     }
     updateStatus();
+}
+
+// Mobile Location Bottom Sheet & Mobile Header Controls
+function initLocationBottomSheet() {
+    const mobLocationBtn = document.getElementById("mobLocationBtn");
+    const backdrop = document.getElementById("locationSheetBackdrop");
+    const sheet = document.getElementById("locationBottomSheet");
+    const closeBtn = document.getElementById("locSheetCloseBtn");
+    const chipsContainer = document.getElementById("sheetHotspotChips");
+    const districtList = document.getElementById("sheetDistrictList");
+    const hotspotTitle = document.getElementById("sheetCurrentHotspotName");
+
+    if (!mobLocationBtn || !backdrop || !sheet) return;
+
+    let activeHotspot = (document.getElementById("hotspotSelect") && document.getElementById("hotspotSelect").value) || "Punjab";
+
+    function renderSheetHotspots() {
+        if (!chipsContainer) return;
+        chipsContainer.innerHTML = "";
+        const hotspots = [
+            { key: "Punjab", label: "🌾 Punjab" },
+            { key: "Central Valley", label: "🏜️ Central Valley" },
+            { key: "Nile Delta", label: "🌊 Nile Delta" },
+            { key: "Murray-Darling", label: "🚜 Murray-Darling" },
+            { key: "Indo-Gangetic", label: "🏔️ Indo-Gangetic" }
+        ];
+        hotspots.forEach(h => {
+            const btn = document.createElement("button");
+            btn.type = "button";
+            btn.className = "sheet-chip" + (h.key === activeHotspot ? " active" : "");
+            btn.innerText = h.label;
+            btn.addEventListener("click", () => {
+                activeHotspot = h.key;
+                renderSheetHotspots();
+                renderSheetDistricts();
+            });
+            chipsContainer.appendChild(btn);
+        });
+    }
+
+    function renderSheetDistricts() {
+        if (!districtList) return;
+        districtList.innerHTML = "";
+        if (hotspotTitle) hotspotTitle.innerText = activeHotspot;
+        const list = HOTSPOT_DISTRICTS[activeHotspot] || HOTSPOT_DISTRICTS["Punjab"];
+        const curDistrict = currentDistrict || "Bathinda";
+
+        list.forEach(item => {
+            const btn = document.createElement("button");
+            btn.type = "button";
+            btn.className = "sheet-dist-btn" + (item.value === curDistrict ? " active" : "");
+            
+            let distLabel = item.label;
+            if (activeHotspot === "Punjab") {
+                distLabel = getLocalizedDistrictName(item.value, currentLang);
+            }
+            btn.innerHTML = `<span class="dist-pin" style="color:var(--accent-amber);">📍</span><span class="dist-name">${distLabel}</span>`;
+            
+            btn.addEventListener("click", () => {
+                const hotspotSelect = document.getElementById("hotspotSelect");
+                const districtSelect = document.getElementById("districtSelect");
+                if (hotspotSelect) hotspotSelect.value = activeHotspot;
+                populateHotspotDistricts(activeHotspot, item.value);
+                if (districtSelect) districtSelect.value = item.value;
+                loadDistrictData(item.value);
+                
+                const locLabel = document.getElementById("mobLocationLabel");
+                if (locLabel) locLabel.innerText = `${activeHotspot} · ${distLabel}`;
+
+                closeSheet();
+            });
+            districtList.appendChild(btn);
+        });
+    }
+
+    function openSheet() {
+        activeHotspot = (document.getElementById("hotspotSelect") && document.getElementById("hotspotSelect").value) || "Punjab";
+        renderSheetHotspots();
+        renderSheetDistricts();
+        backdrop.style.display = "block";
+        requestAnimationFrame(() => {
+            backdrop.classList.add("is-open");
+            sheet.classList.add("is-open");
+        });
+    }
+
+    function closeSheet() {
+        backdrop.classList.remove("is-open");
+        sheet.classList.remove("is-open");
+        setTimeout(() => {
+            backdrop.style.display = "none";
+        }, 220);
+    }
+
+    mobLocationBtn.addEventListener("click", openSheet);
+    if (closeBtn) closeBtn.addEventListener("click", closeSheet);
+    backdrop.addEventListener("click", (e) => {
+        if (e.target === backdrop) closeSheet();
+    });
+
+    // Mobile Hamburger trigger
+    const mobHamburger = document.getElementById("mobHamburgerBtn");
+    if (mobHamburger) {
+        mobHamburger.addEventListener("click", () => {
+            const hamburgerBtn = document.getElementById("hamburgerBtn");
+            if (hamburgerBtn) hamburgerBtn.click();
+            else openDrawer();
+        });
+    }
+
+    // Mobile User Profile button
+    const mobUserPill = document.getElementById("mobUserPill");
+    if (mobUserPill) {
+        mobUserPill.addEventListener("click", () => {
+            const userProfileBtn = document.getElementById("userProfileBtn");
+            if (userProfileBtn) userProfileBtn.click();
+        });
+    }
+
+    // Mobile Theme Toggle button
+    const mobThemeToggle = document.getElementById("mobThemeToggle");
+    if (mobThemeToggle) {
+        mobThemeToggle.addEventListener("click", () => {
+            const themeToggleBtn = document.getElementById("themeToggleBtn");
+            if (themeToggleBtn) themeToggleBtn.click();
+        });
+    }
+
+    // Mobile Language Segment Options
+    document.querySelectorAll(".mob-lang-opt").forEach(btn => {
+        btn.addEventListener("click", () => {
+            const lang = btn.getAttribute("data-lang");
+            applyLanguage(lang);
+        });
+    });
+
+    // Mobile Panchayat Pill button
+    const mobPanchayatPill = document.getElementById("mobPanchayatPill");
+    if (mobPanchayatPill) {
+        mobPanchayatPill.addEventListener("click", () => {
+            const navPanchayatBtn = document.getElementById("navPanchayatBtn");
+            if (navPanchayatBtn) navPanchayatBtn.click();
+            else switchTab("tab-panchayat");
+        });
+    }
+}
+
+// Hero Description Clamping & Read More Toggle
+function initHeroClamps() {
+    document.querySelectorAll(".btn-read-more").forEach(btn => {
+        btn.addEventListener("click", () => {
+            const wrapper = btn.closest(".hero-desc-clamp-wrapper");
+            if (!wrapper) return;
+            const isExpanded = wrapper.classList.toggle("is-expanded");
+            btn.innerText = isExpanded 
+                ? (currentLang === "pa" ? "ਘੱਟ ਵੇਖੋ ▴" : (currentLang === "hi" ? "कम देखें ▴" : "Show less ▴")) 
+                : (currentLang === "pa" ? "ਹੋਰ ਪੜ੍ਹੋ ▾" : (currentLang === "hi" ? "और पढ़ें ▾" : "Read more ▾"));
+            btn.setAttribute("aria-expanded", isExpanded);
+        });
+    });
 }
 
 // Offline PWA Service Worker Registration
@@ -262,14 +436,18 @@ function updateThemeButtonText() {
     const current = document.documentElement.getAttribute("data-theme") || "light";
     const themeIcon = document.getElementById("themeIcon");
     const themeText = document.getElementById("themeText");
-    if (!themeIcon || !themeText) return;
-    if (current === "light") {
-        themeIcon.innerText = "🌙";
-        themeText.innerText = currentLang === "pa" ? "ਡਾਰਕ" : (currentLang === "hi" ? "डार्क" : "Dark");
-    } else {
-        themeIcon.innerText = "☀️";
-        themeText.innerText = currentLang === "pa" ? "ਲਾਈਟ" : (currentLang === "hi" ? "लाइट" : "Light");
-    }
+    const mobThemeIcon = document.getElementById("mobThemeIcon");
+    const mobThemeLabel = document.getElementById("mobThemeLabel");
+    const isLight = current === "light";
+    const icon = isLight ? "🌙" : "☀️";
+    const text = isLight 
+        ? (currentLang === "pa" ? "ਡਾਰਕ" : (currentLang === "hi" ? "डार्क" : "Dark"))
+        : (currentLang === "pa" ? "ਲਾਈਟ" : (currentLang === "hi" ? "लाइट" : "Light"));
+
+    if (themeIcon) themeIcon.innerText = icon;
+    if (themeText) themeText.innerText = text;
+    if (mobThemeIcon) mobThemeIcon.innerText = icon;
+    if (mobThemeLabel) mobThemeLabel.innerText = text;
 }
 
 function populateHotspotDistricts(hotspotKey, selectedDistrict = null) {
@@ -299,6 +477,17 @@ function populateHotspotDistricts(hotspotKey, selectedDistrict = null) {
     });
     if (!selectedDistrict && districtSelect.options.length > 0) {
         districtSelect.selectedIndex = 0;
+    }
+
+    // Sync mobile combined location button label
+    const mobLocationLabel = document.getElementById("mobLocationLabel");
+    if (mobLocationLabel && districtSelect.options.length > 0) {
+        const activeOpt = districtSelect.options[districtSelect.selectedIndex] || districtSelect.options[0];
+        const rawVal = activeOpt ? activeOpt.value : (selectedDistrict || "Bathinda");
+        const cleanName = hotspotKey === "Punjab" 
+            ? getLocalizedDistrictName(rawVal, currentLang) 
+            : (activeOpt ? activeOpt.textContent : rawVal);
+        mobLocationLabel.innerText = `${hotspotKey} · ${cleanName}`;
     }
 }
 
@@ -716,6 +905,11 @@ function applyLanguage(lang) {
 
     // Sync navbar language toggle
     document.querySelectorAll(".lang-btn").forEach(b => {
+        b.classList.toggle("active", b.getAttribute("data-lang") === lang);
+    });
+
+    // Sync mobile rail language toggle
+    document.querySelectorAll(".mob-lang-opt").forEach(b => {
         b.classList.toggle("active", b.getAttribute("data-lang") === lang);
     });
 
@@ -1294,6 +1488,15 @@ function renderTelemetry(data) {
                 <div style="font-size:0.75rem; color:#94A3B8; margin-top:6px;">${centroidLabel}: ${data.lat.toFixed(4)}°N, ${data.lon.toFixed(4)}°E</div>
             </div>
         `);
+    }
+
+    // Sync mobile combined location button label
+    const mobLocLabel = document.getElementById("mobLocationLabel");
+    if (mobLocLabel) {
+        const hSelect = document.getElementById("hotspotSelect");
+        const hVal = hSelect ? hSelect.value : "Punjab";
+        const locDistrict = getLocalizedDistrictName(data.district, lang);
+        mobLocLabel.innerText = `${hVal} · ${locDistrict}`;
     }
 
     // 2. Stress Card
@@ -2233,6 +2436,8 @@ function calculateFarmerImpact(acres, crop, district) {
 function updateUserUI(user) {
     const navAvatar = document.getElementById("navAvatar");
     const navText = document.getElementById("navProfileText");
+    const mobNavAvatar = document.getElementById("mobNavAvatar");
+    const mobNavProfileText = document.getElementById("mobNavProfileText");
 
     const drawerAvatar = document.getElementById("drawerAvatar");
     const drawerUserName = document.getElementById("drawerUserName");
@@ -2246,6 +2451,9 @@ function updateUserUI(user) {
     if (user && user.email) {
         if (navAvatar) navAvatar.innerHTML = `<img src="${userAvatarSrc}" alt="Profile" class="avatar-img" style="object-fit:cover; width:100%; height:100%; border-radius:50%;">`;
         if (navText) navText.innerText = user.name || "Farmer Profile";
+
+        if (mobNavAvatar) mobNavAvatar.innerHTML = `<img src="${userAvatarSrc}" alt="Profile" class="avatar-img" style="object-fit:cover; width:100%; height:100%; border-radius:50%;">`;
+        if (mobNavProfileText) mobNavProfileText.innerText = user.name ? user.name.split(" ")[0] : "Profile";
 
         if (drawerAvatar) drawerAvatar.innerHTML = `<img src="${userAvatarSrc}" alt="Profile" class="avatar-img" style="object-fit:cover; width:100%; height:100%; border-radius:50%;">`;
         if (drawerUserName) drawerUserName.innerText = user.name || "Lead Farmer";
@@ -2345,6 +2553,9 @@ function updateUserUI(user) {
     } else {
         if (navAvatar) navAvatar.innerHTML = `<img src="/default_avatar.png" alt="Profile" class="avatar-img">`;
         if (navText) navText.innerText = "Sign In";
+
+        if (mobNavAvatar) mobNavAvatar.innerHTML = `<img src="/default_avatar.png" alt="Profile" class="avatar-img">`;
+        if (mobNavProfileText) mobNavProfileText.innerText = (currentLang === "pa" ? "ਸਾਈਨ ਇਨ" : (currentLang === "hi" ? "लॉगिन" : "Sign In"));
 
         if (drawerAvatar) drawerAvatar.innerHTML = `<img src="/default_avatar.png" alt="Profile" class="avatar-img">`;
         if (drawerUserName) drawerUserName.innerText = "Guest Farmer";

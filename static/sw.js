@@ -1,5 +1,5 @@
 // Punjab Farm Water Watch - Offline & 2G Resilient Service Worker
-const CACHE_NAME = 'pww-cache-v2026.11.15.v21';
+const CACHE_NAME = 'pww-cache-v2026.11.15.v22';
 
 const CORE_ASSETS = [
     '/',

@@ -15,15 +15,15 @@
     <link rel="apple-touch-icon" href="/logo.png">
     <!-- Leaflet CSS -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-    <link rel="stylesheet" href="/style.css?v=2026.11.15.v21">
-    <!-- Immediate Cache Purge for Version v21 -->
+    <link rel="stylesheet" href="/style.css?v=2026.11.15.v22">
+    <!-- Immediate Cache Purge for Version v22 -->
     <script>
-        if (localStorage.getItem("pww_cache_v") !== "2026.11.15.v21") {
-            localStorage.setItem("pww_cache_v", "2026.11.15.v21");
+        if (localStorage.getItem("pww_cache_v") !== "2026.11.15.v22") {
+            localStorage.setItem("pww_cache_v", "2026.11.15.v22");
             if ("caches" in window) {
                 caches.keys().then(keys => {
                     keys.forEach(k => {
-                        if (!k.includes("v2026.11.15.v21")) caches.delete(k);
+                        if (!k.includes("v2026.11.15.v22")) caches.delete(k);
                     });
                 });
             }
@@ -143,7 +143,72 @@
     </aside>
 
     <div class="container">
-        <!-- Top Navigation Bar -->
+        <!-- MOBILE-ONLY HEADER & CONTROLS (< 768px) -->
+        <div class="mobile-top-section">
+            <!-- 1. Slim 1-row mobile header (menu icon, compact logo + title, and user/live status pill) -->
+            <header class="mobile-header-row">
+                <div class="mob-header-left">
+                    <button type="button" id="mobHamburgerBtn" class="mob-hamburger-btn" aria-label="Open Navigation Menu" title="Open Navigation Menu">
+                        <span class="hamburger-line"></span>
+                        <span class="hamburger-line"></span>
+                        <span class="hamburger-line"></span>
+                    </button>
+                    <div class="mob-brand">
+                        <img src="/logo.png" alt="Punjab Farm Water Watch Logo" class="mob-logo">
+                        <span class="mob-brand-text">Punjab Water Watch</span>
+                    </div>
+                </div>
+                <div class="mob-header-right">
+                    <button type="button" id="mobUserPill" class="mob-user-pill" title="Farmer Profile &amp; Sign In">
+                        <div class="mob-user-avatar" id="mobNavAvatar">
+                            <img src="/default_avatar.png" alt="Profile" class="avatar-img">
+                        </div>
+                        <span class="mob-user-name" id="mobNavProfileText">Sign In</span>
+                    </button>
+                </div>
+            </header>
+
+            <!-- 2. Single Combined Location Pill (opens thumb-friendly bottom sheet) -->
+            <div class="mobile-location-wrapper">
+                <button type="button" id="mobLocationBtn" class="mob-location-pill" aria-label="Select Region and District">
+                    <div class="mob-location-left">
+                        <span class="mob-loc-icon">📍</span>
+                        <span class="mob-loc-text" id="mobLocationLabel">Punjab · Bathinda</span>
+                    </div>
+                    <span class="mob-loc-chevron">▾</span>
+                </button>
+            </div>
+
+            <!-- 3. Single-Row Horizontal Scrollable Pill Rail without wrapping -->
+            <nav class="mobile-pill-rail" aria-label="Quick Controls">
+                <!-- Panchayat Leaderboard Pill -->
+                <button type="button" id="mobPanchayatPill" class="mob-rail-pill mob-rail-btn" data-tab="tab-panchayat" title="Gram Panchayat Leaderboard">
+                    <span>🏛️</span>
+                    <span data-i18n="nav_panchayat">Panchayat Leaderboard</span>
+                </button>
+
+                <!-- Language Switcher Segment -->
+                <div class="mob-lang-segment" aria-label="Language Switcher">
+                    <button type="button" class="mob-lang-opt active" data-lang="en">EN</button>
+                    <button type="button" class="mob-lang-opt" data-lang="hi">HI</button>
+                    <button type="button" class="mob-lang-opt" data-lang="pa">PA</button>
+                </div>
+
+                <!-- Dark / Light Theme Toggle -->
+                <button type="button" id="mobThemeToggle" class="mob-rail-pill mob-rail-btn" aria-label="Toggle Dark/Light Mode">
+                    <span id="mobThemeIcon">☀️</span>
+                    <span id="mobThemeLabel">Light</span>
+                </button>
+
+                <!-- 2G / Live Network Indicator -->
+                <div class="mob-rail-pill mob-network-pill" id="mobNetworkPill" title="Network Live Sync Status">
+                    <span class="network-dot" id="mobNetworkDot"></span>
+                    <span id="mobNetworkText">Live Synced</span>
+                </div>
+            </nav>
+        </div>
+
+        <!-- Top Navigation Bar (Desktop >= 768px) -->
         <header class="top-navbar">
             <div class="nav-left">
                 <!-- Hamburger Menu Button in Left Corner -->
@@ -226,28 +291,30 @@
                     <div id="map"></div>
                 </div>
                 <div class="cards-stack">
-                    <!-- Water Stress Score Card -->
-                    <div class="dark-card">
-                        <div class="card-title">
-                            <span data-i18n="lbl_water_stress_score">Water Stress Score</span>
-                            <span class="badge" id="stressBadge">Loading...</span>
+                    <div class="bento-metrics-row">
+                        <!-- Water Stress Score Card -->
+                        <div class="dark-card bento-metric-card">
+                            <div class="card-title">
+                                <span data-i18n="lbl_water_stress_score">Water Stress</span>
+                                <span class="badge" id="stressBadge">Loading...</span>
+                            </div>
+                            <div style="text-align: center; margin: 4px 0;">
+                                <div style="font-size: 2.2rem; font-weight: 800; color: var(--text-main);" id="stressScoreVal">--</div>
+                                <div style="font-size: 0.72rem; color: var(--text-muted);" data-i18n="lbl_comp_water_stress">Composite Stress Index (0–100)</div>
+                            </div>
                         </div>
-                        <div style="text-align: center; margin: 8px 0;">
-                            <div style="font-size: 2.8rem; font-weight: 800; color: var(--text-main);" id="stressScoreVal">--</div>
-                            <div style="font-size: 0.78rem; color: var(--text-muted);" data-i18n="lbl_comp_water_stress">Composite Water Stress Index (0–100)</div>
-                        </div>
-                    </div>
 
-                    <!-- Soil Quality Card -->
-                    <div class="dark-card">
-                        <div class="card-title">
-                            <span data-i18n="lbl_soil_quality_status">Soil Quality Status</span>
-                            <span class="badge" id="soilBadge">Optimal</span>
+                        <!-- Soil Quality Card -->
+                        <div class="dark-card bento-metric-card">
+                            <div class="card-title">
+                                <span data-i18n="lbl_soil_quality_status">Soil Quality</span>
+                                <span class="badge" id="soilBadge">Optimal</span>
+                            </div>
+                            <div style="font-size: 0.85rem; font-weight: 700; color: var(--text-main); margin-bottom: 4px;" id="soilStatusText">
+                                Checking dual-diagnosis...
+                            </div>
+                            <div style="font-size: 0.72rem; color: var(--text-muted);" data-i18n="lbl_smap_landsat_corr">SMAP vs Landsat Health</div>
                         </div>
-                        <div style="font-size: 0.88rem; font-weight: 700; color: var(--text-main); margin-bottom: 6px;" id="soilStatusText">
-                            Checking dual-diagnosis...
-                        </div>
-                        <div style="font-size: 0.76rem; color: var(--text-muted);" data-i18n="lbl_smap_landsat_corr">SMAP vs Landsat NDVI/SAVI Correlation</div>
                     </div>
 
                     <!-- Farmer Advisory Card -->
@@ -296,8 +363,11 @@
                             <span>📊</span>
                             <span>Agro-Hydrological Visual Analytics Dashboard</span>
                         </div>
-                        <div class="dash-hero-sub">
-                            Comprehensive multi-satellite telemetry curves, predictive drydown envelopes, and comparative cross-district benchmarks for <b id="dashDistrictName" style="color:var(--accent-amber);">Bathinda</b>.
+                        <div class="hero-desc-clamp-wrapper">
+                            <p class="dash-hero-sub clamp-desc" id="dashHeroDesc">
+                                Comprehensive multi-satellite telemetry curves, predictive drydown envelopes, and comparative cross-district benchmarks for <b id="dashDistrictName" style="color:var(--accent-amber);">Bathinda</b>.
+                            </p>
+                            <button type="button" class="btn-read-more" aria-expanded="false">Read more ▾</button>
                         </div>
                     </div>
                     <div class="nasa-live-pill">
@@ -670,8 +740,11 @@
                             <span>Gram Panchayat Water Credit Leaderboard</span>
                             <span class="badge badge-safe" style="font-size:0.75rem; vertical-align:middle; margin-left:8px;">Live NASA Audited</span>
                         </div>
-                        <div class="panchayat-hero-sub">
-                            Satellite-verified community hydrologic governance and village water-saving benchmarks across Punjab. Powered by <b>NASA SMAP L4 (9km)</b> rootzone telemetry, <b>Landsat 8/9 NDVI (30m)</b>, and <b>GRACE-FO gravimetry</b>.
+                        <div class="hero-desc-clamp-wrapper">
+                            <p class="panchayat-hero-sub clamp-desc">
+                                Satellite-verified community hydrologic governance and village water-saving benchmarks across Punjab. Powered by <b>NASA SMAP L4 (9km)</b> rootzone telemetry, <b>Landsat 8/9 NDVI (30m)</b>, and <b>GRACE-FO gravimetry</b>.
+                            </p>
+                            <button type="button" class="btn-read-more" aria-expanded="false">Read more ▾</button>
                         </div>
                     </div>
                 </div>
@@ -1176,8 +1249,11 @@
                         <div style="font-size:0.86rem; color:var(--accent-mint); font-weight:700; margin-bottom:6px; letter-spacing:0.04em;">
                             FROM SPACE TO KHET · NASA SPACE APPS 2026
                         </div>
-                        <div class="about-hero-sub" style="margin-top:0;">
-                            <b>Punjab Farm Water Watch</b> is an operational agro-hydrological diagnostic and early-warning platform developed for the <b>NASA Space Apps Challenge 2026 (Delhi NCR)</b>. Powered by six open NASA Earth Observation satellite constellations, it simultaneously monitors rootzone hydrological scarcity, flags hidden physical and chemical soil degradation, forecasts 7-day soil moisture drydown, and delivers trilingual agronomic advisories to preserve Punjab's critical food bowl and deep fossil aquifers.
+                        <div class="hero-desc-clamp-wrapper">
+                            <p class="about-hero-sub clamp-desc" style="margin-top:0;">
+                                <b>Punjab Farm Water Watch</b> is an operational agro-hydrological diagnostic and early-warning platform developed for the <b>NASA Space Apps Challenge 2026 (Delhi NCR)</b>. Powered by six open NASA Earth Observation satellite constellations, it simultaneously monitors rootzone hydrological scarcity, flags hidden physical and chemical soil degradation, forecasts 7-day soil moisture drydown, and delivers trilingual agronomic advisories to preserve Punjab's critical food bowl and deep fossil aquifers.
+                            </p>
+                            <button type="button" class="btn-read-more" aria-expanded="false">Read more ▾</button>
                         </div>
                     </div>
                 </div>
@@ -1489,7 +1565,10 @@
             <div class="guide-hero">
                 <div class="guide-hero-content">
                     <h2 data-i18n="guide_hero_title">📘 Punjab Farm Water Watch · User Guide</h2>
-                    <p data-i18n="guide_hero_subtitle">Complete operational manual for farmers, agricultural officers, and water stewards to monitor groundwater, plan precision irrigation, and save power using NASA satellite data.</p>
+                    <div class="hero-desc-clamp-wrapper">
+                        <p class="clamp-desc" data-i18n="guide_hero_subtitle">Complete operational manual for farmers, agricultural officers, and water stewards to monitor groundwater, plan precision irrigation, and save power using NASA satellite data.</p>
+                        <button type="button" class="btn-read-more" aria-expanded="false">Read more ▾</button>
+                    </div>
                 </div>
                 <div class="guide-quick-nav">
                     <a href="#guide-mod1" class="guide-jump-btn" data-i18n="guide_nav_1">🛰️ Satellite Map</a>
@@ -2058,6 +2137,34 @@
         </div>
     </div>
 
+    <!-- Thumb-Friendly Location Bottom Sheet (Mobile Only) -->
+    <div id="locationSheetBackdrop" class="location-sheet-backdrop" style="display:none;">
+        <div id="locationBottomSheet" class="location-bottom-sheet" role="dialog" aria-modal="true" aria-labelledby="locSheetTitle">
+            <div class="sheet-drag-handle"></div>
+            <div class="sheet-head">
+                <div class="sheet-title-group">
+                    <span style="font-size:1.25rem;">🌍</span>
+                    <h3 class="sheet-title" id="locSheetTitle">Select Hotspot &amp; District</h3>
+                </div>
+                <button type="button" id="locSheetCloseBtn" class="sheet-close-btn" aria-label="Close">✕</button>
+            </div>
+            
+            <div class="sheet-content-scroll">
+                <div class="sheet-section-title">Global Aquifer Hotspot</div>
+                <div class="sheet-chips-row" id="sheetHotspotChips">
+                    <!-- Populated dynamically via JS -->
+                </div>
+
+                <div class="sheet-section-title" style="margin-top:16px;">
+                    <span>Districts in </span><b id="sheetCurrentHotspotName" style="color:var(--accent-amber);">Punjab</b>
+                </div>
+                <div class="sheet-district-list" id="sheetDistrictList">
+                    <!-- Populated dynamically via JS with min 44px tap targets -->
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Mobile Bottom Thumb Navigation Bar -->
     <nav class="mobile-bottom-nav" id="mobileBottomNav" aria-label="Mobile Navigation">
         <button type="button" class="mobile-nav-btn active" data-tab="tab-overview" title="Mission Control Map">
@@ -2082,6 +2189,6 @@
         </button>
     </nav>
 
-    <script src="/app.js?v=2026.11.15.v21"></script>
+    <script src="/app.js?v=2026.11.15.v22"></script>
 </body>
 </html>
