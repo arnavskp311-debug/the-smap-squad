@@ -15,15 +15,15 @@
     <link rel="apple-touch-icon" href="/logo.png">
     <!-- Leaflet CSS -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-    <link rel="stylesheet" href="/style.css?v=2026.11.15.v20">
-    <!-- Immediate Cache Purge for Version v20 -->
+    <link rel="stylesheet" href="/style.css?v=2026.11.15.v21">
+    <!-- Immediate Cache Purge for Version v21 -->
     <script>
-        if (localStorage.getItem("pww_cache_v") !== "2026.11.15.v20") {
-            localStorage.setItem("pww_cache_v", "2026.11.15.v20");
+        if (localStorage.getItem("pww_cache_v") !== "2026.11.15.v21") {
+            localStorage.setItem("pww_cache_v", "2026.11.15.v21");
             if ("caches" in window) {
                 caches.keys().then(keys => {
                     keys.forEach(k => {
-                        if (!k.includes("v2026.11.15.v20")) caches.delete(k);
+                        if (!k.includes("v2026.11.15.v21")) caches.delete(k);
                     });
                 });
             }
@@ -135,9 +135,9 @@
                 <div>Team <b>The SMAP Squad</b></div>
                 <div style="font-size:0.75rem; color:var(--text-muted); margin-top:2px;">NASA Space Apps 2026 · Delhi NCR</div>
             </div>
-            <div class="nasa-live-pill" style="margin-top:10px; width:100%; justify-content:center;">
+            <div class="nasa-live-pill" id="nasaPill" style="margin-top:10px; width:100%; justify-content:center;">
                 <div class="pulsing-dot"></div>
-                <span>NASA Earthdata Live</span>
+                <span id="nasaPillText">NASA Earthdata Live</span>
             </div>
         </div>
     </aside>
@@ -2082,6 +2082,6 @@
         </button>
     </nav>
 
-    <script src="/app.js?v=2026.11.15.v20"></script>
+    <script src="/app.js?v=2026.11.15.v21"></script>
 </body>
 </html>

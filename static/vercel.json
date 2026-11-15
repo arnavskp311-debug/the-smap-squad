@@ -1,0 +1,7 @@
+{
+  "cleanUrls": true,
+  "rewrites": [
+    { "source": "/api/geojson", "destination": "/data/geojson.json" },
+    { "source": "/api/nasa/status", "destination": "/data/nasa_status.json" }
+  ]
+}

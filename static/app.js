@@ -1574,46 +1574,140 @@ function updateCalculator() {
 
 // Reactive Crop Simulator
 function updateCropSimulator() {
-    const acres = parseFloat(document.getElementById("farmSizeSlider").value);
-    const cropChoice = document.getElementById("cropChoiceSelect").value;
+    const slider = document.getElementById("farmSizeSlider");
+    const select = document.getElementById("cropChoiceSelect");
+    if (!slider || !select) return;
 
-    fetch("/api/simulator/crop", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ crop_choice: cropChoice, farm_acres: acres })
-    })
-    .then(res => res.json())
-    .then(data => {
-        document.getElementById("cropDemandVal").innerText = `${data.crop_water_demand_m}M Litres`;
-        document.getElementById("cropSavedVal").innerText = `${data.groundwater_saved_m}M Litres (${Math.round(data.pct_saved)}%)`;
-        document.getElementById("cropPowerVal").innerText = `${data.kwh_saved.toLocaleString()} kWh`;
-        document.getElementById("cropRecommendation").innerHTML = `💡 <b>Agronomic Guidance:</b> ${data.recommendation}`;
-    })
-    .catch(err => console.error(err));
+    const acres = parseFloat(slider.value) || 10;
+    const cropChoice = select.value;
+
+    function applyCropUI(data) {
+        const cropDemandVal = document.getElementById("cropDemandVal");
+        const cropSavedVal = document.getElementById("cropSavedVal");
+        const cropPowerVal = document.getElementById("cropPowerVal");
+        const cropRecommendation = document.getElementById("cropRecommendation");
+        if (cropDemandVal) cropDemandVal.innerText = `${data.crop_water_demand_m}M Litres`;
+        if (cropSavedVal) cropSavedVal.innerText = `${data.groundwater_saved_m}M Litres (${Math.round(data.pct_saved)}%)`;
+        if (cropPowerVal) cropPowerVal.innerText = `${Number(data.kwh_saved).toLocaleString()} kWh`;
+        if (cropRecommendation) cropRecommendation.innerHTML = `💡 <b>Agronomic Guidance:</b> ${data.recommendation}`;
+    }
+
+    // Client-side agronomic calculation engine (matches PAU & CropBudgetSimulator exactly for offline/Vercel/Netlify)
+    const CROP_PROFILES = {
+        "Traditional Paddy (Baseline)": {
+            water_litres_per_acre: 900000,
+            pct_saving: 0.0,
+            duration_days: 120,
+            color: "#DC2626",
+            recommendation: "Standard flooded paddy - high groundwater extraction."
+        },
+        "Direct Seeded Rice / DSR (~20% less water)": {
+            water_litres_per_acre: 720000,
+            pct_saving: 0.20,
+            duration_days: 110,
+            color: "#0284C7",
+            recommendation: "Direct seeding eliminates nursery puddling, saving 180,000 L/acre."
+        },
+        "Maize / Kharif Pulses (~60% less water)": {
+            water_litres_per_acre: 360000,
+            pct_saving: 0.60,
+            duration_days: 95,
+            color: "#16A34A",
+            recommendation: "Drastic water reduction; protects deep aquifers from secular decline."
+        },
+        "Moong + Mulching (~45% less water)": {
+            water_litres_per_acre: 495000,
+            pct_saving: 0.45,
+            duration_days: 65,
+            color: "#F59E0B",
+            recommendation: "Short duration pulse fixes atmospheric nitrogen and conserves 405,000 L/acre."
+        }
+    };
+    const prof = CROP_PROFILES[cropChoice] || CROP_PROFILES["Traditional Paddy (Baseline)"];
+    const baseProf = CROP_PROFILES["Traditional Paddy (Baseline)"];
+    const baselineLitres = acres * baseProf.water_litres_per_acre;
+    const cropWaterLitres = acres * prof.water_litres_per_acre;
+    const groundwaterSaved = Math.max(0, baselineLitres - cropWaterLitres);
+    const kwhSaved = Math.round(groundwaterSaved * 0.000789);
+
+    const clientData = {
+        crop_water_demand_m: (cropWaterLitres / 1e6).toFixed(2),
+        groundwater_saved_m: (groundwaterSaved / 1e6).toFixed(2),
+        pct_saved: prof.pct_saving * 100.0,
+        kwh_saved: kwhSaved,
+        recommendation: prof.recommendation
+    };
+
+    if (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1") {
+        fetch("/api/simulator/crop", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ crop_choice: cropChoice, farm_acres: acres })
+        })
+        .then(res => {
+            if (!res.ok) throw new Error("HTTP_" + res.status);
+            return res.json();
+        })
+        .then(data => applyCropUI(data))
+        .catch(() => applyCropUI(clientData));
+    } else {
+        applyCropUI(clientData);
+    }
 }
 
 // Reactive Soil Prescription
 function updateSoilPrescription() {
-    const ph = parseFloat(document.getElementById("soilPh").value) || 8.6;
-    const ec = parseFloat(document.getElementById("soilEc").value) || 0.9;
-    const oc = parseFloat(document.getElementById("soilOc").value) || 0.38;
-    const n = parseInt(document.getElementById("soilN").value) || 190;
+    const ph = parseFloat(document.getElementById("soilPh") ? document.getElementById("soilPh").value : 8.6) || 8.6;
+    const ec = parseFloat(document.getElementById("soilEc") ? document.getElementById("soilEc").value : 0.9) || 0.9;
+    const oc = parseFloat(document.getElementById("soilOc") ? document.getElementById("soilOc").value : 0.38) || 0.38;
+    const n = parseInt(document.getElementById("soilN") ? document.getElementById("soilN").value : 190) || 190;
 
-    fetch("/api/simulator/soil", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ph, ec, oc, nitrogen: n })
-    })
-    .then(res => res.json())
-    .then(data => {
-        document.getElementById("rxItem1").innerText = data.prescription[0];
-        document.getElementById("rxItem2").innerText = data.prescription[1];
-        document.getElementById("rxItem3").innerText = data.prescription[2];
+    function applySoilUI(data) {
+        const rx1 = document.getElementById("rxItem1");
+        const rx2 = document.getElementById("rxItem2");
+        const rx3 = document.getElementById("rxItem3");
         const statusEl = document.getElementById("rxStatus");
-        statusEl.innerText = data.status;
-        statusEl.style.color = data.status_color;
-    })
-    .catch(err => console.error(err));
+        if (rx1 && data.prescription && data.prescription[0]) rx1.innerText = data.prescription[0];
+        if (rx2 && data.prescription && data.prescription[1]) rx2.innerText = data.prescription[1];
+        if (rx3 && data.prescription && data.prescription[2]) rx3.innerText = data.prescription[2];
+        if (statusEl) {
+            statusEl.innerText = data.status;
+            statusEl.style.color = data.status_color;
+        }
+    }
+
+    // Client-side soil agronomic prescription (matches server.py exactly for offline/Vercel/Netlify)
+    const gypsum_bags = ph > 8.5 ? 2 : 0;
+    const fym_tonnes = oc < 0.5 ? 4 : 0;
+    const gypsum_text = gypsum_bags > 0 ? `• ${gypsum_bags} Bags Gypsum/Acre` : "• Gypsum: Normal (No Treatment Needed)";
+    const compost_text = fym_tonnes > 0 ? `• ${fym_tonnes}t Compost / FYM / Acre` : "• Compost: Adequate Carbon";
+    const zinc_text = n < 250 ? "• Zinc Sulfate Dose (25 kg/ha ZnSO4)" : "• Basal N-P-K Application";
+    const status = (gypsum_bags > 0 || fym_tonnes > 0) ? "Alkaline / Low Carbon Soil — Immediate Conditioning Required" : "Balanced Agronomic State";
+    const status_color = (gypsum_bags > 0 || fym_tonnes > 0) ? "#F87171" : "#4ADE80";
+
+    const clientData = {
+        gypsum_bags,
+        fym_tonnes,
+        prescription: [gypsum_text, compost_text, zinc_text],
+        status,
+        status_color
+    };
+
+    if (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1") {
+        fetch("/api/simulator/soil", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ ph, ec, oc, nitrogen: n })
+        })
+        .then(res => {
+            if (!res.ok) throw new Error("HTTP_" + res.status);
+            return res.json();
+        })
+        .then(data => applySoilUI(data))
+        .catch(() => applySoilUI(clientData));
+    } else {
+        applySoilUI(clientData);
+    }
 }
 
 // ==========================================================================
@@ -2209,6 +2303,10 @@ function updateUserUI(user) {
                 : window.location.origin;
             const qrData = `${baseOrigin}/verify.html?member_id=${encodeURIComponent(memberId)}&farmer=${encodeURIComponent(farmerName)}&district=${encodeURIComponent(district)}&water_saved=${encodeURIComponent(waterSaved)}&power_saved=${encodeURIComponent(powerSavedVal + " kWh")}&soil_grade=${encodeURIComponent(soilGradeVal)}&crop=${encodeURIComponent(user.primary_crop || "Wheat & Rice")}`;
             qrDataUrl = `https://api.qrserver.com/v1/create-qr-code/?size=180x180&margin=4&data=${encodeURIComponent(qrData)}`;
+            passQrImg.onerror = function() {
+                this.onerror = null;
+                this.src = "/logo.png";
+            };
             passQrImg.src = qrDataUrl;
         }
 
@@ -2237,7 +2335,13 @@ function updateUserUI(user) {
         if (tabPassWaterSaved) tabPassWaterSaved.innerText = `${savedMillions}M L`;
         if (tabPassPowerSaved) tabPassPowerSaved.innerText = `${powerSavedVal.toLocaleString()} kWh`;
         if (tabPassSoilGrade) tabPassSoilGrade.innerText = soilGradeVal;
-        if (tabPassQrImg) tabPassQrImg.src = qrDataUrl;
+        if (tabPassQrImg) {
+            tabPassQrImg.onerror = function() {
+                this.onerror = null;
+                this.src = "/logo.png";
+            };
+            tabPassQrImg.src = qrDataUrl;
+        }
     } else {
         if (navAvatar) navAvatar.innerHTML = `<img src="/default_avatar.png" alt="Profile" class="avatar-img">`;
         if (navText) navText.innerText = "Sign In";
