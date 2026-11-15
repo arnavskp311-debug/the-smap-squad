@@ -293,10 +293,10 @@ def send_verification_email(email: str, name: str, token: str) -> dict:
     verify_url = f"http://localhost:8000/api/auth/verify?email={email}&token={token}"
     resend_key = os.getenv("RESEND_API_KEY", "").strip()
     email_key = os.getenv("EMAIL_API_KEY", "").strip() or resend_key
-    emailjs_pub = os.getenv("EMAILJS_PUBLIC_KEY", "").strip()
-    emailjs_priv = os.getenv("EMAILJS_PRIVATE_KEY", "").strip()
-    emailjs_service = os.getenv("EMAILJS_SERVICE_ID", "").strip()
-    emailjs_template = os.getenv("EMAILJS_TEMPLATE_ID", "").strip()
+    emailjs_pub = os.getenv("EMAILJS_PUBLIC_KEY", "7QVPtO4Sw7ckfLZKe").strip()
+    emailjs_priv = os.getenv("EMAILJS_PRIVATE_KEY", "9jFTyzCzVykL8ZDZvXQ8_").strip()
+    emailjs_service = os.getenv("EMAILJS_SERVICE_ID", "service_vshdx6m").strip()
+    emailjs_template = os.getenv("EMAILJS_TEMPLATE_ID", "template_70yzbhi").strip()
 
     print(f"\n[AUTH EMAIL DISPATCH] To: {email} | Name: {name}\n[AUTH VERIFY LINK] {verify_url}\n")
 
@@ -312,6 +312,7 @@ def send_verification_email(email: str, name: str, token: str) -> dict:
                     "template_id": emailjs_template,
                     "template_params": {
                         "to_name": name,
+                        "name": name,
                         "to_email": email,
                         "user_email": email,
                         "email": email,
