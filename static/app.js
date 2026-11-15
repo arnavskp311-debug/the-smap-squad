@@ -16,6 +16,144 @@ let dashStressDonutChart = null;
 let dashBenchmarkChart = null;
 let dashScenarioChart = null;
 
+// ==========================================================================
+// CRAFT MOTION UX: 60FPS STUDIO-GRADE MOTION SYSTEM
+// Tabular number count-up, sliding pill indicators, scroll header blur & micro-interactions
+// ==========================================================================
+
+// Spring-eased count-up animation (Apple / Linear exponential ease-out)
+function animateNumber(element, target, options = {}) {
+    if (!element) return;
+    const numTarget = typeof target === "number" ? target : parseFloat(target);
+    if (isNaN(numTarget)) {
+        element.innerText = target;
+        return;
+    }
+
+    const duration = options.duration !== undefined ? options.duration : 400;
+    const decimals = options.decimals !== undefined ? options.decimals : 0;
+    const prefix = options.prefix || "";
+    const suffix = options.suffix || "";
+    const htmlSuffix = options.htmlSuffix || "";
+
+    const prefersReduced = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (prefersReduced || duration === 0) {
+        element.innerHTML = `${prefix}${numTarget.toFixed(decimals)}${suffix}${htmlSuffix}`;
+        element._prevVal = numTarget;
+        return;
+    }
+
+    const from = (typeof element._prevVal === "number" && !isNaN(element._prevVal)) ? element._prevVal : 0;
+    element._prevVal = numTarget;
+
+    if (element._animRaf) {
+        cancelAnimationFrame(element._animRaf);
+        element._animRaf = null;
+    }
+
+    if (!element.classList.contains("tabular-nums")) {
+        element.classList.add("tabular-nums");
+    }
+
+    const startTime = performance.now();
+    const tick = (now) => {
+        const p = Math.min(1, (now - startTime) / duration);
+        const eased = p === 1 ? 1 : 1 - Math.pow(2, -10 * p);
+        const current = from + (numTarget - from) * eased;
+        element.innerHTML = `${prefix}${current.toFixed(decimals)}${suffix}${htmlSuffix}`;
+        if (p < 1) {
+            element._animRaf = requestAnimationFrame(tick);
+        } else {
+            element._animRaf = null;
+            element.innerHTML = `${prefix}${numTarget.toFixed(decimals)}${suffix}${htmlSuffix}`;
+        }
+    };
+    element._animRaf = requestAnimationFrame(tick);
+}
+
+// Sliding Pill Indicators for Segmented Controls
+function updateSlidingIndicator(groupEl) {
+    if (!groupEl) return;
+    let indicator = groupEl.querySelector(":scope > .sliding-pill-indicator");
+    if (!indicator) {
+        indicator = document.createElement("span");
+        indicator.className = "sliding-pill-indicator";
+        indicator.setAttribute("aria-hidden", "true");
+        groupEl.appendChild(indicator);
+        groupEl.classList.add("has-sliding-indicator");
+    }
+
+    const activeItem = groupEl.querySelector(":scope > .active");
+    if (!activeItem) {
+        indicator.style.opacity = "0";
+        return;
+    }
+
+    const left = activeItem.offsetLeft;
+    const top = activeItem.offsetTop;
+    const width = activeItem.offsetWidth;
+    const height = activeItem.offsetHeight;
+
+    if (width === 0 || height === 0) return;
+
+    indicator.style.transform = `translate3d(${left}px, ${top}px, 0)`;
+    indicator.style.width = `${width}px`;
+    indicator.style.height = `${height}px`;
+    indicator.style.opacity = "1";
+}
+
+function updateAllSlidingIndicators() {
+    requestAnimationFrame(() => {
+        document.querySelectorAll(".lang-toggle, .mob-lang-segment, .layer-pill-group").forEach(updateSlidingIndicator);
+    });
+}
+
+function initSlidingIndicators() {
+    updateAllSlidingIndicators();
+    window.addEventListener("resize", updateAllSlidingIndicators, { passive: true });
+    setTimeout(updateAllSlidingIndicators, 120);
+    setTimeout(updateAllSlidingIndicators, 400);
+}
+
+function initScrollAwareHeaders() {
+    let ticking = false;
+    const onScroll = () => {
+        if (!ticking) {
+            requestAnimationFrame(() => {
+                const isScrolled = window.scrollY > 16;
+                const desktopNav = document.getElementById("desktopTopNavbar");
+                if (desktopNav) desktopNav.classList.toggle("is-scrolled", isScrolled);
+                const mobHeader = document.querySelector(".mobile-header-row");
+                if (mobHeader) mobHeader.classList.toggle("is-scrolled", isScrolled);
+                ticking = false;
+            });
+            ticking = true;
+        }
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    onScroll();
+}
+
+function triggerStaggerInTab(tabElement) {
+    if (!tabElement) return;
+    const cards = tabElement.querySelectorAll(".dash-kpi-card, .delta-box, .advisory-box, .calc-card, .sim-card, .panchayat-card, .guide-card, .about-card, .table-container");
+    cards.forEach((card, idx) => {
+        card.style.setProperty("--index", idx);
+        card.classList.remove("stagger-item");
+        void card.offsetWidth;
+        card.classList.add("stagger-item");
+    });
+}
+
+function initCraftMotionUX() {
+    initScrollAwareHeaders();
+    initSlidingIndicators();
+    const overviewTab = document.getElementById("tab-overview");
+    if (overviewTab) {
+        triggerStaggerInTab(overviewTab);
+    }
+}
+
 // Initialize when DOM loads
 document.addEventListener("DOMContentLoaded", () => {
     initTheme();
@@ -33,6 +171,7 @@ document.addEventListener("DOMContentLoaded", () => {
     populateHotspotDistricts("Punjab", currentDistrict || "Bathinda");
     setupEventListeners();
     initPanchayatLeaderboard();
+    initCraftMotionUX();
     loadDistrictData(currentDistrict);
 });
 
@@ -508,8 +647,12 @@ function switchTab(target) {
     const content = document.getElementById(target);
     if (content) {
         content.classList.add("active");
+        triggerStaggerInTab(content);
         if (target === "tab-overview" && map) {
-            setTimeout(() => map.invalidateSize(), 150);
+            setTimeout(() => {
+                map.invalidateSize();
+                updateAllSlidingIndicators();
+            }, 150);
         }
         if (target === "tab-dashboard") {
             setTimeout(() => {
@@ -929,6 +1072,9 @@ function applyLanguage(lang) {
         b.classList.toggle("active", b.getAttribute("data-lang") === lang);
     });
 
+    // Craft Motion UX: Slide indicator to new language pill
+    updateAllSlidingIndicators();
+
     // Apply translations to all data-i18n elements
     const dict = I18N_DICTIONARY[lang];
     if (dict) {
@@ -1188,6 +1334,7 @@ function initMap() {
         document.querySelectorAll(".layer-pill-btn").forEach(btn => {
             btn.classList.toggle("active", btn.getAttribute("data-layer-id") === targetId);
         });
+        updateAllSlidingIndicators();
     }
 
     // Attach click events to pills
@@ -1205,6 +1352,7 @@ function initMap() {
                 document.querySelectorAll(".layer-pill-btn").forEach(btn => {
                     btn.classList.toggle("active", btn.getAttribute("data-layer-id") === id);
                 });
+                updateAllSlidingIndicators();
                 break;
             }
         }
@@ -1407,6 +1555,10 @@ async function loadDistrictData(district) {
     const lang = (currentLang === "hi" || currentLang === "pa") ? currentLang : "en";
     let loaded = false;
 
+    // Craft Motion UX: Apply soft shimmer overlay on metric cards during data sync
+    const shimmerTargets = document.querySelectorAll(".stress-telemetry-merged, .delta-grid, .dash-kpi-row, .advisory-box");
+    shimmerTargets.forEach(el => el.classList.add("craft-shimmer"));
+
     // Helper to find clean key in dataset
     function findDistrictInDataset(ds, dName) {
         if (!ds) return null;
@@ -1510,10 +1662,16 @@ function renderTelemetry(data) {
         mobLocLabel.innerText = `${hVal} · ${locDistrict}`;
     }
 
+    // Craft Motion UX: Remove soft shimmer once fresh data arrives
+    const shimmerTargets = document.querySelectorAll(".stress-telemetry-merged, .delta-grid, .dash-kpi-row, .advisory-box");
+    shimmerTargets.forEach(el => el.classList.remove("craft-shimmer"));
+
     // 2. Stress Card
     const stressScoreVal = document.getElementById("stressScoreVal");
     const stressBadge = document.getElementById("stressBadge");
-    if (stressScoreVal) stressScoreVal.innerText = `${data.stress.score}/100`;
+    if (stressScoreVal) {
+        animateNumber(stressScoreVal, data.stress.score, { duration: 420, decimals: 0, suffix: "/100" });
+    }
     if (stressBadge) {
         stressBadge.innerText = getZoneBadgeText(data.stress.zone, lang);
         stressBadge.className = `badge ${data.stress.zone === "Red" ? "badge-critical" : (data.stress.zone === "Yellow" ? "badge-warning" : "badge-safe")}`;
@@ -1568,17 +1726,34 @@ function renderTelemetry(data) {
     const ptsUnit = lang === "pa" ? "ਅੰਕ" : (lang === "hi" ? "अंक" : "pts");
     const deltaSmNow = document.getElementById("deltaSmNow");
     const deltaSmSub = document.getElementById("deltaSmSub");
-    if (deltaSmNow) deltaSmNow.innerHTML = `${d.sm_now} <span style="font-size:0.82rem; color:#94A3B8;">m³/m³</span>`;
+    if (deltaSmNow) {
+        animateNumber(deltaSmNow, parseFloat(d.sm_now) || 0, {
+            decimals: 2,
+            duration: 420,
+            htmlSuffix: ' <span style="font-size:0.82rem; color:#94A3B8;">m³/m³</span>'
+        });
+    }
     if (deltaSmSub) deltaSmSub.innerHTML = `${agoLabel}: ${d.sm_old} | <b style="color:${d.sm_diff < -0.02 ? '#DC2626' : '#16A34A'};">${d.sm_diff > 0 ? '+' : ''}${d.sm_diff}</b>`;
 
     const deltaNdviNow = document.getElementById("deltaNdviNow");
     const deltaNdviSub = document.getElementById("deltaNdviSub");
-    if (deltaNdviNow) deltaNdviNow.innerText = d.ndvi_now;
+    if (deltaNdviNow) {
+        animateNumber(deltaNdviNow, parseFloat(d.ndvi_now) || 0, {
+            decimals: 2,
+            duration: 420
+        });
+    }
     if (deltaNdviSub) deltaNdviSub.innerHTML = `${agoLabel}: ${d.ndvi_old} | <b style="color:${d.ndvi_diff < -0.04 ? '#DC2626' : '#16A34A'};">${d.ndvi_diff > 0 ? '+' : ''}${d.ndvi_diff}</b>`;
 
     const deltaScoreNow = document.getElementById("deltaScoreNow");
     const deltaScoreSub = document.getElementById("deltaScoreSub");
-    if (deltaScoreNow) deltaScoreNow.innerHTML = `${d.score_now} <span style="font-size:0.82rem; color:#94A3B8;">/ 100</span>`;
+    if (deltaScoreNow) {
+        animateNumber(deltaScoreNow, parseFloat(d.score_now) || 0, {
+            decimals: 0,
+            duration: 420,
+            htmlSuffix: ' <span style="font-size:0.82rem; color:#94A3B8;">/ 100</span>'
+        });
+    }
     if (deltaScoreSub) deltaScoreSub.innerHTML = `${agoLabel}: ${d.score_old} | <b style="color:${d.score_diff > 5 ? '#DC2626' : '#16A34A'};">${d.score_diff > 0 ? '+' : ''}${d.score_diff} ${ptsUnit}</b>`;
 
     // 6. Forecast Chart & Dashboard Analytics
@@ -1781,9 +1956,18 @@ function updateCalculator() {
     const saved = baseline * ratio;
     const kwh = Math.round(saved * 0.000789);
 
-    const litresDisplay = saved >= 1000000 ? `${(saved / 1000000).toFixed(1)}M` : `${Math.round(saved).toLocaleString()}`;
-    document.getElementById("calcLitresSaved").innerText = litresDisplay;
-    document.getElementById("calcKwhSaved").innerText = `⚡ Electricity Saved: ${kwh.toLocaleString()} kWh`;
+    const litresEl = document.getElementById("calcLitresSaved");
+    if (litresEl) {
+        if (saved >= 1000000) {
+            animateNumber(litresEl, saved / 1000000, { decimals: 1, suffix: "M", duration: 280 });
+        } else {
+            animateNumber(litresEl, saved, { decimals: 0, duration: 280 });
+        }
+    }
+    const kwhEl = document.getElementById("calcKwhSaved");
+    if (kwhEl) {
+        animateNumber(kwhEl, kwh, { prefix: "⚡ Electricity Saved: ", suffix: " kWh", decimals: 0, duration: 280 });
+    }
 }
 
 // Reactive Crop Simulator
@@ -1800,9 +1984,9 @@ function updateCropSimulator() {
         const cropSavedVal = document.getElementById("cropSavedVal");
         const cropPowerVal = document.getElementById("cropPowerVal");
         const cropRecommendation = document.getElementById("cropRecommendation");
-        if (cropDemandVal) cropDemandVal.innerText = `${data.crop_water_demand_m}M Litres`;
-        if (cropSavedVal) cropSavedVal.innerText = `${data.groundwater_saved_m}M Litres (${Math.round(data.pct_saved)}%)`;
-        if (cropPowerVal) cropPowerVal.innerText = `${Number(data.kwh_saved).toLocaleString()} kWh`;
+        if (cropDemandVal) animateNumber(cropDemandVal, parseFloat(data.crop_water_demand_m) || 0, { decimals: 1, suffix: "M Litres", duration: 280 });
+        if (cropSavedVal) animateNumber(cropSavedVal, parseFloat(data.groundwater_saved_m) || 0, { decimals: 1, suffix: `M Litres (${Math.round(data.pct_saved)}%)`, duration: 280 });
+        if (cropPowerVal) animateNumber(cropPowerVal, parseFloat(data.kwh_saved) || 0, { decimals: 0, suffix: " kWh", duration: 280 });
         if (cropRecommendation) cropRecommendation.innerHTML = `💡 <b>Agronomic Guidance:</b> ${data.recommendation}`;
     }
 
@@ -1940,21 +2124,21 @@ function renderDashboardKPIs(data) {
 
     const kpiStress = document.getElementById("dashKpiStress");
     if (kpiStress) {
-        kpiStress.innerText = `${data.stress.score}/100`;
+        animateNumber(kpiStress, data.stress.score, { duration: 420, decimals: 0, suffix: "/100" });
         kpiStress.style.color = data.stress.zone === "Red" ? "#DC2626" : (data.stress.zone === "Yellow" ? "#F59E0B" : "#16A34A");
     }
 
     const kpiSm = document.getElementById("dashKpiSm");
-    if (kpiSm) kpiSm.innerText = `${data.latest.smap_rootzone_sm}`;
+    if (kpiSm) animateNumber(kpiSm, parseFloat(data.latest.smap_rootzone_sm) || 0, { decimals: 2, duration: 420 });
 
     const kpiRain = document.getElementById("dashKpiRain");
-    if (kpiRain) kpiRain.innerText = `${data.latest.gpm_rain_30d}`;
+    if (kpiRain) animateNumber(kpiRain, parseFloat(data.latest.gpm_rain_30d) || 0, { decimals: 1, duration: 420 });
 
     const kpiNdvi = document.getElementById("dashKpiNdvi");
-    if (kpiNdvi) kpiNdvi.innerText = `${data.latest.landsat_ndvi}`;
+    if (kpiNdvi) animateNumber(kpiNdvi, parseFloat(data.latest.landsat_ndvi) || 0, { decimals: 2, duration: 420 });
 
     const kpiLst = document.getElementById("dashKpiLst");
-    if (kpiLst) kpiLst.innerText = `${data.latest.landsat_lst_c}`;
+    if (kpiLst) animateNumber(kpiLst, parseFloat(data.latest.landsat_lst_c) || 0, { decimals: 1, duration: 420 });
 }
 
 function renderDashboardCharts(data) {

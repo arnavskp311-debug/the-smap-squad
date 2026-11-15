@@ -5851,3 +5851,320 @@ input {
         transform: scale(0.94) !important;
     }
 }
+
+/* ==========================================================================
+   CRAFT MOTION UX: 60FPS STUDIO-GRADE MOTION & INTERACTIONS
+   Physics-based spring easing, tabular numbers, sliding indicators & tactile feedback.
+   Zero palette/layout changes. Full prefers-reduced-motion safety.
+   ========================================================================== */
+
+/* 1. Tabular Numbers (Eliminates horizontal jitter during count-ups) */
+.tabular-nums,
+#stressScoreVal,
+.delta-current,
+#deltaSmNow,
+#deltaNdviNow,
+#deltaScoreNow,
+.dash-kpi-card .val,
+#dashKpiStress,
+#dashKpiSm,
+#dashKpiRain,
+#dashKpiNdvi,
+#dashKpiLst,
+#calcLitresSaved,
+#calcKwhSaved,
+#cropDemandVal,
+#cropSavedVal,
+#cropPowerVal,
+.sim-kpi-val,
+.kpi-val,
+.score-num,
+.metric-value,
+.panchayat-score,
+.data-table td {
+    font-variant-numeric: tabular-nums !important;
+    font-feature-settings: "tnum" 1 !important;
+}
+
+/* 2. Sliding Tab & Segmented Pill Indicators */
+.lang-toggle,
+.mob-lang-segment,
+.layer-pill-group {
+    position: relative !important;
+}
+
+.sliding-pill-indicator {
+    position: absolute;
+    top: 0;
+    left: 0;
+    pointer-events: none;
+    border-radius: 9999px;
+    z-index: 1;
+    opacity: 0;
+    background: var(--palette-forest, #2D6A4F);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+    transition: transform 280ms cubic-bezier(0.22, 1, 0.36, 1),
+                width 280ms cubic-bezier(0.22, 1, 0.36, 1),
+                height 280ms cubic-bezier(0.22, 1, 0.36, 1),
+                opacity 180ms ease;
+    will-change: transform, width, height;
+}
+
+[data-theme="light"] .sliding-pill-indicator {
+    background: var(--palette-navy, #1C2D5B) !important;
+    box-shadow: 0 2px 8px rgba(28, 45, 91, 0.2) !important;
+}
+
+.layer-pill-group .sliding-pill-indicator {
+    border-radius: 9999px;
+    background: var(--palette-forest, #2D6A4F) !important;
+}
+
+[data-theme="light"] .layer-pill-group .sliding-pill-indicator {
+    background: var(--palette-navy, #1C2D5B) !important;
+}
+
+/* When sliding indicator is active, keep buttons clean & crisp */
+.has-sliding-indicator .lang-btn,
+.has-sliding-indicator .mob-lang-opt,
+.has-sliding-indicator .layer-pill-btn {
+    position: relative !important;
+    z-index: 2 !important;
+    background: transparent !important;
+    transition: color 200ms ease, transform 150ms cubic-bezier(0.22, 1, 0.36, 1) !important;
+}
+
+.has-sliding-indicator .lang-btn.active,
+.has-sliding-indicator .mob-lang-opt.active,
+.has-sliding-indicator .layer-pill-btn.active {
+    background: transparent !important;
+    color: #FFFFFF !important;
+    box-shadow: none !important;
+    border-color: transparent !important;
+}
+
+/* 3. Tactile Micro-Interactions (Spring-scale press & desktop hover lift) */
+.btn,
+.btn-tactile,
+.btn-primary,
+.btn-whatsapp,
+.lang-btn,
+.mob-lang-opt,
+.layer-pill-btn,
+.map-fullscreen-btn,
+.panchayat-nav-pill,
+.desktop-location-pill,
+.mob-location-pill,
+.mob-action-btn,
+.theme-toggle-btn,
+.mob-hamburger-btn,
+.drawer-nav-btn,
+.btn-read-more {
+    touch-action: manipulation;
+    transition: transform 150ms cubic-bezier(0.22, 1, 0.36, 1),
+                box-shadow 180ms ease,
+                background-color 180ms ease,
+                color 180ms ease,
+                opacity 150ms ease;
+    will-change: transform;
+}
+
+.btn:active,
+.btn-tactile:active,
+.btn-primary:active,
+.btn-whatsapp:active,
+.lang-btn:active,
+.mob-lang-opt:active,
+.layer-pill-btn:active,
+.map-fullscreen-btn:active,
+.panchayat-nav-pill:active,
+.desktop-location-pill:active,
+.mob-location-pill:active,
+.mob-action-btn:active,
+.theme-toggle-btn:active,
+.mob-hamburger-btn:active,
+.drawer-nav-btn:active,
+.btn-read-more:active {
+    transform: scale(0.96) !important;
+}
+
+/* Gentle Desktop Card Hover Elevation (-2px + diffused shadow) */
+@media (min-width: 768px) {
+    .dash-kpi-card,
+    .delta-box,
+    .advisory-box,
+    .calc-card,
+    .sim-card,
+    .panchayat-card,
+    .guide-card,
+    .about-card {
+        transition: transform 220ms cubic-bezier(0.22, 1, 0.36, 1),
+                    box-shadow 220ms cubic-bezier(0.22, 1, 0.36, 1) !important;
+        will-change: transform, box-shadow;
+    }
+
+    .dash-kpi-card:hover,
+    .delta-box:hover,
+    .calc-card:hover,
+    .sim-card:hover,
+    .panchayat-card:hover {
+        transform: translateY(-2px) !important;
+        box-shadow: 0 10px 24px -4px rgba(0, 0, 0, 0.22) !important;
+    }
+
+    [data-theme="light"] .dash-kpi-card:hover,
+    [data-theme="light"] .delta-box:hover,
+    [data-theme="light"] .calc-card:hover,
+    [data-theme="light"] .sim-card:hover,
+    [data-theme="light"] .panchayat-card:hover {
+        box-shadow: 0 10px 24px -4px rgba(28, 45, 91, 0.12) !important;
+    }
+}
+
+/* 4. Skeleton Shimmer Crossfade & Smooth Accordions */
+.craft-shimmer {
+    position: relative !important;
+    overflow: hidden !important;
+}
+
+.craft-shimmer::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    transform: translateX(-100%);
+    background: linear-gradient(
+        90deg,
+        rgba(255, 255, 255, 0) 0%,
+        rgba(255, 255, 255, 0.08) 35%,
+        rgba(255, 255, 255, 0.16) 50%,
+        rgba(255, 255, 255, 0.08) 65%,
+        rgba(255, 255, 255, 0) 100%
+    );
+    animation: craftShimmerAnim 1.2s infinite;
+    pointer-events: none;
+    z-index: 10;
+}
+
+[data-theme="light"] .craft-shimmer::after {
+    background: linear-gradient(
+        90deg,
+        rgba(0, 0, 0, 0) 0%,
+        rgba(0, 0, 0, 0.04) 35%,
+        rgba(0, 0, 0, 0.08) 50%,
+        rgba(0, 0, 0, 0.04) 65%,
+        rgba(0, 0, 0, 0) 100%
+    );
+}
+
+@keyframes craftShimmerAnim {
+    0% { transform: translateX(-100%); }
+    100% { transform: translateX(100%); }
+}
+
+/* CSS Grid 0fr -> 1fr Accordion Pattern */
+.craft-accordion,
+.accordion-content {
+    display: grid !important;
+    grid-template-rows: 0fr !important;
+    transition: grid-template-rows 260ms cubic-bezier(0.22, 1, 0.36, 1) !important;
+}
+
+.craft-accordion.is-open,
+.craft-accordion[data-open="true"],
+.accordion-content.is-open,
+.accordion-content[data-open="true"] {
+    grid-template-rows: 1fr !important;
+}
+
+.craft-accordion-inner,
+.accordion-inner {
+    overflow: hidden !important;
+    min-height: 0 !important;
+}
+
+/* Mobile Hero Clamped Description Transition */
+@media (max-width: 767px) {
+    .hero-desc-clamp-wrapper {
+        position: relative !important;
+        margin-top: 4px !important;
+    }
+
+    .hero-desc-clamp-wrapper .clamp-desc {
+        display: -webkit-box !important;
+        -webkit-box-orient: vertical !important;
+        -webkit-line-clamp: 2 !important;
+        overflow: hidden !important;
+        line-height: 1.45 !important;
+        max-height: 3em !important;
+        transition: max-height 320ms cubic-bezier(0.22, 1, 0.36, 1), opacity 220ms ease !important;
+    }
+
+    .hero-desc-clamp-wrapper.is-expanded .clamp-desc {
+        -webkit-line-clamp: unset !important;
+        max-height: 600px !important;
+    }
+}
+
+/* 5. Staggered Cascades & Scroll-Aware Headers */
+@keyframes craftFadeUp {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.stagger-item {
+    opacity: 0;
+    animation: craftFadeUp 280ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    animation-delay: calc(min(var(--index, 0), 8) * 30ms);
+    will-change: transform, opacity;
+}
+
+.top-navbar.is-scrolled {
+    background: rgba(13, 27, 42, 0.94) !important;
+    backdrop-filter: blur(16px) saturate(160%) !important;
+    -webkit-backdrop-filter: blur(16px) saturate(160%) !important;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.28) !important;
+}
+
+[data-theme="light"] .top-navbar.is-scrolled {
+    background: rgba(255, 255, 255, 0.95) !important;
+    box-shadow: 0 4px 20px rgba(28, 45, 91, 0.08) !important;
+}
+
+.mobile-header-row.is-scrolled {
+    background: rgba(13, 27, 42, 0.96) !important;
+    backdrop-filter: blur(16px) saturate(160%) !important;
+    -webkit-backdrop-filter: blur(16px) saturate(160%) !important;
+    box-shadow: 0 2px 14px rgba(0, 0, 0, 0.3) !important;
+}
+
+[data-theme="light"] .mobile-header-row.is-scrolled {
+    background: rgba(255, 255, 255, 0.96) !important;
+    box-shadow: 0 2px 14px rgba(28, 45, 91, 0.08) !important;
+}
+
+/* 6. Accessibility Guardrail: prefers-reduced-motion */
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+    }
+    .sliding-pill-indicator {
+        transition: none !important;
+    }
+    .stagger-item {
+        opacity: 1 !important;
+        transform: none !important;
+        animation: none !important;
+    }
+}
+
