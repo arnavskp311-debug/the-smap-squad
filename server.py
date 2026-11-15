@@ -290,7 +290,7 @@ def save_users(users):
 
 def send_verification_email(email: str, name: str, token: str) -> dict:
     import urllib.request
-    verify_url = f"http://localhost:8000/api/auth/verify?email={email}&token={token}"
+    verify_url = f"https://punjab-farm-water-watch.netlify.app/?verify_email={email}&token={token}"
     resend_key = os.getenv("RESEND_API_KEY", "").strip()
     email_key = os.getenv("EMAIL_API_KEY", "").strip() or resend_key
     emailjs_pub = os.getenv("EMAILJS_PUBLIC_KEY", "7QVPtO4Sw7ckfLZKe").strip()
@@ -316,6 +316,7 @@ def send_verification_email(email: str, name: str, token: str) -> dict:
                         "to_email": email,
                         "user_email": email,
                         "email": email,
+                        "to": email,
                         "from_name": "Punjab Farm Water Watch",
                         "reply_to": "support@punjabfarms.gov.in",
                         "verification_link": verify_url,
@@ -326,7 +327,7 @@ def send_verification_email(email: str, name: str, token: str) -> dict:
                 headers={
                     "Content-Type": "application/json",
                     "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)",
-                    "Origin": "http://localhost:8000"
+                    "Origin": "https://punjab-farm-water-watch.netlify.app"
                 },
                 method="POST"
             )

@@ -1938,6 +1938,42 @@ function updateUserUI(user) {
     }
 }
 
+// Client-Side Transactional Verification Email Dispatch via EmailJS
+async function sendClientVerificationEmail(email, name, verifyUrl) {
+    try {
+        const payload = {
+            service_id: "service_vshdx6m",
+            template_id: "template_70yzbhi",
+            user_id: "7QVPtO4Sw7ckfLZKe",
+            template_params: {
+                to_name: name || "Farmer",
+                name: name || "Farmer",
+                email: email,
+                to_email: email,
+                user_email: email,
+                to: email,
+                from_name: "Punjab Farm Water Watch",
+                reply_to: "support@punjabfarms.gov.in",
+                verification_link: verifyUrl,
+                verify_url: verifyUrl,
+                message: `नमस्ते ${name || 'किसान साथी'},\n\nपंजाब फार्म वाटर वॉच में आपका स्वागत है। अपने खाते को सुरक्षित रूप से सक्रिय करने के लिए नीचे दिए गए लिंक पर क्लिक करें:\n\n${verifyUrl}\n\nसुरक्षा कारणों से सत्यापन पूर्ण होने तक खाता निष्क्रिय रहेगा।`
+            }
+        };
+
+        const res = await fetch("https://api.emailjs.com/api/v1.0/email/send", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(payload)
+        });
+        return res.ok;
+    } catch (err) {
+        console.warn("[EmailJS Client Dispatch]:", err);
+        return false;
+    }
+}
+
 function setupAuthListeners() {
     const userProfileBtn = document.getElementById("userProfileBtn");
     const drawerAuthActionBtn = document.getElementById("drawerAuthActionBtn");
@@ -2056,17 +2092,33 @@ function setupAuthListeners() {
                 }
                 const data = await res.json();
                 if (data.status === "pending_verification") {
+                    const authPasswordEl = document.getElementById("authPassword");
+                    if (authPasswordEl) authPasswordEl.value = "";
                     if (feedback) {
                         feedback.style.display = "block";
                         feedback.className = "auth-feedback auth-feedback-warning";
                         feedback.innerHTML = `
-                            <div class="feedback-title">✉️ सत्यापन ईमेल भेज दिया गया है!</div>
+                            <div class="feedback-title">✉️ सुरक्षा सत्यापन ईमेल भेजा गया!</div>
                             <div class="feedback-desc">
-                                हमने आपके ईमेल <b>${email}</b> पर एक सुरक्षित सत्यापन लिंक भेजा है।<br>
-                                कृपया अपना <b>ईमेल इनबॉक्स</b> (या स्पैम/जंक फ़ोल्डर) खोलें और उस लिंक पर क्लिक करके खाता सक्रिय करें।<br>
-                                <span style="font-size:0.85rem; opacity:0.9;">सुरक्षा कारणों से जब तक आप ईमेल से पुष्टि नहीं करते, खाता निष्क्रिय रहेगा।</span>
+                                सत्यापन लिंक आपके आधिकारिक ईमेल <b>${email}</b> पर भेज दिया गया है।<br><br>
+                                🔒 <b>गोपनीयता व सुरक्षा निर्देश:</b> आपकी सुरक्षा के लिए, खाता केवल आपकी व्यक्तिगत ईमेल इनबॉक्स में भेजे गए लिंक से ही सक्रिय किया जा सकता है।<br><br>
+                                कृपया अपना <b>ईमेल इनबॉक्स</b> खोलें और लिंक पर क्लिक करके खाता सक्रिय करें। पुष्टि के पश्चात <b>Direct Sign-In</b> से लॉगिन करें।
+                            </div>
+                            <div style="margin-top:14px; text-align:center;">
+                                <button type="button" class="btn-auth-primary" id="btnGoToLoginFastAPI" style="display:inline-block; width:auto; padding:10px 22px; font-size:0.88rem; background:linear-gradient(135deg, #0284C7, #0369A1); color:white; border:none; border-radius:8px; cursor:pointer; font-weight:700;">
+                                    🔑 Direct Sign-In पर जाएं (Go to Sign-In)
+                                </button>
                             </div>
                         `;
+                        const btnGo = document.getElementById("btnGoToLoginFastAPI");
+                        if (btnGo) {
+                            btnGo.addEventListener("click", () => {
+                                const tabLoginAuth = document.getElementById("tabLoginAuth");
+                                const loginEmail = document.getElementById("loginEmail");
+                                if (tabLoginAuth) tabLoginAuth.click();
+                                if (loginEmail) loginEmail.value = email;
+                            });
+                        }
                     }
                 } else if (data.status === "success" && data.user) {
                     currentUser = data.user;
@@ -2121,24 +2173,41 @@ function setupAuthListeners() {
                     localUsers[email.toLowerCase()] = { ...mockUser, password };
                     localStorage.setItem("pww_local_users", JSON.stringify(localUsers));
 
-                    // DO NOT LOGIN DIRECTLY! Require Account Activation!
+                    // Send Real Transactional Verification Email to Farmer Inbox via EmailJS
                     const verifyUrl = `${window.location.origin}/?verify_email=${encodeURIComponent(email)}&token=${token}`;
+                    sendClientVerificationEmail(email, name, verifyUrl);
+
+                    // Clear sensitive password field
+                    const authPasswordEl = document.getElementById("authPassword");
+                    if (authPasswordEl) authPasswordEl.value = "";
+
+                    // Strict Privacy & Security Display: NEVER expose activation link on public web screen!
                     if (feedback) {
                         feedback.style.display = "block";
                         feedback.className = "auth-feedback auth-feedback-warning";
                         feedback.innerHTML = `
-                            <div class="feedback-title">✉️ खाता पंजीकरण सफल! एक्टिवेशन आवश्यक</div>
+                            <div class="feedback-title">✉️ सुरक्षा सत्यापन ईमेल भेजा गया!</div>
                             <div class="feedback-desc">
-                                आपका खाता <b>${email}</b> सफलतापूर्वक पंजीकृत कर लिया गया है।<br>
-                                <b>सुरक्षा नियम:</b> जब तक खाता सक्रिय (Activate) नहीं होगा, <b>सीधे लॉगिन की अनुमति नहीं है</b>।<br>
-                                कृपया नीचे दिए गए एक्टिवेशन लिंक पर क्लिक करके अपना खाता सक्रिय करें:
+                                सत्यापन लिंक आपके आधिकारिक ईमेल <b>${email}</b> पर सफलतापूर्वक भेज दिया गया है।<br><br>
+                                🔒 <b>गोपनीयता व सुरक्षा निर्देश:</b> आपकी सुरक्षा और डेटा अखंडता के लिए, खाता केवल आपकी व्यक्तिगत ईमेल इनबॉक्स में भेजे गए सुरक्षित लिंक से ही सक्रिय किया जा सकता है।<br><br>
+                                कृपया अपना <b>ईमेल इनबॉक्स</b> (या स्पैम/जंक फ़ोल्डर) खोलें और लिंक पर क्लिक करके खाता सक्रिय करें। पुष्टि के पश्चात <b>Direct Sign-In</b> से लॉगिन करें।
                             </div>
-                            <div style="margin-top:12px; text-align:center;">
-                                <a href="${verifyUrl}" id="linkActivateAccount" style="display:inline-block; font-weight:800; background:#0284C7; color:white; padding:10px 18px; border-radius:8px; text-decoration:none; font-size:0.88rem; box-shadow:0 4px 12px rgba(2,132,199,0.3);">
-                                    🔗 खाता सक्रिय करें (Click to Activate Account)
-                                </a>
+                            <div style="margin-top:14px; text-align:center;">
+                                <button type="button" class="btn-auth-primary" id="btnGoToLoginAfterReg" style="display:inline-block; width:auto; padding:10px 22px; font-size:0.88rem; background:linear-gradient(135deg, #0284C7, #0369A1); color:white; border:none; border-radius:8px; cursor:pointer; font-weight:700;">
+                                    🔑 Direct Sign-In पर जाएं (Go to Sign-In)
+                                </button>
                             </div>
                         `;
+
+                        const btnGo = document.getElementById("btnGoToLoginAfterReg");
+                        if (btnGo) {
+                            btnGo.addEventListener("click", () => {
+                                const tabLoginAuth = document.getElementById("tabLoginAuth");
+                                const loginEmail = document.getElementById("loginEmail");
+                                if (tabLoginAuth) tabLoginAuth.click();
+                                if (loginEmail) loginEmail.value = email;
+                            });
+                        }
                     }
                     return;
                 }
