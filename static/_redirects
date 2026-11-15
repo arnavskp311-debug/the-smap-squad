@@ -1,0 +1,2 @@
+/api/geojson /data/geojson.json 200
+/api/nasa/status /data/nasa_status.json 200

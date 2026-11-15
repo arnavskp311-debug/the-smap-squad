@@ -29,3 +29,6 @@ desktop.ini
 # Antigravity Agent metadata
 .agents/
 skills-lock.json
+
+# Local Netlify folder
+.netlify

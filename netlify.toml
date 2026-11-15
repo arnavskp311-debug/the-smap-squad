@@ -1,0 +1,12 @@
+[build]
+  publish = "static"
+
+[[redirects]]
+  from = "/api/geojson"
+  to = "/data/geojson.json"
+  status = 200
+
+[[redirects]]
+  from = "/api/nasa/status"
+  to = "/data/nasa_status.json"
+  status = 200

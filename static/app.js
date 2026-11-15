@@ -32,7 +32,14 @@ document.addEventListener("DOMContentLoaded", () => {
 // NASA API Key & Live Status
 function initNasaStatus() {
     fetch("/api/nasa/status")
-        .then(res => res.json())
+        .then(res => {
+            if (!res.ok) throw new Error("HTTP " + res.status);
+            return res.json();
+        })
+        .catch(async () => {
+            const r = await fetch("data/nasa_status.json");
+            return await r.json();
+        })
         .then(data => {
             const pillText = document.getElementById("nasaPillText");
             const pill = document.getElementById("nasaPill");
@@ -347,7 +354,15 @@ function initMap() {
 
     // Load authentic GeoJSON district boundaries
     fetch("/api/geojson")
-        .then(res => res.json())
+        .then(res => {
+            if (!res.ok) throw new Error("HTTP " + res.status);
+            return res.json();
+        })
+        .catch(async () => {
+            console.warn("API geojson fetch error, trying static fallback");
+            const r = await fetch("data/geojson.json");
+            return await r.json();
+        })
         .then(data => {
             geojsonLayer = L.geoJSON(data, {
                 style: feature => {
@@ -500,12 +515,30 @@ function setupEventListeners() {
 function loadDistrictData(district) {
     currentDistrict = district;
     fetch(`/api/telemetry?district=${encodeURIComponent(district)}&lang=${currentLang}`)
-        .then(res => res.json())
+        .then(res => {
+            if (!res.ok) throw new Error("HTTP " + res.status);
+            return res.json();
+        })
         .then(data => {
             lastTelemetryData = data;
             renderTelemetry(data);
         })
-        .catch(err => console.error("Error loading telemetry:", err));
+        .catch(async err => {
+            console.warn("API telemetry fetch error, trying static fallback:", err);
+            try {
+                if (!window._staticTelemetryCache) {
+                    const r = await fetch("data/telemetry_all.json");
+                    window._staticTelemetryCache = await r.json();
+                }
+                const fallbackData = window._staticTelemetryCache[district] || window._staticTelemetryCache["Bathinda"];
+                if (fallbackData) {
+                    lastTelemetryData = fallbackData;
+                    renderTelemetry(fallbackData);
+                }
+            } catch (fallbackErr) {
+                console.error("Static telemetry fallback failed:", fallbackErr);
+            }
+        });
 }
 
 // Render Telemetry Data into DOM
