@@ -756,6 +756,12 @@ const I18N_DICTIONARY = {
         "theme_light": "Light",
         "theme_dark": "Dark",
         "pre_lang_title": "🌐 Choose Your Language / भाषा चुनें / ਭਾਸ਼ਾ ਚੁਣੋ:",
+        "guest_gate_badge": "⚡ HACKATHON EVALUATOR / JUDGE FAST ACCESS",
+        "guest_gate_subtitle": "Explore live NASA satellite telemetry, AI drydown curves, and farmer passes instantly without registration.",
+        "btn_continue_guest": "🚀 Continue as Guest (Judge Demo)",
+        "auth_or_register_below": "OR REGISTER / SIGN IN BELOW",
+        "guest_eval_question": "Evaluating for NASA Space Apps?",
+        "btn_guest_inline": "🚀 Continue as Guest (Judge Demo)",
         "auth_title": "Mandatory Farmer & Sentinel Access",
         "auth_subtitle": "Access to Punjab's live NASA SMAP telemetry, GIS spatial maps, and groundwater advisories requires verified farmer registration or direct sign-in.",
         "tab_register_auth": "📝 New Farmer Registration",
@@ -865,6 +871,12 @@ const I18N_DICTIONARY = {
         "theme_light": "लाइट",
         "theme_dark": "डार्क",
         "pre_lang_title": "🌐 अपनी पसंदीदा भाषा चुनें / Choose Language:",
+        "guest_gate_badge": "⚡ हैकाथॉन जज / मूल्यांकनकर्ता त्वरित प्रवेश",
+        "guest_gate_subtitle": "बिना किसी पंजीकरण के सीधे लाइव नासा उपग्रह टेलीमेट्री, एआई ड्राइडउन कर्व और किसान पास देखें।",
+        "btn_continue_guest": "🚀 अतिथि के रूप में जारी रखें (जज डेमो)",
+        "auth_or_register_below": "या नीचे नया पंजीकरण / साइन-इन करें",
+        "guest_eval_question": "क्या आप नासा स्पेस ऐप्स मूल्यांकनकर्ता हैं?",
+        "btn_guest_inline": "🚀 अतिथि के रूप में जारी रखें (जज डेमो)",
         "auth_title": "किसान एवं प्रहरी आधिकारिक पोर्टल",
         "auth_subtitle": "पंजाब की लाइव नासा SMAP टेलीमेट्री, उपग्रह नक्शे और सटीक भूजल सलाहकारों तक पहुंच के लिए किसान पंजीकरण या सीधा साइन-इन अनिवार्य है।",
         "tab_register_auth": "📝 नया किसान पंजीकरण",
@@ -974,6 +986,12 @@ const I18N_DICTIONARY = {
         "theme_light": "ਲਾਈਟ",
         "theme_dark": "ਡਾਰਕ",
         "pre_lang_title": "🌐 ਆਪਣੀ ਪਸੰਦੀਦਾ ਭਾਸ਼ਾ ਚੁਣੋ / Choose Language:",
+        "guest_gate_badge": "⚡ ਹੈਕਾਥੌਨ ਜੱਜ / ਮੁਲਾਂਕਣਕਰਤਾ ਤੁਰੰਤ ਪਹੁੰਚ",
+        "guest_gate_subtitle": "ਬਿਨਾਂ ਕਿਸੇ ਰਜਿਸਟ੍ਰੇਸ਼ਨ ਦੇ ਸਿੱਧੇ ਲਾਈਵ ਨਾਸਾ ਉਪਗ੍ਰਹਿ ਟੈਲੀਮੈਟਰੀ, ਏਆਈ ਡਰਾਈਡਾਊਨ ਕਰਵ ਅਤੇ ਕਿਸਾਨ ਪਾਸ ਦੇਖੋ।",
+        "btn_continue_guest": "🚀 ਮਹਿਮਾਨ ਵਜੋਂ ਜਾਰੀ ਰੱਖੋ (ਜੱਜ ਡੈਮੋ)",
+        "auth_or_register_below": "ਜਾਂ ਹੇਠਾਂ ਨਵਾਂ ਰਜਿਸਟ੍ਰੇਸ਼ਨ / ਸਾਈਨ-ਇਨ ਕਰੋ",
+        "guest_eval_question": "ਕੀ ਤੁਸੀਂ ਨਾਸਾ ਸਪੇਸ ਐਪਸ ਮੁਲਾਂਕਣਕਰਤਾ ਹੋ?",
+        "btn_guest_inline": "🚀 ਮਹਿਮਾਨ ਵਜੋਂ ਜਾਰੀ ਰੱਖੋ (ਜੱਜ ਡੈਮੋ)",
         "auth_title": "ਕਿਸਾਨ ਅਤੇ ਪਹਿਰੇਦਾਰ ਅਧਿਕਾਰਤ ਪੋਰਟਲ",
         "auth_subtitle": "ਪੰਜਾਬ ਦੀ ਲਾਈਵ ਨਾਸਾ SMAP ਟੈਲੀਮੈਟਰੀ, ਉਪਗ੍ਰਹਿ ਨਕਸ਼ੇ ਅਤੇ ਧਰਤੀ ਹੇਠਲੇ ਪਾਣੀ ਦੀਆਂ ਸਲਾਹਾਂ ਲਈ ਕਿਸਾਨ ਰਜਿਸਟ੍ਰੇਸ਼ਨ ਜਾਂ ਸਿੱਧਾ ਸਾਈਨ-ਇਨ ਲਾਜ਼ਮੀ ਹੈ।",
         "tab_register_auth": "📝 ਨਵਾਂ ਕਿਸਾਨ ਰਜਿਸਟ੍ਰੇਸ਼ਨ",
@@ -2507,6 +2525,67 @@ function renderDashScenario() {
 // ==========================================================================
 let currentUser = null;
 
+const GUEST_DEMO_USER = {
+    name: "Guest Evaluator",
+    email: "guest@judgedemo.spaceapps",
+    phone: "+91 98888 00000",
+    farm_acres: 12,
+    primary_crop: "Wheat & Direct Seeded Rice (DSR)",
+    irrigation_source: "Solar Micro-Drip & Canal",
+    district: "Bathinda",
+    member_id: "PWW-2026-GUEST-01",
+    role: "NASA Space Apps Evaluator · Judge Fast Track",
+    is_active: true,
+    email_verified: true,
+    is_guest: true,
+    avatar: "/logo.png",
+    water_saved_litres: 4800000,
+    electricity_saved_kwh: 1240,
+    soil_health_grade: "Grade A",
+    created_at: "2026-11-15T12:00:00.000Z"
+};
+
+function continueAsGuest() {
+    currentUser = Object.assign({}, GUEST_DEMO_USER);
+    localStorage.setItem("pww_user", JSON.stringify(currentUser));
+
+    // Clear any pending auth error banners
+    const registerFeedback = document.getElementById("registerFeedback");
+    if (registerFeedback) registerFeedback.style.display = "none";
+    const loginFeedback = document.getElementById("loginFeedback");
+    if (loginFeedback) loginFeedback.style.display = "none";
+
+    // Unlock modal and remove platform lock class
+    unlockAuthGate();
+
+    // Update all UI elements, user chips, digital passes, QR code
+    updateUserUI(currentUser);
+
+    // Ensure default district Bathinda is selected and loaded
+    const districtSelect = document.getElementById("districtSelect");
+    if (districtSelect) {
+        districtSelect.value = "Bathinda";
+    }
+    const mobDistrictSelect = document.getElementById("mobDistrictSelect");
+    if (mobDistrictSelect) {
+        mobDistrictSelect.value = "Bathinda";
+    }
+    const mobDistrictPillText = document.getElementById("mobDistrictPillText");
+    if (mobDistrictPillText) {
+        mobDistrictPillText.innerText = "Bathinda";
+    }
+    if (typeof loadDistrictData === "function") {
+        loadDistrictData("Bathinda");
+    }
+
+    // Invalidate Leaflet map size so it renders smoothly
+    setTimeout(() => {
+        if (window.map && typeof window.map.invalidateSize === "function") {
+            window.map.invalidateSize();
+        }
+    }, 200);
+}
+
 function initAuth() {
     try {
         const stored = localStorage.getItem("pww_user");
@@ -2644,22 +2723,41 @@ function updateUserUI(user) {
     const userAvatarSrc = (user && user.avatar) ? user.avatar : "/default_avatar.png";
 
     if (user && user.email) {
-        if (navAvatar) navAvatar.innerHTML = `<img src="${userAvatarSrc}" alt="Profile" class="avatar-img" style="object-fit:cover; width:100%; height:100%; border-radius:50%;">`;
-        if (navText) navText.innerText = user.name || "Farmer Profile";
+        if (user.is_guest) {
+            if (navAvatar) navAvatar.innerHTML = `<img src="/logo.png" alt="Guest" class="avatar-img" style="object-fit:cover; width:100%; height:100%; border-radius:50%;">`;
+            if (navText) navText.innerHTML = `<span>Guest Demo</span> <span class="guest-signin-link" style="font-size:0.75rem; text-decoration:underline; margin-left:4px; opacity:0.85; font-weight:700; cursor:pointer;" title="Sign In or Register">(Sign In)</span>`;
 
-        if (mobNavAvatar) mobNavAvatar.innerHTML = `<img src="${userAvatarSrc}" alt="Profile" class="avatar-img" style="object-fit:cover; width:100%; height:100%; border-radius:50%;">`;
-        if (mobNavProfileText) mobNavProfileText.innerText = user.name ? user.name.split(" ")[0] : "Profile";
+            if (mobNavAvatar) mobNavAvatar.innerHTML = `<img src="/logo.png" alt="Guest" class="avatar-img" style="object-fit:cover; width:100%; height:100%; border-radius:50%;">`;
+            if (mobNavProfileText) mobNavProfileText.innerText = "Guest Demo";
 
-        if (drawerAvatar) drawerAvatar.innerHTML = `<img src="${userAvatarSrc}" alt="Profile" class="avatar-img" style="object-fit:cover; width:100%; height:100%; border-radius:50%;">`;
-        if (drawerUserName) drawerUserName.innerText = user.name || "Lead Farmer";
-        if (drawerUserRole) drawerUserRole.innerText = `${user.role || "Sentinel"} · ${user.district || "Punjab"}`;
-        if (drawerPassBadge) {
-            drawerPassBadge.innerHTML = `
-                <span class="pass-chip">🛡️ Active Sentinel</span>
-                <span class="pass-id" id="drawerPassId">${user.member_id || "PWW-2026-PB-0482"}</span>
-            `;
+            if (drawerAvatar) drawerAvatar.innerHTML = `<img src="/logo.png" alt="Guest" class="avatar-img" style="object-fit:cover; width:100%; height:100%; border-radius:50%;">`;
+            if (drawerUserName) drawerUserName.innerText = "Guest Evaluator (Judge Demo)";
+            if (drawerUserRole) drawerUserRole.innerText = "NASA Space Apps Hackathon Evaluator";
+            if (drawerPassBadge) {
+                drawerPassBadge.innerHTML = `
+                    <span class="pass-chip" style="background:rgba(16,185,129,0.2); color:#10B981; border:1px solid #10B981;">⚡ Judge Demo</span>
+                    <span class="pass-id" id="drawerPassId">${user.member_id || "PWW-2026-GUEST-01"}</span>
+                `;
+            }
+            if (drawerAuthBtnLabel) drawerAuthBtnLabel.innerText = "Exit Demo / Sign In";
+        } else {
+            if (navAvatar) navAvatar.innerHTML = `<img src="${userAvatarSrc}" alt="Profile" class="avatar-img" style="object-fit:cover; width:100%; height:100%; border-radius:50%;">`;
+            if (navText) navText.innerText = user.name || "Farmer Profile";
+
+            if (mobNavAvatar) mobNavAvatar.innerHTML = `<img src="${userAvatarSrc}" alt="Profile" class="avatar-img" style="object-fit:cover; width:100%; height:100%; border-radius:50%;">`;
+            if (mobNavProfileText) mobNavProfileText.innerText = user.name ? user.name.split(" ")[0] : "Profile";
+
+            if (drawerAvatar) drawerAvatar.innerHTML = `<img src="${userAvatarSrc}" alt="Profile" class="avatar-img" style="object-fit:cover; width:100%; height:100%; border-radius:50%;">`;
+            if (drawerUserName) drawerUserName.innerText = user.name || "Lead Farmer";
+            if (drawerUserRole) drawerUserRole.innerText = `${user.role || "Sentinel"} · ${user.district || "Punjab"}`;
+            if (drawerPassBadge) {
+                drawerPassBadge.innerHTML = `
+                    <span class="pass-chip">🛡️ Active Sentinel</span>
+                    <span class="pass-id" id="drawerPassId">${user.member_id || "PWW-2026-PB-0482"}</span>
+                `;
+            }
+            if (drawerAuthBtnLabel) drawerAuthBtnLabel.innerText = "View Digital Water Pass";
         }
-        if (drawerAuthBtnLabel) drawerAuthBtnLabel.innerText = "View Digital Water Pass";
 
         // Update Pass modal fields
         const passAvatar = document.getElementById("passAvatar");
@@ -2745,6 +2843,15 @@ function updateUserUI(user) {
             };
             tabPassQrImg.src = qrDataUrl;
         }
+
+        const btnSignOutBtn = document.getElementById("btnSignOutBtn");
+        if (btnSignOutBtn) {
+            if (user.is_guest) {
+                btnSignOutBtn.innerHTML = `<span>🚪</span> <span>Exit Demo / Sign In</span>`;
+            } else {
+                btnSignOutBtn.innerHTML = `<span>🚪</span> <span>Sign Out</span>`;
+            }
+        }
     } else {
         if (navAvatar) navAvatar.innerHTML = `<img src="/default_avatar.png" alt="Profile" class="avatar-img">`;
         if (navText) navText.innerText = "Sign In";
@@ -2770,6 +2877,11 @@ function updateUserUI(user) {
         if (tabPassRole) tabPassRole.innerText = "Register Farm to Activate Official Pass";
         const tabPassMemberId = document.getElementById("tabPassMemberId");
         if (tabPassMemberId) tabPassMemberId.innerText = "PENDING-REGISTRATION";
+
+        const btnSignOutBtn = document.getElementById("btnSignOutBtn");
+        if (btnSignOutBtn) {
+            btnSignOutBtn.innerHTML = `<span>🚪</span> <span>Sign Out</span>`;
+        }
     }
 }
 
@@ -2905,8 +3017,21 @@ function setupAuthListeners() {
     const btnPrintPassBtn = document.getElementById("btnPrintPassBtn");
     const btnSignOutBtn = document.getElementById("btnSignOutBtn");
 
+    const btnContinueAsGuest = document.getElementById("btnContinueAsGuest");
+    const btnGuestFromRegister = document.getElementById("btnGuestFromRegister");
+    const btnGuestFromLogin = document.getElementById("btnGuestFromLogin");
+
+    if (btnContinueAsGuest) btnContinueAsGuest.addEventListener("click", continueAsGuest);
+    if (btnGuestFromRegister) btnGuestFromRegister.addEventListener("click", continueAsGuest);
+    if (btnGuestFromLogin) btnGuestFromLogin.addEventListener("click", continueAsGuest);
+
     if (userProfileBtn) {
-        userProfileBtn.addEventListener("click", () => {
+        userProfileBtn.addEventListener("click", (e) => {
+            if (e.target && e.target.closest(".guest-signin-link")) {
+                e.stopPropagation();
+                openAuthModal();
+                return;
+            }
             if (currentUser && currentUser.email) {
                 openProfileModal();
             } else {
@@ -2924,7 +3049,11 @@ function setupAuthListeners() {
             document.body.style.overflow = "";
 
             if (currentUser && currentUser.email) {
-                openProfileModal();
+                if (currentUser.is_guest) {
+                    openAuthModal();
+                } else {
+                    openProfileModal();
+                }
             } else {
                 openAuthModal();
             }

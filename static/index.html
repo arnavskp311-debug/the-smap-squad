@@ -13,17 +13,21 @@
     <link rel="icon" type="image/png" href="/favicon.png">
     <link rel="shortcut icon" href="/favicon.ico">
     <link rel="apple-touch-icon" href="/logo.png">
+    <!-- Google Fonts: Inter, Noto Sans Devanagari (Hindi), Noto Sans Gurmukhi (Punjabi) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+Devanagari:wght@400;500;600;700;800&family=Noto+Sans+Gurmukhi:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <!-- Leaflet CSS -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-    <link rel="stylesheet" href="/style.css?v=2026.11.15.v24">
-    <!-- Immediate Cache Purge for Version v24 -->
+    <link rel="stylesheet" href="/style.css?v=2026.11.15.v25">
+    <!-- Immediate Cache Purge for Version v25 -->
     <script>
-        if (localStorage.getItem("pww_cache_v") !== "2026.11.15.v24") {
-            localStorage.setItem("pww_cache_v", "2026.11.15.v24");
+        if (localStorage.getItem("pww_cache_v") !== "2026.11.15.v25") {
+            localStorage.setItem("pww_cache_v", "2026.11.15.v25");
             if ("caches" in window) {
                 caches.keys().then(keys => {
                     keys.forEach(k => {
-                        if (!k.includes("v2026.11.15.v24")) caches.delete(k);
+                        if (!k.includes("v2026.11.15.v25")) caches.delete(k);
                     });
                 });
             }
@@ -1793,6 +1797,21 @@
                         <button type="button" class="pre-lang-btn" data-lang="pa">🌾 ਪੰਜਾਬੀ</button>
                     </div>
                 </div>
+
+                <!-- 1-Click Fast Access: Continue as Guest (Judge Demo) -->
+                <div class="guest-gate-card">
+                    <div class="guest-gate-badge-row">
+                        <span class="guest-gate-badge" data-i18n="guest_gate_badge">⚡ HACKATHON EVALUATOR / JUDGE FAST ACCESS</span>
+                    </div>
+                    <div class="guest-gate-subtitle" data-i18n="guest_gate_subtitle">Explore live NASA satellite telemetry, AI drydown curves, and farmer passes instantly without registration.</div>
+                    <button type="button" class="btn-continue-guest" id="btnContinueAsGuest">
+                        <span data-i18n="btn_continue_guest">🚀 Continue as Guest (Judge Demo)</span>
+                    </button>
+                </div>
+
+                <div class="auth-tabs-divider">
+                    <span data-i18n="auth_or_register_below">OR REGISTER / SIGN IN BELOW</span>
+                </div>
             </div>
 
             <div class="auth-tabs">
@@ -1854,7 +1873,7 @@
                     </div>
                     <div class="auth-input-group">
                         <label for="authAvatarFile" data-i18n="auth_lbl_photo">Profile Photo (From Device)</label>
-                        <input type="file" id="authAvatarFile" class="auth-input" accept="image/*" style="padding:6px 10px; font-size:0.82rem;">
+                        <input type="file" id="authAvatarFile" class="auth-input auth-file-input" accept="image/*">
                     </div>
                 </div>
 
@@ -1892,6 +1911,13 @@
                 <div class="auth-helper-note" data-i18n="auth_note">
                     🔒 All farm information is securely cataloged into Punjab Ag-Stack for authentic telemetry.
                 </div>
+
+                <div class="guest-link-row">
+                    <span data-i18n="guest_eval_question">Evaluating for NASA Space Apps?</span> 
+                    <button type="button" class="btn-guest-inline" id="btnGuestFromRegister" data-i18n="btn_guest_inline">
+                        🚀 Continue as Guest (Judge Demo)
+                    </button>
+                </div>
             </form>
 
             <!-- Direct Sign-In Panel (Registered Users Only) -->
@@ -1915,6 +1941,13 @@
                     <span data-i18n="login_no_acc_text">Don't have an account yet?</span> 
                     <button type="button" id="linkSwitchToRegister" style="background:none; border:none; color:var(--accent-teal); cursor:pointer; font-weight:700; text-decoration:underline;" data-i18n="login_switch_register">
                         Register Your Farm Here
+                    </button>
+                </div>
+
+                <div class="guest-link-row">
+                    <span data-i18n="guest_eval_question">Evaluating for NASA Space Apps?</span> 
+                    <button type="button" class="btn-guest-inline" id="btnGuestFromLogin" data-i18n="btn_guest_inline">
+                        🚀 Continue as Guest (Judge Demo)
                     </button>
                 </div>
             </form>
@@ -2198,6 +2231,6 @@
         </button>
     </nav>
 
-    <script src="/app.js?v=2026.11.15.v24"></script>
+    <script src="/app.js?v=2026.11.15.v25"></script>
 </body>
 </html>

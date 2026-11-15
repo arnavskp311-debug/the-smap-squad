@@ -31,7 +31,7 @@
     box-sizing: border-box;
     margin: 0;
     padding: 0;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    font-family: 'Inter', 'Noto Sans Gurmukhi', 'Noto Sans Devanagari', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
 }
 
 body {
@@ -2489,14 +2489,25 @@ select.region-select {
     align-items: center;
     justify-content: center;
     gap: 10px;
-    background: linear-gradient(135deg, var(--accent-teal), #0284C7);
-    color: #071924;
-    box-shadow: 0 4px 14px rgba(56, 189, 248, 0.3);
+    background: linear-gradient(135deg, #0284C7, #0369A1);
+    color: #FFFFFF !important;
+    box-shadow: 0 4px 14px rgba(2, 132, 199, 0.35);
 }
 
 .btn-auth-primary:hover {
     transform: translateY(-1px);
-    box-shadow: 0 6px 20px rgba(56, 189, 248, 0.4);
+    background: linear-gradient(135deg, #0369A1, #0284C7);
+    box-shadow: 0 6px 20px rgba(2, 132, 199, 0.45);
+}
+
+[data-theme="light"] .btn-auth-primary {
+    background: linear-gradient(135deg, #1C2D5B, #0F172A);
+    color: #FFFFFF !important;
+    box-shadow: 0 4px 14px rgba(15, 23, 42, 0.25);
+}
+
+[data-theme="light"] .btn-auth-primary:hover {
+    background: linear-gradient(135deg, #0F172A, #1E293B);
 }
 
 .btn-google-action {
@@ -2543,6 +2554,20 @@ select.region-select {
     display: flex;
     flex-direction: column;
     gap: 4px;
+    min-width: 0 !important;
+}
+
+.auth-file-input,
+input[type="file"].auth-input {
+    max-width: 100% !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    white-space: nowrap !important;
+    padding: 6px 10px;
+    font-size: 0.8rem;
+    cursor: pointer;
 }
 
 .auth-input-group label {
@@ -3176,6 +3201,146 @@ body.auth-locked #drawerOverlay {
     background: #0284C7;
     border-color: #0284C7;
     color: #FFFFFF;
+}
+
+/* Guest Fast Access Card (Judge Demo) */
+.guest-gate-card {
+    background: linear-gradient(135deg, rgba(16, 185, 129, 0.12) 0%, rgba(6, 78, 59, 0.22) 100%);
+    border: 1.5px solid rgba(16, 185, 129, 0.45);
+    border-radius: 12px;
+    padding: 14px 16px;
+    margin: 4px 0 14px 0;
+    box-shadow: 0 4px 16px rgba(16, 185, 129, 0.12);
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    text-align: left;
+}
+
+[data-theme="light"] .guest-gate-card {
+    background: linear-gradient(135deg, #ECFDF5 0%, #D1FAE5 100%);
+    border-color: #059669;
+    box-shadow: 0 4px 14px rgba(5, 150, 105, 0.15);
+}
+
+.guest-gate-badge-row {
+    display: flex;
+    align-items: center;
+}
+
+.guest-gate-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.68rem;
+    font-weight: 800;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+    color: #34D399;
+    background: rgba(6, 78, 59, 0.65);
+    padding: 3px 8px;
+    border-radius: 999px;
+    border: 1px solid rgba(52, 211, 153, 0.35);
+}
+
+[data-theme="light"] .guest-gate-badge {
+    color: #065F46;
+    background: #A7F3D0;
+    border-color: #34D399;
+}
+
+.guest-gate-subtitle {
+    font-size: 0.82rem;
+    color: var(--text-muted);
+    line-height: 1.45;
+}
+
+[data-theme="light"] .guest-gate-subtitle {
+    color: #334155;
+}
+
+.btn-continue-guest {
+    width: 100%;
+    padding: 12px 18px;
+    border-radius: 8px;
+    border: none;
+    font-size: 0.94rem;
+    font-weight: 800;
+    cursor: pointer;
+    background: linear-gradient(135deg, #059669 0%, #047857 100%);
+    color: #FFFFFF !important;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    box-shadow: 0 4px 14px rgba(5, 150, 105, 0.35);
+    transition: all 0.2s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.btn-continue-guest:hover {
+    transform: translateY(-1px);
+    background: linear-gradient(135deg, #10B981 0%, #059669 100%);
+    box-shadow: 0 6px 18px rgba(16, 185, 129, 0.45);
+}
+
+.btn-continue-guest:active {
+    transform: translateY(0);
+}
+
+.auth-tabs-divider {
+    display: flex;
+    align-items: center;
+    text-align: center;
+    margin: 12px 0 16px 0;
+    color: var(--text-muted);
+    font-size: 0.7rem;
+    font-weight: 800;
+    letter-spacing: 0.8px;
+}
+
+.auth-tabs-divider::before,
+.auth-tabs-divider::after {
+    content: '';
+    flex: 1;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.auth-tabs-divider span {
+    padding: 0 10px;
+}
+
+.guest-link-row {
+    margin-top: 14px;
+    padding-top: 12px;
+    border-top: 1px dashed var(--border-color);
+    text-align: center;
+    font-size: 0.78rem;
+    color: var(--text-muted);
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+}
+
+.btn-guest-inline {
+    background: transparent;
+    border: none;
+    color: #10B981;
+    font-size: 0.78rem;
+    font-weight: 700;
+    cursor: pointer;
+    text-decoration: underline;
+    padding: 2px 4px;
+    transition: color 0.15s;
+}
+
+[data-theme="light"] .btn-guest-inline {
+    color: #059669;
+}
+
+.btn-guest-inline:hover {
+    color: #34D399;
 }
 
 /* User Guide Navbar Pill */
