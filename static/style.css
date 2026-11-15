@@ -3752,3 +3752,232 @@ body.auth-locked #drawerOverlay {
         grid-template-columns: 1fr !important;
     }
 }
+
+/* ==========================================================================
+   PANCHAYAT WATER CREDIT LEADERBOARD STYLES
+   ========================================================================== */
+
+/* Navbar Pill */
+.panchayat-nav-pill {
+    background: rgba(16, 185, 129, 0.12);
+    border: 1px solid rgba(16, 185, 129, 0.35);
+    color: var(--accent-mint);
+    padding: 6px 14px;
+    border-radius: 8px;
+    font-size: 0.82rem;
+    font-weight: 700;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.2s ease;
+}
+.panchayat-nav-pill:hover {
+    background: rgba(16, 185, 129, 0.24);
+    border-color: var(--accent-mint);
+    transform: translateY(-1px);
+}
+[data-theme="light"] .panchayat-nav-pill {
+    background: #ECFDF5;
+    border-color: #A7F3D0;
+    color: #059669;
+}
+[data-theme="light"] .panchayat-nav-pill:hover {
+    background: #D1FAE5;
+    border-color: #059669;
+}
+
+/* Panchayat Hero */
+.panchayat-hero {
+    background: linear-gradient(135deg, rgba(6, 78, 59, 0.45) 0%, rgba(15, 23, 42, 0.95) 100%);
+    border: 1px solid rgba(16, 185, 129, 0.3);
+    border-radius: 14px;
+    padding: 26px 28px;
+    margin-bottom: 20px;
+    box-shadow: 0 4px 18px rgba(0, 0, 0, 0.3);
+}
+[data-theme="light"] .panchayat-hero {
+    background: linear-gradient(135deg, #ECFDF5 0%, #F0FDF4 100%);
+    border-color: #A7F3D0;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05);
+}
+.panchayat-hero-icon {
+    font-size: 2.6rem;
+    line-height: 1;
+}
+.panchayat-hero-title {
+    font-size: 1.65rem;
+    font-weight: 800;
+    color: #FFFFFF;
+    margin-bottom: 6px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+[data-theme="light"] .panchayat-hero-title {
+    color: #0F172A;
+}
+.panchayat-hero-sub {
+    font-size: 0.92rem;
+    color: var(--text-muted);
+    line-height: 1.55;
+    max-width: 920px;
+}
+[data-theme="light"] .panchayat-hero-sub {
+    color: #475569;
+}
+
+/* KPI Grid */
+.panchayat-kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+    margin-top: 18px;
+}
+.panchayat-kpi-card {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    padding: 14px 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+[data-theme="light"] .panchayat-kpi-card {
+    background: #FFFFFF;
+    border-color: #E2E8F0;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.03);
+}
+.panchayat-kpi-card .kpi-icon {
+    font-size: 1.8rem;
+    line-height: 1;
+}
+.panchayat-kpi-card .kpi-val {
+    font-size: 1.35rem;
+    font-weight: 800;
+    color: var(--accent-mint);
+}
+[data-theme="light"] .panchayat-kpi-card .kpi-val {
+    color: #059669;
+}
+.panchayat-kpi-card .kpi-lbl {
+    font-size: 0.74rem;
+    color: var(--text-muted);
+    margin-top: 2px;
+}
+
+/* Panchayat Table */
+.panchayat-table-wrapper {
+    overflow-x: auto;
+    border-radius: 8px;
+}
+.panchayat-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.86rem;
+    text-align: left;
+}
+.panchayat-table th {
+    background: rgba(255, 255, 255, 0.04);
+    color: var(--text-muted);
+    font-weight: 700;
+    padding: 12px 14px;
+    border-bottom: 1px solid var(--border-color);
+    font-size: 0.80rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    white-space: nowrap;
+}
+[data-theme="light"] .panchayat-table th {
+    background: #F1F5F9;
+    color: #475569;
+}
+.panchayat-table td {
+    padding: 12px 14px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    vertical-align: middle;
+}
+[data-theme="light"] .panchayat-table td {
+    border-bottom-color: #F1F5F9;
+}
+.panchayat-table tr:hover td {
+    background: rgba(255, 255, 255, 0.03);
+}
+[data-theme="light"] .panchayat-table tr:hover td {
+    background: #F8FAFC;
+}
+
+/* Rank Badges */
+.rank-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-weight: 800;
+    font-size: 0.82rem;
+    white-space: nowrap;
+}
+.rank-badge.rank-1 {
+    background: linear-gradient(135deg, #F59E0B, #D97706);
+    color: #FFFFFF;
+    box-shadow: 0 2px 8px rgba(245, 158, 11, 0.35);
+}
+.rank-badge.rank-2 {
+    background: linear-gradient(135deg, #94A3B8, #64748B);
+    color: #FFFFFF;
+}
+.rank-badge.rank-3 {
+    background: linear-gradient(135deg, #B45309, #78350F);
+    color: #FFFFFF;
+}
+.rank-badge.rank-other {
+    background: rgba(255, 255, 255, 0.08);
+    color: var(--text-muted);
+}
+[data-theme="light"] .rank-badge.rank-other {
+    background: #E2E8F0;
+    color: #475569;
+}
+
+/* Reward Pills */
+.reward-pill {
+    display: inline-block;
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-size: 0.74rem;
+    font-weight: 700;
+    white-space: nowrap;
+}
+.reward-pill.reward-approved {
+    background: rgba(16, 185, 129, 0.15);
+    color: #10B981;
+    border: 1px solid rgba(16, 185, 129, 0.3);
+}
+[data-theme="light"] .reward-pill.reward-approved {
+    background: #ECFDF5;
+    color: #047857;
+    border-color: #A7F3D0;
+}
+.reward-pill.reward-review {
+    background: rgba(245, 158, 11, 0.15);
+    color: #F59E0B;
+    border: 1px solid rgba(245, 158, 11, 0.3);
+}
+[data-theme="light"] .reward-pill.reward-review {
+    background: #FFFBEB;
+    color: #B45309;
+    border-color: #FDE68A;
+}
+
+@media (max-width: 768px) {
+    .panchayat-kpi-grid {
+        grid-template-columns: 1fr 1fr !important;
+    }
+}
+@media (max-width: 480px) {
+    .panchayat-kpi-grid {
+        grid-template-columns: 1fr !important;
+    }
+}

@@ -29,6 +29,7 @@ document.addEventListener("DOMContentLoaded", () => {
     initAuth();
     populateHotspotDistricts("Punjab", currentDistrict || "Bathinda");
     setupEventListeners();
+    initPanchayatLeaderboard();
     loadDistrictData(currentDistrict);
 });
 
@@ -374,6 +375,7 @@ function applyTheme(theme) {
 const I18N_DICTIONARY = {
     "en": {
         "nav_guide": "User Guide",
+        "nav_panchayat": "Panchayat Leaderboard",
         "nav_mission": "Mission Control",
         "nav_dashboard": "Dashboard",
         "nav_forecast": "7-Day Forecast",
@@ -480,6 +482,7 @@ const I18N_DICTIONARY = {
     },
     "hi": {
         "nav_guide": "यूज़र गाइड",
+        "nav_panchayat": "पंचायत लीडरबोर्ड",
         "nav_mission": "मिशन कंट्रोल",
         "nav_dashboard": "डैशबोर्ड",
         "nav_forecast": "7-दिवसीय पूर्वानुमान",
@@ -586,6 +589,7 @@ const I18N_DICTIONARY = {
     },
     "pa": {
         "nav_guide": "ਯੂਜ਼ਰ ਗਾਈਡ",
+        "nav_panchayat": "ਪੰਚਾਇਤ ਲੀਡਰਬੋਰਡ",
         "nav_mission": "ਮਿਸ਼ਨ ਕੰਟਰੋਲ",
         "nav_dashboard": "ਡੈਸ਼ਬੋਰਡ",
         "nav_forecast": "7-ਦਿਨਾਂ ਭਵਿੱਖਬਾਣੀ",
@@ -882,6 +886,15 @@ function initTabs() {
     if (navGuideBtn) {
         navGuideBtn.addEventListener("click", () => {
             switchTab("tab-guide");
+            window.scrollTo({ top: 0, behavior: "smooth" });
+        });
+    }
+
+    // Top Navbar Panchayat Leaderboard Button
+    const navPanchayatBtn = document.getElementById("navPanchayatBtn");
+    if (navPanchayatBtn) {
+        navPanchayatBtn.addEventListener("click", () => {
+            switchTab("tab-panchayat");
             window.scrollTo({ top: 0, behavior: "smooth" });
         });
     }
@@ -2760,4 +2773,138 @@ function openProfileModal() {
 function closeProfileModal() {
     const modal = document.getElementById("profileModal");
     if (modal) modal.style.display = "none";
+}
+
+// ==========================================
+// GRAM PANCHAYAT WATER CREDIT LEADERBOARD
+// ==========================================
+
+function filterAndSortPanchayatTable() {
+    const districtSelect = document.getElementById("panchayatDistrictSelect");
+    const sortSelect = document.getElementById("panchayatSortSelect");
+    const searchInput = document.getElementById("panchayatSearchInput");
+    const tbody = document.getElementById("panchayatTableBody");
+    if (!tbody) return;
+
+    const selectedDistrict = districtSelect ? districtSelect.value : "ALL";
+    const sortKey = sortSelect ? sortSelect.value : "credits";
+    const query = searchInput ? searchInput.value.toLowerCase().trim() : "";
+
+    const rows = Array.from(tbody.querySelectorAll("tr:not(.empty-state-row)"));
+
+    // Filter by district and search text
+    rows.forEach(row => {
+        const rowDistrict = row.getAttribute("data-district") || "";
+        const rowText = row.innerText.toLowerCase();
+        const matchesDistrict = (selectedDistrict === "ALL" || rowDistrict.toLowerCase() === selectedDistrict.toLowerCase());
+        const matchesQuery = (!query || rowText.includes(query));
+
+        if (matchesDistrict && matchesQuery) {
+            row.style.display = "";
+        } else {
+            row.style.display = "none";
+        }
+    });
+
+    // Sort rows (both visible & hidden, maintaining overall relative ranking)
+    rows.sort((a, b) => {
+        const valA = parseFloat(a.getAttribute(`data-${sortKey}`) || 0);
+        const valB = parseFloat(b.getAttribute(`data-${sortKey}`) || 0);
+        return valB - valA; // Descending
+    });
+
+    // Re-append to tbody in sorted order
+    rows.forEach(r => tbody.appendChild(r));
+
+    // Dynamic rank badge assignment for visible rows
+    const visibleRows = rows.filter(r => r.style.display !== "none");
+    visibleRows.forEach((row, idx) => {
+        const firstTd = row.querySelector("td");
+        if (!firstTd) return;
+        const rank = idx + 1;
+        if (rank === 1) {
+            firstTd.innerHTML = `<span class="rank-badge rank-1">🏆 #1</span>`;
+        } else if (rank === 2) {
+            firstTd.innerHTML = `<span class="rank-badge rank-2">🥇 #2</span>`;
+        } else if (rank === 3) {
+            firstTd.innerHTML = `<span class="rank-badge rank-3">🥈 #3</span>`;
+        } else {
+            firstTd.innerHTML = `<span class="rank-badge rank-other">#${rank}</span>`;
+        }
+    });
+
+    // Handle Empty State
+    let emptyRow = tbody.querySelector(".empty-state-row");
+    if (visibleRows.length === 0) {
+        if (!emptyRow) {
+            emptyRow = document.createElement("tr");
+            emptyRow.className = "empty-state-row";
+            emptyRow.innerHTML = `<td colspan="8" style="text-align:center; padding:24px; color:var(--text-muted); font-size:0.88rem;">🔍 No Gram Panchayats found matching your search. Try selecting "All Punjab Districts" or clearing your search keywords.</td>`;
+            tbody.appendChild(emptyRow);
+        }
+        emptyRow.style.display = "";
+    } else if (emptyRow) {
+        emptyRow.style.display = "none";
+    }
+}
+
+function updatePanchayatSimulator() {
+    const acresSlider = document.getElementById("panchayatSimAcres");
+    const dsrSlider = document.getElementById("panchayatSimDsr");
+    const acresVal = document.getElementById("panchayatSimAcresVal");
+    const dsrVal = document.getElementById("panchayatSimDsrVal");
+    const outWater = document.getElementById("simOutWater");
+    const outCredits = document.getElementById("simOutCredits");
+    const outGrant = document.getElementById("simOutGrant");
+    const outDelta = document.getElementById("simOutDelta");
+
+    if (!acresSlider || !dsrSlider) return;
+
+    const acres = parseInt(acresSlider.value, 10) || 2500;
+    const dsr = parseInt(dsrSlider.value, 10) || 65;
+
+    if (acresVal) acresVal.innerText = acres.toLocaleString() + " Acres";
+    if (dsrVal) dsrVal.innerText = dsr + "%";
+
+    // Standardized conversion: 180,000 Litres saved per acre under Direct Seeded Rice (DSR)
+    const effectiveAcres = acres * (dsr / 100);
+    const waterSavedL = effectiveAcres * 180000;
+    const pwcCredits = Math.round(waterSavedL / 100000); // 1 PWC = 100,000 L
+    const waterSavedM = (waterSavedL / 1000000).toFixed(1) + "M L";
+
+    // State Capital Grant Tiers under Punjab Rural Development Gram Nidhi
+    let grant = "₹5.0 Lakhs";
+    if (pwcCredits >= 3500) {
+        grant = "₹15.0 Lakhs";
+    } else if (pwcCredits >= 2500) {
+        grant = "₹10.0 Lakhs";
+    } else if (pwcCredits >= 1500) {
+        grant = "₹6.5 Lakhs";
+    }
+
+    // Hydrologic aquifer water table recovery coefficient (cm/year)
+    const delta = "+" + (effectiveAcres * 0.0054).toFixed(1) + " cm/yr";
+
+    if (outWater) outWater.innerText = waterSavedM;
+    if (outCredits) outCredits.innerText = pwcCredits.toLocaleString() + " PWC";
+    if (outGrant) outGrant.innerText = grant;
+    if (outDelta) outDelta.innerText = delta;
+}
+
+function initPanchayatLeaderboard() {
+    const districtSelect = document.getElementById("panchayatDistrictSelect");
+    const sortSelect = document.getElementById("panchayatSortSelect");
+    const searchInput = document.getElementById("panchayatSearchInput");
+    const acresSlider = document.getElementById("panchayatSimAcres");
+    const dsrSlider = document.getElementById("panchayatSimDsr");
+
+    if (districtSelect) districtSelect.addEventListener("change", filterAndSortPanchayatTable);
+    if (sortSelect) sortSelect.addEventListener("change", filterAndSortPanchayatTable);
+    if (searchInput) searchInput.addEventListener("input", filterAndSortPanchayatTable);
+
+    if (acresSlider) acresSlider.addEventListener("input", updatePanchayatSimulator);
+    if (dsrSlider) dsrSlider.addEventListener("input", updatePanchayatSimulator);
+
+    filterAndSortPanchayatTable();
+    updatePanchayatSimulator();
 }
