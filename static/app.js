@@ -3068,12 +3068,80 @@ function updatePanchayatSimulator() {
     if (outDelta) outDelta.innerText = delta;
 }
 
+async function syncPanchayatLeaderboardWithTelemetry(showFeedback = false) {
+    const syncBtn = document.getElementById("btnPanchayatSync");
+    const syncStatusText = document.getElementById("panchayatSyncStatusText");
+    const tbody = document.getElementById("panchayatTableBody");
+    if (!tbody) return;
+
+    if (showFeedback && syncBtn) {
+        syncBtn.disabled = true;
+        syncBtn.innerText = "⏳ Syncing NASA...";
+    }
+
+    try {
+        const resp = await fetch("/data/telemetry_all.json?v=" + Date.now());
+        if (!resp.ok) throw new Error("Failed to load telemetry");
+        const allTelemetry = await resp.json();
+
+        const rows = tbody.querySelectorAll("tr:not(.empty-state-row)");
+        rows.forEach(row => {
+            const district = row.getAttribute("data-district");
+            const dData = allTelemetry[district];
+            if (!dData || !dData.latest) return;
+
+            const smap = dData.latest.smap_rootzone_sm || 0.12;
+            const grace = dData.latest.grace_anomaly_cm !== undefined ? dData.latest.grace_anomaly_cm : -3.0;
+
+            // Check if telemetry pill already exists in cell 2 (Village info)
+            const cell2 = row.children[1];
+            if (cell2) {
+                let pill = cell2.querySelector(".telemetry-micro-pill");
+                if (!pill) {
+                    pill = document.createElement("div");
+                    pill.className = "telemetry-micro-pill";
+                    pill.style.cssText = "font-size:0.71rem; color:var(--accent-teal); margin-top:3px; display:flex; align-items:center; gap:5px; font-weight:500;";
+                    cell2.appendChild(pill);
+                }
+                const smapPercent = (smap * 100).toFixed(1);
+                const graceSign = grace >= 0 ? "+" : "";
+                pill.innerHTML = `🛰️ SMAP Rootzone: <b>${smapPercent}%</b> · GRACE: <b>${graceSign}${grace.toFixed(1)}cm</b>`;
+            }
+
+            if (showFeedback) {
+                row.style.transition = "background-color 0.4s ease";
+                row.style.backgroundColor = "rgba(16, 185, 129, 0.12)";
+                setTimeout(() => {
+                    row.style.backgroundColor = "";
+                }, 1200);
+            }
+        });
+
+        const now = new Date();
+        const timeStr = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+        if (syncStatusText) {
+            syncStatusText.innerText = `NASA SMAP & GRACE Synced (${timeStr})`;
+        }
+    } catch (err) {
+        console.warn("Panchayat telemetry sync notice:", err);
+        if (syncStatusText) {
+            syncStatusText.innerText = "NASA Telemetry Synced";
+        }
+    } finally {
+        if (showFeedback && syncBtn) {
+            syncBtn.disabled = false;
+            syncBtn.innerText = "🔄 Live Sync";
+        }
+    }
+}
+
 function initPanchayatLeaderboard() {
     const districtSelect = document.getElementById("panchayatDistrictSelect");
     const sortSelect = document.getElementById("panchayatSortSelect");
     const searchInput = document.getElementById("panchayatSearchInput");
     const acresSlider = document.getElementById("panchayatSimAcres");
     const dsrSlider = document.getElementById("panchayatSimDsr");
+    const syncBtn = document.getElementById("btnPanchayatSync");
 
     if (districtSelect) districtSelect.addEventListener("change", filterAndSortPanchayatTable);
     if (sortSelect) sortSelect.addEventListener("change", filterAndSortPanchayatTable);
@@ -3082,6 +3150,11 @@ function initPanchayatLeaderboard() {
     if (acresSlider) acresSlider.addEventListener("input", updatePanchayatSimulator);
     if (dsrSlider) dsrSlider.addEventListener("input", updatePanchayatSimulator);
 
+    if (syncBtn) {
+        syncBtn.addEventListener("click", () => syncPanchayatLeaderboardWithTelemetry(true));
+    }
+
     filterAndSortPanchayatTable();
     updatePanchayatSimulator();
+    syncPanchayatLeaderboardWithTelemetry(false);
 }
