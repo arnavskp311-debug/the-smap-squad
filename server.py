@@ -318,7 +318,8 @@ def send_verification_email(email: str, name: str, token: str) -> dict:
                         "from_name": "Punjab Farm Water Watch",
                         "reply_to": "support@punjabfarms.gov.in",
                         "verification_link": verify_url,
-                        "verify_url": verify_url
+                        "verify_url": verify_url,
+                        "message": f"नमस्ते {name},\n\nपंजाब फार्म वाटर वॉच में आपका स्वागत है। अपने खाते को सुरक्षित रूप से सक्रिय करने के लिए नीचे दिए गए लिंक पर क्लिक करें:\n{verify_url}\n\nसुरक्षा कारणों से सत्यापन पूर्ण होने तक खाता निष्क्रिय रहेगा।"
                     }
                 }).encode("utf-8"),
                 headers={
