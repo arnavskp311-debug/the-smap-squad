@@ -15,15 +15,15 @@
     <link rel="apple-touch-icon" href="/logo.png">
     <!-- Leaflet CSS -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-    <link rel="stylesheet" href="/style.css?v=2026.11.15.v19">
-    <!-- Immediate Cache Purge for Version v19 -->
+    <link rel="stylesheet" href="/style.css?v=2026.11.15.v20">
+    <!-- Immediate Cache Purge for Version v20 -->
     <script>
-        if (localStorage.getItem("pww_cache_v") !== "2026.11.15.v19") {
-            localStorage.setItem("pww_cache_v", "2026.11.15.v19");
+        if (localStorage.getItem("pww_cache_v") !== "2026.11.15.v20") {
+            localStorage.setItem("pww_cache_v", "2026.11.15.v20");
             if ("caches" in window) {
                 caches.keys().then(keys => {
                     keys.forEach(k => {
-                        if (!k.includes("v2026.11.15.v19")) caches.delete(k);
+                        if (!k.includes("v2026.11.15.v20")) caches.delete(k);
                     });
                 });
             }
@@ -461,7 +461,7 @@
         <!-- TAB 3: AGRISENSE INTEGRATED FARM SIMULATOR & SOIL HEALTH LAB -->
         <section id="tab-agrisense" class="tab-content">
             <!-- Part 1: Interactive What-If Water & Energy Calculator + Crop Groundwater Budget -->
-            <div style="display: grid; grid-template-columns: 1.1fr 1.3fr; gap: 16px; margin-bottom: 16px;">
+            <div class="agrisense-grid-top">
                 <div class="dark-card">
                     <div class="card-title">What-If Water &amp; Energy Calculator</div>
                     <label style="font-size: 0.82rem; color: var(--text-muted); font-weight: 600;">Farm Size: <span id="farmSizeLabel">10</span> Acres</label>
@@ -515,7 +515,7 @@
             </div>
 
             <!-- Part 2: Soil Health Card Parameters & PAU/KVK Lab Prescription -->
-            <div style="display: grid; grid-template-columns: 1.1fr 1.25fr; gap: 16px; margin-bottom: 16px;">
+            <div class="agrisense-grid-bottom">
                 <div class="dark-card">
                     <div class="card-title">🧪 Soil Health Card Parameters</div>
                     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
@@ -892,7 +892,7 @@
                     Adjust the sliders below to estimate how many Water Credits (PWC) and how much state capital grant funding your Gram Panchayat can unlock by transitioning conventional flooded fields to Direct Seeded Rice (DSR) and precision scheduling.
                 </div>
 
-                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:16px; margin-bottom:16px;">
+                <div class="panchayat-sim-grid">
                     <div class="control-box">
                         <label for="panchayatSimAcres" style="display:flex; justify-content:space-between; font-weight:700; font-size:0.86rem;">
                             <span>Village Agricultural Area (Acres):</span>
@@ -910,7 +910,7 @@
                 </div>
 
                 <!-- Simulator Dynamic Outputs -->
-                <div style="display:grid; grid-template-columns: repeat(4, 1fr); gap:12px;">
+                <div class="panchayat-sim-metrics">
                     <div style="background:rgba(255,255,255,0.04); border:1px solid var(--border-color); border-radius:8px; padding:14px; text-align:center;">
                         <div style="font-size:0.76rem; color:var(--text-muted); margin-bottom:4px;">Projected Water Preserved</div>
                         <div style="font-size:1.5rem; font-weight:800; color:var(--accent-mint);" id="simOutWater">29.2M L</div>
@@ -935,7 +935,7 @@
             </div>
 
             <!-- 3 Policy Integration Pillar Cards -->
-            <div style="display:grid; grid-template-columns: repeat(3, 1fr); gap:16px;">
+            <div class="policy-cards-grid">
                 <div class="dark-card">
                     <div class="card-title">
                         <span>🏛️ Atal Bhujal Yojana</span>
@@ -1142,7 +1142,7 @@
             </div>
 
             <!-- Problem & Impact Breakdown -->
-            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:16px; margin-bottom:16px;">
+            <div class="about-crisis-grid">
                 <div class="dark-card" style="margin-bottom:0;">
                     <div class="card-title">🚨 The Punjab Groundwater Crisis</div>
                     <div style="font-size:0.83rem; color:var(--text-muted); line-height:1.6;">
@@ -1326,7 +1326,7 @@
                         • <b>Landsat Thermal Canopy Stress (10%):</b> Scaled from 25.0°C (optimal canopy temperature) to 42.0°C (severe heat stress).
                     </div>
                 </div>
-                <div style="display:grid; grid-template-columns: repeat(3, 1fr); gap:12px; margin-top:12px;">
+                <div class="guide-zones-grid">
                     <div style="background:rgba(22, 163, 74, 0.15); border:1px solid #16A34A; border-radius:8px; padding:12px; text-align:center;">
                         <span class="badge badge-safe">0 – 30: Green Zone</span>
                         <div style="font-size:0.80rem; color:var(--text-main); margin-top:6px;">Adequate moisture. Cross-check NDVI for hidden chemical/physical soil anomalies.</div>
@@ -1363,7 +1363,7 @@
             </div>
 
             <!-- Section 6: 7-Day ML Forecaster & Aquifer Preservation -->
-            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:16px; margin-bottom:16px;">
+            <div class="guide-steps-grid">
                 <div class="dark-card">
                     <div class="card-title">
                         <span>🔮 6. 7-Day ML Forecaster</span>
@@ -2082,6 +2082,6 @@
         </button>
     </nav>
 
-    <script src="/app.js?v=2026.11.15.v19"></script>
+    <script src="/app.js?v=2026.11.15.v20"></script>
 </body>
 </html>

@@ -3752,6 +3752,67 @@ body.auth-locked #drawerOverlay {
         width: 100% !important;
         justify-content: center !important;
     }
+
+    /* Mobile Responsive Grids for Clean Spacious View */
+    .team-members-grid {
+        grid-template-columns: 1fr 1fr !important;
+        gap: 12px !important;
+    }
+
+    .team-stats-row {
+        grid-template-columns: 1fr 1fr !important;
+        gap: 8px !important;
+    }
+
+    .arch-grid {
+        grid-template-columns: 1fr !important;
+        gap: 12px !important;
+    }
+
+    .calendar-grid {
+        grid-template-columns: 1fr !important;
+        gap: 10px !important;
+    }
+
+    .agrisense-grid-top,
+    .agrisense-grid-bottom,
+    .panchayat-sim-grid,
+    .about-crisis-grid,
+    .guide-steps-grid {
+        grid-template-columns: 1fr !important;
+        gap: 12px !important;
+    }
+
+    .panchayat-sim-metrics {
+        grid-template-columns: 1fr 1fr !important;
+        gap: 8px !important;
+    }
+
+    .policy-cards-grid,
+    .guide-zones-grid {
+        grid-template-columns: 1fr !important;
+        gap: 12px !important;
+    }
+
+    .panchayat-kpi-grid {
+        grid-template-columns: 1fr 1fr !important;
+        gap: 8px !important;
+    }
+
+    .top-navbar {
+        padding: 8px 10px !important;
+        gap: 6px !important;
+    }
+
+    .panchayat-nav-pill {
+        padding: 6px 10px !important;
+        font-size: 0.78rem !important;
+    }
+
+    .profile-nav-btn {
+        padding: 5px 10px !important;
+        font-size: 0.80rem !important;
+    }
 }
 
 @media (max-width: 480px) {
@@ -3766,6 +3827,53 @@ body.auth-locked #drawerOverlay {
     .pass-metrics-strip {
         grid-template-columns: 1fr !important;
     }
+
+    .team-members-grid {
+        grid-template-columns: 1fr !important;
+        gap: 12px !important;
+    }
+
+    .team-stats-row {
+        grid-template-columns: 1fr 1fr !important;
+        gap: 6px !important;
+    }
+
+    .panchayat-sim-metrics {
+        grid-template-columns: 1fr !important;
+        gap: 8px !important;
+    }
+
+    .panchayat-kpi-grid {
+        grid-template-columns: 1fr !important;
+        gap: 8px !important;
+    }
+}
+
+/* ==========================================================================
+   FEATURE GRID BASE CLASSES
+   ========================================================================== */
+.agrisense-grid-top,
+.agrisense-grid-bottom,
+.panchayat-sim-grid,
+.about-crisis-grid,
+.guide-steps-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 16px;
+}
+
+.panchayat-sim-metrics {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+}
+
+.policy-cards-grid,
+.guide-zones-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
 }
 
 /* ==========================================================================
