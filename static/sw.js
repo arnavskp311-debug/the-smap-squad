@@ -1,14 +1,18 @@
 // Punjab Farm Water Watch - Offline & 2G Resilient Service Worker
-const CACHE_NAME = 'pww-cache-v2026.11.15.v15';
+const CACHE_NAME = 'pww-cache-v2026.11.15.v16';
 
 const CORE_ASSETS = [
     '/',
     '/index.html',
     '/verify.html',
-    '/style.css?v=2026.11.15.v14',
-    '/app.js?v=2026.11.15.v14',
+    '/style.css?v=2026.11.15.v16',
+    '/app.js?v=2026.11.15.v16',
     '/logo.png',
     '/default_avatar.png',
+    '/arnav_sharma.jpg',
+    '/chetan_kaushik.jpg',
+    '/aryan_sharma.jpg',
+    '/amisha_ajana.jpg',
     '/favicon.png',
     '/favicon.ico',
     '/manifest.json',
