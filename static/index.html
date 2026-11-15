@@ -15,15 +15,15 @@
     <link rel="apple-touch-icon" href="/logo.png">
     <!-- Leaflet CSS -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-    <link rel="stylesheet" href="/style.css?v=2026.11.15.v18">
-    <!-- Immediate Cache Purge for Version v18 -->
+    <link rel="stylesheet" href="/style.css?v=2026.11.15.v19">
+    <!-- Immediate Cache Purge for Version v19 -->
     <script>
-        if (localStorage.getItem("pww_cache_v") !== "2026.11.15.v18") {
-            localStorage.setItem("pww_cache_v", "2026.11.15.v18");
+        if (localStorage.getItem("pww_cache_v") !== "2026.11.15.v19") {
+            localStorage.setItem("pww_cache_v", "2026.11.15.v19");
             if ("caches" in window) {
                 caches.keys().then(keys => {
                     keys.forEach(k => {
-                        if (!k.includes("v2026.11.15.v18")) caches.delete(k);
+                        if (!k.includes("v2026.11.15.v19")) caches.delete(k);
                     });
                 });
             }
@@ -2082,6 +2082,6 @@
         </button>
     </nav>
 
-    <script src="/app.js?v=2026.11.15.v18"></script>
+    <script src="/app.js?v=2026.11.15.v19"></script>
 </body>
 </html>
