@@ -15,15 +15,15 @@
     <link rel="apple-touch-icon" href="/logo.png">
     <!-- Leaflet CSS -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-    <link rel="stylesheet" href="/style.css?v=2026.11.15.v13">
-    <!-- Immediate Cache Purge for Version v13 -->
+    <link rel="stylesheet" href="/style.css?v=2026.11.15.v14">
+    <!-- Immediate Cache Purge for Version v14 -->
     <script>
-        if (localStorage.getItem("pww_cache_v") !== "2026.11.15.v13") {
-            localStorage.setItem("pww_cache_v", "2026.11.15.v13");
+        if (localStorage.getItem("pww_cache_v") !== "2026.11.15.v14") {
+            localStorage.setItem("pww_cache_v", "2026.11.15.v14");
             if ("caches" in window) {
                 caches.keys().then(keys => {
                     keys.forEach(k => {
-                        if (!k.includes("v2026.11.15.v13")) caches.delete(k);
+                        if (!k.includes("v2026.11.15.v14")) caches.delete(k);
                     });
                 });
             }
@@ -172,11 +172,6 @@
                     </select>
                 </div>
 
-                <div class="nasa-live-pill" id="nasaPill" title="NASA API Authenticated &amp; Connected (nkcn...HpdH)">
-                    <div class="pulsing-dot"></div>
-                    <span id="nasaPillText">NASA API Live</span>
-                </div>
-
                 <!-- 2G / Live Network Indicator Pill -->
                 <div class="network-status-pill network-online" id="networkPill" title="Network Connection Status">
                     <div class="network-dot" id="networkDot"></div>
@@ -199,12 +194,6 @@
                 <button id="navPanchayatBtn" class="panchayat-nav-pill" data-tab="tab-panchayat" title="Gram Panchayat Water Credit Leaderboard">
                     <span>🏛️</span>
                     <span id="navPanchayatText" data-i18n="nav_panchayat">Panchayat Leaderboard</span>
-                </button>
-
-                <!-- Dedicated User Guide Navbar Pill -->
-                <button id="navGuideBtn" class="guide-nav-pill" data-tab="tab-guide" title="User Guide & System Manual">
-                    <span>📘</span>
-                    <span id="navGuideText" data-i18n="nav_guide">User Guide</span>
                 </button>
 
                 <!-- Farmer / User Profile Button -->
@@ -2078,6 +2067,6 @@
         </button>
     </nav>
 
-    <script src="/app.js?v=2026.11.15.v13"></script>
+    <script src="/app.js?v=2026.11.15.v14"></script>
 </body>
 </html>

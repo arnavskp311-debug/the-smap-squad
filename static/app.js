@@ -100,7 +100,7 @@ function initNasaStatus() {
             if (pillText && data.authenticated) {
                 pillText.innerText = "NASA API Live";
                 if (pill) {
-                    pill.title = `NASA api.nasa.gov Key: ${data.api_key_masked} · Authenticated & Rate Limit: ${data.rate_limit_limit} reqs/day`;
+                    pill.title = `NASA api.nasa.gov Authenticated & Connected · Rate Limit: ${data.rate_limit_limit} reqs/day`;
                 }
             }
         })

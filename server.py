@@ -19,7 +19,7 @@ try:
 except ImportError:
     pass
 
-NASA_API_KEY = os.getenv("NASA_API_KEY", "nkcnGCDbmHL9dnHrmLFrP8qbFfCJCGbGQmdwHpdH")
+NASA_API_KEY = os.getenv("NASA_API_KEY", "DEMO_KEY")
 
 from fastapi import FastAPI, HTTPException
 from fastapi.staticfiles import StaticFiles
@@ -295,7 +295,7 @@ def send_verification_email(email: str, name: str, token: str) -> dict:
     resend_key = os.getenv("RESEND_API_KEY", "").strip()
     email_key = os.getenv("EMAIL_API_KEY", "").strip() or resend_key
     emailjs_pub = os.getenv("EMAILJS_PUBLIC_KEY", "7QVPtO4Sw7ckfLZKe").strip()
-    emailjs_priv = os.getenv("EMAILJS_PRIVATE_KEY", "9jFTyzCzVykL8ZDZvXQ8_").strip()
+    emailjs_priv = os.getenv("EMAILJS_PRIVATE_KEY", "").strip()
     emailjs_service = os.getenv("EMAILJS_SERVICE_ID", "service_vshdx6m").strip()
     emailjs_template = os.getenv("EMAILJS_TEMPLATE_ID", "template_70yzbhi").strip()
 
@@ -688,8 +688,8 @@ def get_user_profile(email: str = "arnav@punjabfarms.gov.in"):
 
 @app.get("/api/health")
 def health_check():
-    key = os.getenv("NASA_API_KEY", "nkcnGCDbmHL9dnHrmLFrP8qbFfCJCGbGQmdwHpdH")
-    masked_key = f"{key[:4]}...{key[-4:]}" if len(key) > 8 else "***"
+    key = os.getenv("NASA_API_KEY", "DEMO_KEY")
+    masked_key = "PROTECTED_SERVER_VAULT"
     return {
         "status": "healthy",
         "app": "Punjab Farm Water Watch",
@@ -702,8 +702,8 @@ def health_check():
 
 @app.get("/api/nasa/status")
 def get_nasa_api_status():
-    key = os.getenv("NASA_API_KEY", "nkcnGCDbmHL9dnHrmLFrP8qbFfCJCGbGQmdwHpdH")
-    masked_key = f"{key[:4]}...{key[-4:]}" if len(key) > 8 else "***"
+    key = os.getenv("NASA_API_KEY", "DEMO_KEY")
+    masked_key = "PROTECTED_SERVER_VAULT"
     return {
         "status": "connected",
         "authenticated": True,

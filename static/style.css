@@ -2112,6 +2112,7 @@ select.region-select {
     cursor: pointer;
     transition: all 0.2s ease;
     white-space: nowrap;
+    flex-shrink: 0;
 }
 
 .profile-nav-btn:hover {
