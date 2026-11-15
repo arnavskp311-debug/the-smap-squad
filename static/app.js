@@ -787,8 +787,22 @@ function applyLanguage(lang) {
                 btnGo.addEventListener("click", () => {
                     const tabLoginAuth = document.getElementById("tabLoginAuth");
                     const loginEmail = document.getElementById("loginEmail");
+                    const loginPassword = document.getElementById("loginPassword");
+                    const loginFeedback = document.getElementById("loginFeedback");
                     if (tabLoginAuth) tabLoginAuth.click();
                     if (loginEmail) loginEmail.value = email;
+                    if (loginPassword) loginPassword.value = "";
+                    if (loginFeedback) {
+                        loginFeedback.style.display = "block";
+                        loginFeedback.className = "auth-feedback auth-feedback-warning";
+                        loginFeedback.setAttribute("data-feedback-state", "unverified");
+                        loginFeedback.setAttribute("data-email", email);
+                        const errs = getLoginErrorMessages(email, lang);
+                        loginFeedback.innerHTML = `
+                            <div class="feedback-title">${errs.unverifiedTitle}</div>
+                            <div class="feedback-desc">${errs.unverifiedDesc}</div>
+                        `;
+                    }
                 });
             }
         }
@@ -1890,57 +1904,67 @@ function initAuth() {
         unlockAuthGate();
     }
 
-    // Check for email verification URL parameters: ?verify_email=... or ?verified=true
+    // Check for email verification URL parameters: ?verify_email=... and ?token=...
     const urlParams = new URLSearchParams(window.location.search);
     const verifyEmail = urlParams.get("verify_email") || (urlParams.get("verified") === "true" ? urlParams.get("email") : null);
     const token = urlParams.get("token");
 
-    if (verifyEmail) {
-        // Activate user in persistent storage
+    if (verifyEmail && token) {
+        let isTokenValid = false;
+        // STRICT PRIVACY & SECURITY: Activate ONLY if token matches the user's secret verification_token
         try {
             const localUsers = JSON.parse(localStorage.getItem("pww_local_users") || "{}");
             const lowerEmail = verifyEmail.toLowerCase();
-            if (localUsers[lowerEmail]) {
+            if (localUsers[lowerEmail] && localUsers[lowerEmail].verification_token === token) {
                 localUsers[lowerEmail].is_active = true;
                 localUsers[lowerEmail].email_verified = true;
                 localStorage.setItem("pww_local_users", JSON.stringify(localUsers));
+                isTokenValid = true;
             }
         } catch(e) {}
 
-        // Also notify backend if online
-        if (token) {
+        // ALWAYS remove sensitive tokens from the browser URL address bar immediately
+        window.history.replaceState({}, document.title, window.location.pathname);
+
+        if (isTokenValid) {
+            // Also notify backend if online
             fetch(`/api/auth/verify?email=${encodeURIComponent(verifyEmail)}&token=${encodeURIComponent(token)}`).catch(() => {});
+
+            setTimeout(() => {
+                const tabLoginAuth = document.getElementById("tabLoginAuth");
+                const loginFeedback = document.getElementById("loginFeedback");
+                const loginEmail = document.getElementById("loginEmail");
+                const loginPassword = document.getElementById("loginPassword");
+
+                if (tabLoginAuth) tabLoginAuth.click();
+                if (loginEmail) loginEmail.value = verifyEmail;
+                if (loginPassword) loginPassword.value = "";
+                if (loginFeedback) {
+                    loginFeedback.style.display = "block";
+                    loginFeedback.className = "auth-feedback auth-feedback-success";
+                    loginFeedback.setAttribute("data-feedback-state", "activated");
+                    loginFeedback.setAttribute("data-email", verifyEmail);
+                    const l = currentLang || "en";
+                    const okTitle = l === "pa" 
+                        ? "✅ ਖਾਤਾ ਸਫਲਤਾਪੂਰਵਕ ਐਕਟੀਵੇਟ ਹੋ ਗਿਆ!" 
+                        : (l === "hi" 
+                            ? "✅ खाता सफलतापूर्वक सक्रिय (Activated) हुआ!" 
+                            : "✅ Account Successfully Activated!");
+                    const okDesc = l === "pa" 
+                        ? `ਤੁਹਾਡਾ ਕਿਸਾਨ ਖਾਤਾ <b>${verifyEmail}</b> ਹੁਣ ਐਕਟੀਵੇਟ ਹੋ ਗਿਆ ਹੈ। ਕਿਰਪਾ ਕਰਕੇ ਹੇਠਾਂ ਆਪਣਾ ਪਾਸਵਰਡ ਦਰਜ ਕਰਕੇ ਲੌਗਇਨ ਕਰੋ।` 
+                        : (l === "hi" 
+                            ? `आपका किसान खाता <b>${verifyEmail}</b> अब सक्रिय हो चुका है। कृपया नीचे अपना सही पासवर्ड दर्ज करके लॉगिन करें।` 
+                            : `Your farmer account <b>${verifyEmail}</b> is now verified and active. Please enter your password below to sign in.`);
+                    loginFeedback.innerHTML = `
+                        <div class="feedback-title">${okTitle}</div>
+                        <div class="feedback-desc">${okDesc}</div>
+                    `;
+                }
+            }, 350);
         }
-
-        setTimeout(() => {
-            const tabLoginAuth = document.getElementById("tabLoginAuth");
-            const loginFeedback = document.getElementById("loginFeedback");
-            const loginEmail = document.getElementById("loginEmail");
-
-            if (tabLoginAuth) tabLoginAuth.click();
-            if (loginEmail) loginEmail.value = verifyEmail;
-            if (loginFeedback) {
-                loginFeedback.style.display = "block";
-                loginFeedback.className = "auth-feedback auth-feedback-success";
-                loginFeedback.setAttribute("data-feedback-state", "activated");
-                loginFeedback.setAttribute("data-email", verifyEmail);
-                const l = currentLang || "en";
-                const okTitle = l === "pa" 
-                    ? "✅ ਖਾਤਾ ਸਫਲਤਾਪੂਰਵਕ ਐਕਟੀਵੇਟ ਹੋ ਗਿਆ!" 
-                    : (l === "hi" 
-                        ? "✅ खाता सफलतापूर्वक सक्रिय (Activated) हुआ!" 
-                        : "✅ Account Successfully Activated!");
-                const okDesc = l === "pa" 
-                    ? `ਤੁਹਾਡਾ ਕਿਸਾਨ ਖਾਤਾ <b>${verifyEmail}</b> ਹੁਣ ਐਕਟੀਵੇਟ ਹੋ ਗਿਆ ਹੈ। ਕਿਰਪਾ ਕਰਕੇ ਹੇਠਾਂ ਆਪਣਾ ਪਾਸਵਰਡ ਦਰਜ ਕਰਕੇ ਲੌਗਇਨ ਕਰੋ।` 
-                    : (l === "hi" 
-                        ? `आपका किसान खाता <b>${verifyEmail}</b> अब सक्रिय हो चुका है। कृपया नीचे अपना सही पासवर्ड दर्ज करके लॉगिन करें।` 
-                        : `Your farmer account <b>${verifyEmail}</b> is now verified and active. Please enter your password below to sign in.`);
-                loginFeedback.innerHTML = `
-                    <div class="feedback-title">${okTitle}</div>
-                    <div class="feedback-desc">${okDesc}</div>
-                `;
-            }
-        }, 350);
+    } else if (verifyEmail) {
+        // Strip invalid or dangling URL parameters without activating
+        window.history.replaceState({}, document.title, window.location.pathname);
     }
 }
 
@@ -2323,8 +2347,22 @@ function setupAuthListeners() {
                             btnGo.addEventListener("click", () => {
                                 const tabLoginAuth = document.getElementById("tabLoginAuth");
                                 const loginEmail = document.getElementById("loginEmail");
+                                const loginPassword = document.getElementById("loginPassword");
+                                const loginFeedback = document.getElementById("loginFeedback");
                                 if (tabLoginAuth) tabLoginAuth.click();
                                 if (loginEmail) loginEmail.value = email;
+                                if (loginPassword) loginPassword.value = "";
+                                if (loginFeedback) {
+                                    loginFeedback.style.display = "block";
+                                    loginFeedback.className = "auth-feedback auth-feedback-warning";
+                                    loginFeedback.setAttribute("data-feedback-state", "unverified");
+                                    loginFeedback.setAttribute("data-email", email);
+                                    const errs = getLoginErrorMessages(email, currentLang);
+                                    loginFeedback.innerHTML = `
+                                        <div class="feedback-title">${errs.unverifiedTitle}</div>
+                                        <div class="feedback-desc">${errs.unverifiedDesc}</div>
+                                    `;
+                                }
                             });
                         }
                     }
@@ -2411,8 +2449,22 @@ function setupAuthListeners() {
                             btnGo.addEventListener("click", () => {
                                 const tabLoginAuth = document.getElementById("tabLoginAuth");
                                 const loginEmail = document.getElementById("loginEmail");
+                                const loginPassword = document.getElementById("loginPassword");
+                                const loginFeedback = document.getElementById("loginFeedback");
                                 if (tabLoginAuth) tabLoginAuth.click();
                                 if (loginEmail) loginEmail.value = email;
+                                if (loginPassword) loginPassword.value = "";
+                                if (loginFeedback) {
+                                    loginFeedback.style.display = "block";
+                                    loginFeedback.className = "auth-feedback auth-feedback-warning";
+                                    loginFeedback.setAttribute("data-feedback-state", "unverified");
+                                    loginFeedback.setAttribute("data-email", email);
+                                    const errs = getLoginErrorMessages(email, currentLang);
+                                    loginFeedback.innerHTML = `
+                                        <div class="feedback-title">${errs.unverifiedTitle}</div>
+                                        <div class="feedback-desc">${errs.unverifiedDesc}</div>
+                                    `;
+                                }
                             });
                         }
                     }
