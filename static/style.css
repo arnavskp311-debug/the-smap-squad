@@ -2889,3 +2889,96 @@ body.auth-locked #drawerOverlay {
     50% { transform: scale(1.12); filter: drop-shadow(0 0 10px rgba(56, 189, 248, 0.6)); }
     100% { transform: scale(1); }
 }
+
+/* High-Contrast Accessible Feedback Messages */
+.auth-feedback {
+    display: block;
+    padding: 14px 16px;
+    border-radius: 10px;
+    font-size: 0.95rem;
+    line-height: 1.55;
+    margin-bottom: 16px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.45);
+    animation: fadeInFeedback 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes fadeInFeedback {
+    from { opacity: 0; transform: translateY(-4px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.auth-feedback .feedback-title {
+    font-size: 1.02rem;
+    font-weight: 700;
+    margin-bottom: 6px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.auth-feedback .feedback-desc {
+    font-size: 0.92rem;
+    font-weight: 500;
+    line-height: 1.5;
+}
+
+.auth-feedback-warning {
+    background: #2D1A05 !important;
+    border: 2px solid #F59E0B !important;
+    color: #FFFBEB !important;
+}
+
+.auth-feedback-warning .feedback-title {
+    color: #FCD34D !important;
+}
+
+.auth-feedback-error {
+    background: #3B0D0D !important;
+    border: 2px solid #EF4444 !important;
+    color: #FFF1F2 !important;
+}
+
+.auth-feedback-error .feedback-title {
+    color: #FCA5A5 !important;
+}
+
+.auth-feedback-success {
+    background: #062D1B !important;
+    border: 2px solid #10B981 !important;
+    color: #ECFDF5 !important;
+}
+
+.auth-feedback-success .feedback-title {
+    color: #6EE7B7 !important;
+}
+
+[data-theme="light"] .auth-feedback-warning {
+    background: #FFFBEB !important;
+    border: 2px solid #D97706 !important;
+    color: #78350F !important;
+}
+
+[data-theme="light"] .auth-feedback-warning .feedback-title {
+    color: #B45309 !important;
+}
+
+[data-theme="light"] .auth-feedback-error {
+    background: #FEF2F2 !important;
+    border: 2px solid #DC2626 !important;
+    color: #7F1D1D !important;
+}
+
+[data-theme="light"] .auth-feedback-error .feedback-title {
+    color: #991B1B !important;
+}
+
+[data-theme="light"] .auth-feedback-success {
+    background: #ECFDF5 !important;
+    border: 2px solid #059669 !important;
+    color: #064E3B !important;
+}
+
+[data-theme="light"] .auth-feedback-success .feedback-title {
+    color: #047857 !important;
+}
+

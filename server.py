@@ -279,7 +279,11 @@ def send_verification_email(email: str, name: str, token: str) -> dict:
     import urllib.request
     verify_url = f"http://localhost:8000/api/auth/verify?email={email}&token={token}"
     resend_key = os.getenv("RESEND_API_KEY", "").strip()
+    email_key = os.getenv("EMAIL_API_KEY", "").strip() or resend_key
 
+    print(f"\n[AUTH EMAIL DISPATCH] To: {email} | Name: {name}\n[AUTH VERIFY LINK] {verify_url}\n")
+
+    # 1. Resend API (starts with re_)
     if resend_key and resend_key.startswith("re_"):
         try:
             req = urllib.request.Request(
@@ -311,9 +315,47 @@ def send_verification_email(email: str, name: str, token: str) -> dict:
                 method="POST"
             )
             with urllib.request.urlopen(req, timeout=5) as resp:
+                print(f"[AUTH EMAIL SUCCESS] Resend email dispatched to {email}")
                 return {"sent": True, "method": "resend", "verify_url": verify_url}
         except Exception as e:
-            print("Resend delivery attempt notice:", e)
+            print("[AUTH EMAIL NOTICE] Resend delivery attempt:", e)
+
+    # 2. Postmark API (UUID token)
+    if email_key and len(email_key) == 36 and "-" in email_key:
+        try:
+            req = urllib.request.Request(
+                "https://api.postmarkapp.com/email",
+                data=json.dumps({
+                    "From": "notifications@punjabfarms.gov.in",
+                    "To": email,
+                    "Subject": "सुरक्षा सत्यापन: पंजाब फार्म वाटर वॉच खाता एक्टिवेट करें",
+                    "HtmlBody": f"""
+                        <div style="font-family:sans-serif; max-width:520px; padding:24px; border:1px solid #10B981; border-radius:12px; background:#0B1912; color:#E2E8F0;">
+                            <h2 style="color:#34D399; margin-top:0;">🛡️ Punjab Farm Water Watch</h2>
+                            <p>नमस्ते <b>{name}</b>,</p>
+                            <p>आपके किसान खाते का पंजीकरण प्राप्त हुआ है। सुरक्षा कारणों से आपका खाता अभी निष्क्रिय (Inactive) है।</p>
+                            <p>अपने खाते को सक्रिय (Active) करने के लिए नीचे दिए गए बटन पर क्लिक करें:</p>
+                            <div style="margin:25px 0;">
+                                <a href="{verify_url}" style="background:#10B981; color:#022C22; padding:12px 28px; text-decoration:none; border-radius:8px; font-weight:bold; display:inline-block;">
+                                    खाता सत्यापित और सक्रिय करें &rarr;
+                                </a>
+                            </div>
+                            <p style="color:#94A3B8; font-size:12px;">NASA Space Apps Challenge 2026 · Team The SMAP Squad</p>
+                        </div>
+                    """
+                }).encode("utf-8"),
+                headers={
+                    "X-Postmark-Server-Token": email_key,
+                    "Content-Type": "application/json",
+                    "Accept": "application/json"
+                },
+                method="POST"
+            )
+            with urllib.request.urlopen(req, timeout=5) as resp:
+                print(f"[AUTH EMAIL SUCCESS] Postmark email dispatched to {email}")
+                return {"sent": True, "method": "postmark", "verify_url": verify_url}
+        except Exception as e:
+            print("[AUTH EMAIL NOTICE] Postmark delivery attempt:", e)
 
     return {"sent": False, "method": "simulation", "verify_url": verify_url}
 

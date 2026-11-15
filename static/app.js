@@ -1168,10 +1168,11 @@ function initAuth() {
             if (loginEmail && verifiedEmail) loginEmail.value = verifiedEmail;
             if (loginFeedback) {
                 loginFeedback.style.display = "block";
-                loginFeedback.style.background = "rgba(16, 185, 129, 0.15)";
-                loginFeedback.style.border = "1px solid rgba(16, 185, 129, 0.5)";
-                loginFeedback.style.color = "#34D399";
-                loginFeedback.innerHTML = `✅ <b>ईमेल सत्यापित हुआ!</b> आपका खाता सक्रिय हो गया है। कृपया अपना पासवर्ड दर्ज करके लॉगिन करें।`;
+                loginFeedback.className = "auth-feedback auth-feedback-success";
+                loginFeedback.innerHTML = `
+                    <div class="feedback-title">✅ ईमेल सफलतापूर्वक सत्यापित हुआ!</div>
+                    <div class="feedback-desc">आपका किसान खाता अब सक्रिय (Active) हो चुका है। कृपया नीचे अपना पासवर्ड दर्ज करें और पोर्टल में प्रवेश करें।</div>
+                `;
             }
         }, 350);
     }
@@ -1376,16 +1377,13 @@ function setupAuthListeners() {
                 if (data.status === "pending_verification") {
                     if (feedback) {
                         feedback.style.display = "block";
-                        feedback.style.background = "rgba(245, 158, 11, 0.15)";
-                        feedback.style.border = "1px solid rgba(245, 158, 11, 0.5)";
-                        feedback.style.color = "#FDE68A";
+                        feedback.className = "auth-feedback auth-feedback-warning";
                         feedback.innerHTML = `
-                            <div style="font-weight:700; margin-bottom:6px;">⚠️ खाता निष्क्रिय है (Verification Required)</div>
-                            <div>${data.message}</div>
-                            <div style="margin-top:10px;">
-                                <a href="${data.verification_link}" target="_blank" style="display:inline-block; background:#10B981; color:#022C22; font-weight:700; padding:8px 16px; border-radius:6px; text-decoration:none; font-size:0.85rem;">
-                                    👉 ईमेल अप्रूवल लिंक पर क्लिक करें (Verify Now)
-                                </a>
+                            <div class="feedback-title">✉️ सत्यापन ईमेल भेज दिया गया है!</div>
+                            <div class="feedback-desc">
+                                हमने आपके ईमेल <b>${email}</b> पर खाता सक्रिय करने का सुरक्षित लिंक भेज दिया है।<br>
+                                कृपया अपना <b>ईमेल इनबॉक्स</b> (या स्पैम/जंक फ़ोल्डर) खोलें और उस लिंक पर क्लिक करके खाता सक्रिय करें।<br>
+                                <span style="font-size:0.85rem; opacity:0.9;">सुरक्षा कारणों से सत्यापन पूर्ण होने तक खाता निष्क्रिय रहेगा।</span>
                             </div>
                         `;
                     }
@@ -1405,20 +1403,22 @@ function setupAuthListeners() {
                 } else {
                     if (feedback) {
                         feedback.style.display = "block";
-                        feedback.style.background = "rgba(220, 38, 38, 0.15)";
-                        feedback.style.border = "1px solid rgba(220, 38, 38, 0.4)";
-                        feedback.style.color = "#FCA5A5";
-                        feedback.innerText = data.message || "Registration failed. Please check your details.";
+                        feedback.className = "auth-feedback auth-feedback-error";
+                        feedback.innerHTML = `
+                            <div class="feedback-title">❌ पंजीकरण विफल (Registration Error)</div>
+                            <div class="feedback-desc">${data.message || "कृपया अपनी प्रविष्टियों की जाँच करें।"}</div>
+                        `;
                     }
                 }
             } catch (err) {
                 console.error("Registration failed:", err);
                 if (feedback) {
                     feedback.style.display = "block";
-                    feedback.style.background = "rgba(220, 38, 38, 0.15)";
-                    feedback.style.border = "1px solid rgba(220, 38, 38, 0.4)";
-                    feedback.style.color = "#FCA5A5";
-                    feedback.innerText = "Network error. Please verify your connection.";
+                    feedback.className = "auth-feedback auth-feedback-error";
+                    feedback.innerHTML = `
+                        <div class="feedback-title">❌ नेटवर्क समस्या (Network Error)</div>
+                        <div class="feedback-desc">सर्वर से संपर्क नहीं हो पाया। कृपया अपना इंटरनेट कनेक्शन जाँचें।</div>
+                    `;
                 }
             } finally {
                 if (submitBtn) submitBtn.innerHTML = `<span>Register Account &amp; Unlock Water Pass</span>`;
@@ -1463,36 +1463,34 @@ function setupAuthListeners() {
                 } else if (data.status === "unverified") {
                     if (feedback) {
                         feedback.style.display = "block";
-                        feedback.style.background = "rgba(245, 158, 11, 0.15)";
-                        feedback.style.border = "1px solid rgba(245, 158, 11, 0.4)";
-                        feedback.style.color = "#FDE68A";
+                        feedback.className = "auth-feedback auth-feedback-warning";
                         feedback.innerHTML = `
-                            <div style="font-weight:700; margin-bottom:4px;">⚠️ खाता निष्क्रिय (Account Inactive)</div>
-                            <div>${data.message}</div>
-                            <div style="margin-top:8px;">
-                                <a href="${data.verification_link}" target="_blank" style="display:inline-block; background:#10B981; color:#022C22; font-weight:700; padding:6px 14px; border-radius:6px; text-decoration:none; font-size:0.82rem;">
-                                    👉 अप्रूवल लिंक से एक्टिव करें (Verify Email)
-                                </a>
+                            <div class="feedback-title">⚠️ खाता अभी निष्क्रिय है (Verification Pending)</div>
+                            <div class="feedback-desc">
+                                आपका खाता सुरक्षित रूप से पंजीकृत है लेकिन अभी सक्रिय नहीं हुआ है।<br>
+                                कृपया अपने ईमेल इनबॉक्स पर भेजा गया सक्रियण लिंक खोलकर पुष्टि करें।
                             </div>
                         `;
                     }
                 } else {
                     if (feedback) {
                         feedback.style.display = "block";
-                        feedback.style.background = "rgba(220, 38, 38, 0.15)";
-                        feedback.style.border = "1px solid rgba(220, 38, 38, 0.4)";
-                        feedback.style.color = "#FCA5A5";
-                        feedback.innerText = data.message || "Invalid credentials. Please verify your email and password.";
+                        feedback.className = "auth-feedback auth-feedback-error";
+                        feedback.innerHTML = `
+                            <div class="feedback-title">❌ लॉगिन विफल (Login Error)</div>
+                            <div class="feedback-desc">${data.message || "गलत ईमेल अथवा पासवर्ड। कृपया पुनः प्रयास करें।"}</div>
+                        `;
                     }
                 }
             } catch (err) {
                 console.error("Direct login failed:", err);
                 if (feedback) {
                     feedback.style.display = "block";
-                    feedback.style.background = "rgba(220, 38, 38, 0.15)";
-                    feedback.style.border = "1px solid rgba(220, 38, 38, 0.4)";
-                    feedback.style.color = "#FCA5A5";
-                    feedback.innerText = "Network error. Please try again.";
+                    feedback.className = "auth-feedback auth-feedback-error";
+                    feedback.innerHTML = `
+                        <div class="feedback-title">❌ नेटवर्क समस्या (Network Error)</div>
+                        <div class="feedback-desc">सर्वर से संपर्क नहीं हो पाया। कृपया अपना इंटरनेट कनेक्शन जाँचें।</div>
+                    `;
                 }
             } finally {
                 if (submitBtn) submitBtn.innerHTML = `<span>Direct Sign-In to Farm Account</span>`;
