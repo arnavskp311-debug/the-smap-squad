@@ -9,7 +9,7 @@
     <link rel="shortcut icon" href="/favicon.ico">
     <!-- Leaflet CSS -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-    <link rel="stylesheet" href="/style.css?v=2026.11.15.v5">
+    <link rel="stylesheet" href="/style.css?v=2026.11.15.v6">
     <!-- Chart.js & Leaflet JS -->
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -56,31 +56,31 @@
                 <li>
                     <button class="drawer-nav-btn active" data-tab="tab-overview">
                         <span>🛰️</span>
-                        <span>Mission Control</span>
+                        <span data-i18n="nav_mission">Mission Control</span>
                     </button>
                 </li>
                 <li>
                     <button class="drawer-nav-btn" data-tab="tab-dashboard">
                         <span>📊</span>
-                        <span>Dashboard</span>
+                        <span data-i18n="nav_dashboard">Dashboard</span>
                     </button>
                 </li>
                 <li>
                     <button class="drawer-nav-btn" data-tab="tab-forecast">
                         <span>📈</span>
-                        <span>7-Day Forecast</span>
+                        <span data-i18n="nav_forecast">7-Day Forecast</span>
                     </button>
                 </li>
                 <li>
                     <button class="drawer-nav-btn" data-tab="tab-agrisense">
                         <span>🌱</span>
-                        <span>AgriSense</span>
+                        <span data-i18n="nav_agrisense">AgriSense</span>
                     </button>
                 </li>
                 <li>
                     <button class="drawer-nav-btn" data-tab="tab-report">
                         <span>🪪</span>
-                        <span>Farmer Identity Card</span>
+                        <span data-i18n="nav_report">Farmer Identity Card</span>
                     </button>
                 </li>
                 <li>
@@ -185,12 +185,12 @@
             <div class="grid-top">
                 <div class="map-wrapper">
                     <div class="map-layer-toolbar">
-                        <span class="map-layer-label">🛰️ Basemap Layer:</span>
+                        <span class="map-layer-label" data-i18n="lbl_basemap">🛰️ Basemap Layer:</span>
                         <div class="layer-pill-group">
-                            <button type="button" class="layer-pill-btn active" data-layer-id="darkMatter">🗺️ Dark Matter</button>
-                            <button type="button" class="layer-pill-btn" data-layer-id="esriSatellite">🌍 Satellite (Esri)</button>
-                            <button type="button" class="layer-pill-btn" data-layer-id="nasaGibs">🛰️ NASA GIBS Live</button>
-                            <button type="button" class="layer-pill-btn" data-layer-id="nasaBlackMarble">🌌 NASA Black Marble</button>
+                            <button type="button" class="layer-pill-btn active" data-layer-id="darkMatter" data-i18n="layer_dark_matter">🗺️ Dark Matter</button>
+                            <button type="button" class="layer-pill-btn" data-layer-id="esriSatellite" data-i18n="layer_satellite">🌍 Satellite (Esri)</button>
+                            <button type="button" class="layer-pill-btn" data-layer-id="nasaGibs" data-i18n="layer_nasa_gibs">🛰️ NASA GIBS Live</button>
+                            <button type="button" class="layer-pill-btn" data-layer-id="nasaBlackMarble" data-i18n="layer_black_marble">🌌 NASA Black Marble</button>
                         </div>
                     </div>
                     <div id="map"></div>
@@ -199,38 +199,38 @@
                     <!-- Water Stress Score Card -->
                     <div class="dark-card">
                         <div class="card-title">
-                            <span>Water Stress Score</span>
+                            <span data-i18n="lbl_water_stress_score">Water Stress Score</span>
                             <span class="badge" id="stressBadge">Loading...</span>
                         </div>
                         <div style="text-align: center; margin: 8px 0;">
                             <div style="font-size: 2.8rem; font-weight: 800; color: var(--text-main);" id="stressScoreVal">--</div>
-                            <div style="font-size: 0.78rem; color: var(--text-muted);">Composite Water Stress Index (0–100)</div>
+                            <div style="font-size: 0.78rem; color: var(--text-muted);" data-i18n="lbl_comp_water_stress">Composite Water Stress Index (0–100)</div>
                         </div>
                     </div>
 
                     <!-- Soil Quality Card -->
                     <div class="dark-card">
                         <div class="card-title">
-                            <span>Soil Quality Status</span>
+                            <span data-i18n="lbl_soil_quality_status">Soil Quality Status</span>
                             <span class="badge" id="soilBadge">Optimal</span>
                         </div>
                         <div style="font-size: 0.88rem; font-weight: 700; color: var(--text-main); margin-bottom: 6px;" id="soilStatusText">
                             Checking dual-diagnosis...
                         </div>
-                        <div style="font-size: 0.76rem; color: var(--text-muted);">SMAP vs Landsat NDVI/SAVI Correlation</div>
+                        <div style="font-size: 0.76rem; color: var(--text-muted);" data-i18n="lbl_smap_landsat_corr">SMAP vs Landsat NDVI/SAVI Correlation</div>
                     </div>
 
                     <!-- Farmer Advisory Card -->
                     <div class="advisory-box">
                         <div class="advisory-title">
-                            <span>Farmer Advisory &amp; Action</span>
+                            <span data-i18n="lbl_farmer_advisory">Farmer Advisory &amp; Action</span>
                             <span>🔔</span>
                         </div>
                         <div id="advLine1" class="advisory-bullet">• Loading...</div>
                         <div id="advLine2" class="advisory-bullet" style="margin-bottom: 12px;">• Loading...</div>
                         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
-                            <a id="btnWhatsApp" href="#" target="_blank" class="btn-whatsapp">💬 WhatsApp</a>
-                            <button id="btnVoice" class="btn-voice">🔊 Listen Voice</button>
+                            <a id="btnWhatsApp" href="#" target="_blank" class="btn-whatsapp" data-i18n="btn_whatsapp">💬 WhatsApp</a>
+                            <button id="btnVoice" class="btn-voice" data-i18n="btn_listen_voice">🔊 Listen Voice</button>
                         </div>
                     </div>
                 </div>
@@ -239,17 +239,17 @@
             <!-- Delta 30 Days Ago vs Today -->
             <div class="delta-grid">
                 <div class="delta-box">
-                    <div class="delta-label">SMAP Rootzone Soil Moisture</div>
+                    <div class="delta-label" data-i18n="lbl_delta_sm">SMAP Rootzone Soil Moisture</div>
                     <div class="delta-current" id="deltaSmNow">--</div>
                     <div class="delta-sub" id="deltaSmSub">30d Ago: --</div>
                 </div>
                 <div class="delta-box">
-                    <div class="delta-label">Landsat 8/9 Canopy NDVI</div>
+                    <div class="delta-label" data-i18n="lbl_delta_ndvi">Landsat 8/9 Canopy NDVI</div>
                     <div class="delta-current" id="deltaNdviNow">--</div>
                     <div class="delta-sub" id="deltaNdviSub">30d Ago: --</div>
                 </div>
                 <div class="delta-box">
-                    <div class="delta-label">Water Stress Index (0–100)</div>
+                    <div class="delta-label" data-i18n="lbl_delta_score">Water Stress Index (0–100)</div>
                     <div class="delta-current" id="deltaScoreNow">--</div>
                     <div class="delta-sub" id="deltaScoreSub">30d Ago: --</div>
                 </div>
@@ -1443,6 +1443,6 @@
         </div>
     </div>
 
-    <script src="/app.js?v=2026.11.15.v5"></script>
+    <script src="/app.js?v=2026.11.15.v6"></script>
 </body>
 </html>

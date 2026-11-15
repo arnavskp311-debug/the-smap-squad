@@ -156,6 +156,68 @@ const HOTSPOT_DISTRICTS = {
     ]
 };
 
+const DISTRICT_NAMES_LOCALIZED = {
+    "Bathinda": { pa: "ਬਠਿੰਡਾ", hi: "बठिंडा", en: "Bathinda" },
+    "Amritsar": { pa: "ਅੰਮ੍ਰਿਤਸਰ", hi: "अमृतसर", en: "Amritsar" },
+    "Barnala": { pa: "ਬਰਨਾਲਾ", hi: "बरनाला", en: "Barnala" },
+    "Faridkot": { pa: "ਫ਼ਰੀਦਕੋਟ", hi: "फरीदकोट", en: "Faridkot" },
+    "Fatehgarh Sahib": { pa: "ਫ਼ਤਹਿਗੜ੍ਹ ਸਾਹਿਬ", hi: "फतेहगढ़ साहिब", en: "Fatehgarh Sahib" },
+    "Fazilka": { pa: "ਫ਼ਾਜ਼ਿਲਕਾ", hi: "फाजिल्का", en: "Fazilka" },
+    "Ferozepur": { pa: "ਫ਼ਿਰੋਜ਼ਪੁਰ", hi: "फिरोजपुर", en: "Ferozepur" },
+    "Gurdaspur": { pa: "ਗੁਰਦਾਸਪੁਰ", hi: "गुरदासपुर", en: "Gurdaspur" },
+    "Hoshiarpur": { pa: "ਹੁਸ਼ਿਆਰਪੁਰ", hi: "होशियारपुर", en: "Hoshiarpur" },
+    "Jalandhar": { pa: "ਜਲੰਧਰ", hi: "जालंधर", en: "Jalandhar" },
+    "Kapurthala": { pa: "ਕਪੂਰਥਲਾ", hi: "कपूरथला", en: "Kapurthala" },
+    "Ludhiana": { pa: "ਲੁਧਿਆਣਾ", hi: "लुधियाना", en: "Ludhiana" },
+    "Mansa": { pa: "ਮਾਨਸਾ", hi: "मानसा", en: "Mansa" },
+    "Moga": { pa: "ਮੋਗਾ", hi: "मोगा", en: "Moga" },
+    "Pathankot": { pa: "ਪਠਾਨਕੋਟ", hi: "पठानकोट", en: "Pathankot" },
+    "Patiala": { pa: "ਪਟਿਆਲਾ", hi: "पटियाला", en: "Patiala" },
+    "Rupnagar": { pa: "ਰੂਪਨਗਰ", hi: "रूपनगर", en: "Rupnagar" },
+    "S.A.S. Nagar": { pa: "ਐੱਸ.ਏ.ਐੱਸ. ਨਗਰ (ਮੋਹਾਲੀ)", hi: "एस.ए.एस. नगर (मोहाली)", en: "S.A.S. Nagar (Mohali)" },
+    "Sangrur": { pa: "ਸੰਗਰੂਰ", hi: "संगरूर", en: "Sangrur" },
+    "Shahid Bhagat Singh Nagar": { pa: "ਸ਼ਹੀਦ ਭਗਤ ਸਿੰਘ ਨਗਰ", hi: "शहीद भगत सिंह नगर", en: "SBS Nagar" },
+    "Sri Muktsar Sahib": { pa: "ਸ੍ਰੀ ਮੁਕਤਸਰ ਸਾਹਿਬ", hi: "श्री मुक्तसर साहिब", en: "Sri Muktsar Sahib" },
+    "Tarn Taran": { pa: "ਤਰਨ ਤਾਰਨ", hi: "तरन तारण", en: "Tarn Taran" }
+};
+
+function getLocalizedDistrictName(district, lang) {
+    if (DISTRICT_NAMES_LOCALIZED[district] && DISTRICT_NAMES_LOCALIZED[district][lang]) {
+        return DISTRICT_NAMES_LOCALIZED[district][lang];
+    }
+    return district;
+}
+
+function getZoneBadgeText(zone, lang) {
+    if (lang === "pa") {
+        if (zone === "Red") return "ਲਾਲ ਜੋਖਮ ਜ਼ੋਨ";
+        if (zone === "Yellow") return "ਪੀਲਾ ਦਰਮਿਆਨਾ ਜ਼ੋਨ";
+        return "ਹਰਾ ਸੁਰੱਖਿਅਤ ਜ਼ੋਨ";
+    }
+    if (lang === "hi") {
+        if (zone === "Red") return "लाल जोखिम क्षेत्र";
+        if (zone === "Yellow") return "पीला मध्यम क्षेत्र";
+        return "हरा सुरक्षित क्षेत्र";
+    }
+    if (zone === "Red") return "Red Risk Zone";
+    if (zone === "Yellow") return "Yellow Warning Zone";
+    return "Green Safe Zone";
+}
+
+function updateThemeButtonText() {
+    const current = document.documentElement.getAttribute("data-theme") || "light";
+    const themeIcon = document.getElementById("themeIcon");
+    const themeText = document.getElementById("themeText");
+    if (!themeIcon || !themeText) return;
+    if (current === "light") {
+        themeIcon.innerText = "🌙";
+        themeText.innerText = currentLang === "pa" ? "ਡਾਰਕ" : (currentLang === "hi" ? "डार्क" : "Dark");
+    } else {
+        themeIcon.innerText = "☀️";
+        themeText.innerText = currentLang === "pa" ? "ਲਾਈਟ" : (currentLang === "hi" ? "लाइट" : "Light");
+    }
+}
+
 function populateHotspotDistricts(hotspotKey, selectedDistrict = null) {
     const districtSelect = document.getElementById("districtSelect");
     if (!districtSelect) return;
@@ -164,7 +226,18 @@ function populateHotspotDistricts(hotspotKey, selectedDistrict = null) {
     list.forEach(item => {
         const opt = document.createElement("option");
         opt.value = item.value;
-        opt.textContent = item.label;
+        if (hotspotKey === "Punjab") {
+            const locName = getLocalizedDistrictName(item.value, currentLang);
+            if (currentLang === "pa") {
+                opt.textContent = `ਪੰਜਾਬ - ${locName}`;
+            } else if (currentLang === "hi") {
+                opt.textContent = `पंजाब - ${locName}`;
+            } else {
+                opt.textContent = item.label;
+            }
+        } else {
+            opt.textContent = item.label;
+        }
         if (selectedDistrict && opt.value === selectedDistrict) {
             opt.selected = true;
         }
@@ -228,17 +301,7 @@ function applyTheme(theme) {
     document.documentElement.setAttribute("data-theme", theme);
     localStorage.setItem("pww_theme", theme);
 
-    const themeIcon = document.getElementById("themeIcon");
-    const themeText = document.getElementById("themeText");
-    if (themeIcon && themeText) {
-        if (theme === "light") {
-            themeIcon.innerText = "🌙";
-            themeText.innerText = "Dark";
-        } else {
-            themeIcon.innerText = "☀️";
-            themeText.innerText = "Light";
-        }
-    }
+    updateThemeButtonText();
 
     // Immediately re-render forecast chart with theme-aligned colors
     if (lastTelemetryData && lastTelemetryData.chart_data) {
@@ -257,6 +320,33 @@ const I18N_DICTIONARY = {
         "nav_report": "Farmer Identity Card",
         "nav_team": "Team",
         "nav_about": "About",
+        "nav_signin": "Sign In",
+        "lbl_platform_tools": "Platform Tools",
+        "lbl_basemap": "🛰️ Basemap Layer:",
+        "layer_dark_matter": "🗺️ Dark Matter",
+        "layer_satellite": "🌍 Satellite (Esri)",
+        "layer_nasa_gibs": "🛰️ NASA GIBS Live",
+        "layer_black_marble": "🌌 NASA Black Marble",
+        "lbl_water_stress_score": "Water Stress Score",
+        "lbl_comp_water_stress": "Composite Water Stress Index (0–100)",
+        "lbl_soil_quality_status": "Soil Quality Status",
+        "lbl_smap_landsat_corr": "SMAP vs Landsat NDVI/SAVI Correlation",
+        "lbl_farmer_advisory": "Farmer Advisory & Action",
+        "btn_whatsapp": "💬 WhatsApp",
+        "btn_listen_voice": "🔊 Listen Voice",
+        "lbl_delta_sm": "SMAP Rootzone Soil Moisture",
+        "lbl_delta_ndvi": "Landsat 8/9 Canopy NDVI",
+        "lbl_delta_score": "Water Stress Index (0–100)",
+        "lbl_30d_ago": "30d Ago",
+        "zone_red": "Red Risk Zone",
+        "zone_yellow": "Yellow Warning Zone",
+        "zone_green": "Green Safe Zone",
+        "badge_optimal": "Optimal",
+        "badge_critical": "Critical",
+        "soil_optimal_text": "Optimal Soil Health & Carbon Balance",
+        "soil_critical_text": "Alert: Low Organic Carbon & Alkaline",
+        "theme_light": "Light",
+        "theme_dark": "Dark",
         "pre_lang_title": "🌐 Choose Your Language / भाषा चुनें / ਭਾਸ਼ਾ ਚੁਣੋ:",
         "auth_title": "Mandatory Farmer & Sentinel Access",
         "auth_subtitle": "Access to Punjab's live NASA SMAP telemetry, GIS spatial maps, and groundwater advisories requires verified farmer registration or direct sign-in.",
@@ -307,14 +397,41 @@ const I18N_DICTIONARY = {
         "guide_c6_tip": "💡 <b>Tip:</b> Use the top navbar buttons to toggle language or theme with a single click."
     },
     "hi": {
-        "nav_guide": "मार्गदर्शिका",
+        "nav_guide": "यूज़र गाइड",
         "nav_mission": "मिशन कंट्रोल",
         "nav_dashboard": "डैशबोर्ड",
         "nav_forecast": "7-दिवसीय पूर्वानुमान",
         "nav_agrisense": "एग्रीसेंस",
         "nav_report": "किसान पहचान पत्र",
         "nav_team": "टीम",
-        "nav_about": "के बारे में",
+        "nav_about": "परिचय",
+        "nav_signin": "साइन इन",
+        "lbl_platform_tools": "प्लेटफ़ॉर्म टूल्स",
+        "lbl_basemap": "🛰️ बेसमैप परत:",
+        "layer_dark_matter": "🗺️ डार्क मैटर",
+        "layer_satellite": "🌍 सैटेलाइट (एजरी)",
+        "layer_nasa_gibs": "🛰️ नासा गिब्स लाइव",
+        "layer_black_marble": "🌌 नासा ब्लैक मार्बल",
+        "lbl_water_stress_score": "जल तनाव स्कोर",
+        "lbl_comp_water_stress": "संयुक्त जल तनाव सूचकांक (0–100)",
+        "lbl_soil_quality_status": "मिट्टी की गुणवत्ता स्थिति",
+        "lbl_smap_landsat_corr": "SMAP बनाम लैंडसैट NDVI/SAVI सहसंबंध",
+        "lbl_farmer_advisory": "किसान सलाह एवं कार्रवाई",
+        "btn_whatsapp": "💬 व्हाट्सएप",
+        "btn_listen_voice": "🔊 आवाज सुनें",
+        "lbl_delta_sm": "SMAP रूटज़ोन मिट्टी की नमी",
+        "lbl_delta_ndvi": "लैंडसैट 8/9 कैनोपी NDVI",
+        "lbl_delta_score": "जल तनाव सूचकांक (0–100)",
+        "lbl_30d_ago": "30 दिन पूर्व",
+        "zone_red": "लाल जोखिम क्षेत्र",
+        "zone_yellow": "पीला मध्यम क्षेत्र",
+        "zone_green": "हरा सुरक्षित क्षेत्र",
+        "badge_optimal": "उत्कृष्ट",
+        "badge_critical": "गंभीर",
+        "soil_optimal_text": "उत्कृष्ट मिट्टी स्वास्थ्य एवं कार्बन संतुलन",
+        "soil_critical_text": "चेतावनी: कम जैविक कार्बन एवं क्षारीयता",
+        "theme_light": "लाइट",
+        "theme_dark": "डार्क",
         "pre_lang_title": "🌐 अपनी पसंदीदा भाषा चुनें / Choose Language:",
         "auth_title": "किसान एवं प्रहरी आधिकारिक पोर्टल",
         "auth_subtitle": "पंजाब की लाइव नासा SMAP टेलीमेट्री, उपग्रह नक्शे और सटीक भूजल सलाहकारों तक पहुंच के लिए किसान पंजीकरण या सीधा साइन-इन अनिवार्य है।",
@@ -373,6 +490,33 @@ const I18N_DICTIONARY = {
         "nav_report": "ਕਿਸਾਨ ਪਛਾਣ ਪੱਤਰ",
         "nav_team": "ਟੀਮ",
         "nav_about": "ਬਾਰੇ",
+        "nav_signin": "ਸਾਈਨ ਇਨ",
+        "lbl_platform_tools": "ਪਲੇਟਫਾਰਮ ਟੂਲਜ਼",
+        "lbl_basemap": "🛰️ ਬੇਸਮੈਪ ਪਰਤ:",
+        "layer_dark_matter": "🗺️ ਡਾਰਕ ਮੈਟਰ",
+        "layer_satellite": "🌍 ਸੈਟੇਲਾਈਟ (ਐਸਰੀ)",
+        "layer_nasa_gibs": "🛰️ ਨਾਸਾ ਜਿਬਸ ਲਾਈਵ",
+        "layer_black_marble": "🌌 ਨਾਸਾ ਬਲੈਕ ਮਾਰਬਲ",
+        "lbl_water_stress_score": "ਵਾਟਰ ਸਟ੍ਰੈਸ ਸਕੋਰ",
+        "lbl_comp_water_stress": "ਸੰਯੁਕਤ ਵਾਟਰ ਸਟ੍ਰੈਸ ਇੰਡੈਕਸ (0–100)",
+        "lbl_soil_quality_status": "ਮਿੱਟੀ ਦੀ ਗੁਣਵੱਤਾ ਦੀ ਸਥਿਤੀ",
+        "lbl_smap_landsat_corr": "SMAP ਬਨਾਮ ਲੈਂਡਸੈਟ NDVI/SAVI ਸਹਿ-ਸੰਬੰਧ",
+        "lbl_farmer_advisory": "ਕਿਸਾਨ ਸਲਾਹ ਅਤੇ ਕਾਰਵਾਈ",
+        "btn_whatsapp": "💬 ਵਟਸਐਪ",
+        "btn_listen_voice": "🔊 ਆਵਾਜ਼ ਸੁਣੋ",
+        "lbl_delta_sm": "SMAP ਰੂਟਜ਼ੋਨ ਮਿੱਟੀ ਦੀ ਨਮੀ",
+        "lbl_delta_ndvi": "ਲੈਂਡਸੈਟ 8/9 ਕੈਨੋਪੀ NDVI",
+        "lbl_delta_score": "ਵਾਟਰ ਸਟ੍ਰੈਸ ਇੰਡੈਕਸ (0–100)",
+        "lbl_30d_ago": "30 ਦਿਨ ਪਹਿਲਾਂ",
+        "zone_red": "ਲਾਲ ਜੋਖਮ ਜ਼ੋਨ",
+        "zone_yellow": "ਪੀਲਾ ਦਰਮਿਆਨਾ ਜ਼ੋਨ",
+        "zone_green": "ਹਰਾ ਸੁਰੱਖਿਅਤ ਜ਼ੋਨ",
+        "badge_optimal": "ਸਰਵੋਤਮ",
+        "badge_critical": "ਗੰਭੀਰ",
+        "soil_optimal_text": "ਸਰਵੋਤਮ ਮਿੱਟੀ ਸਿਹਤ ਅਤੇ ਕਾਰਬਨ ਸੰਤੁਲਨ",
+        "soil_critical_text": "ਚੇਤਾਵਨੀ: ਘੱਟ ਜੈਵਿਕ ਕਾਰਬਨ ਅਤੇ ਖਾਰੀਤਾ",
+        "theme_light": "ਲਾਈਟ",
+        "theme_dark": "ਡਾਰਕ",
         "pre_lang_title": "🌐 ਆਪਣੀ ਪਸੰਦੀਦਾ ਭਾਸ਼ਾ ਚੁਣੋ / Choose Language:",
         "auth_title": "ਕਿਸਾਨ ਅਤੇ ਪਹਿਰੇਦਾਰ ਅਧਿਕਾਰਤ ਪੋਰਟਲ",
         "auth_subtitle": "ਪੰਜਾਬ ਦੀ ਲਾਈਵ ਨਾਸਾ SMAP ਟੈਲੀਮੈਟਰੀ, ਉਪਗ੍ਰਹਿ ਨਕਸ਼ੇ ਅਤੇ ਧਰਤੀ ਹੇਠਲੇ ਪਾਣੀ ਦੀਆਂ ਸਲਾਹਾਂ ਲਈ ਕਿਸਾਨ ਰਜਿਸਟ੍ਰੇਸ਼ਨ ਜਾਂ ਸਿੱਧਾ ਸਾਈਨ-ਇਨ ਲਾਜ਼ਮੀ ਹੈ।",
@@ -453,6 +597,50 @@ function applyLanguage(lang) {
                 el.innerHTML = dict[key];
             }
         });
+    }
+
+    // Translate Hotspot dropdown options
+    const hotspotSelect = document.getElementById("hotspotSelect");
+    if (hotspotSelect) {
+        const hotspotTranslations = {
+            "en": {
+                "Punjab": "🌾 Punjab (India)",
+                "Central Valley": "🏜️ Central Valley (USA)",
+                "Nile Delta": "🌊 Nile Delta (Egypt)",
+                "Murray-Darling": "🚜 Murray-Darling (Australia)",
+                "Indo-Gangetic": "🏔️ Indo-Gangetic Basin (South Asia)"
+            },
+            "hi": {
+                "Punjab": "🌾 पंजाब (भारत)",
+                "Central Valley": "🏜️ सेंट्रल वैली (USA)",
+                "Nile Delta": "🌊 नील डेल्टा (मिस्र)",
+                "Murray-Darling": "🚜 मरे-डार्लिंग (ऑस्ट्रेलिया)",
+                "Indo-Gangetic": "🏔️ सिंधु-गंगा बेसिन (दक्षिण एशिया)"
+            },
+            "pa": {
+                "Punjab": "🌾 ਪੰਜਾਬ (ਭਾਰਤ)",
+                "Central Valley": "🏜️ ਸੈਂਟਰਲ ਵੈਲੀ (USA)",
+                "Nile Delta": "🌊 ਨੀਲ ਡੈਲਟਾ (ਮਿਸਰ)",
+                "Murray-Darling": "🚜 ਮਰੇ-ਡਾਰਲਿੰਗ (ਆਸਟ੍ਰੇਲੀਆ)",
+                "Indo-Gangetic": "🏔️ ਸਿੰਧੂ-ਗੰਗਾ ਬੇਸਿਨ (ਦੱਖਣੀ ਏਸ਼ੀਆ)"
+            }
+        };
+        const ht = hotspotTranslations[lang] || hotspotTranslations["en"];
+        Array.from(hotspotSelect.options).forEach(opt => {
+            if (ht[opt.value]) opt.textContent = ht[opt.value];
+        });
+    }
+
+    // Refresh district dropdown with translated names
+    const currentHotspot = hotspotSelect ? hotspotSelect.value : "Punjab";
+    populateHotspotDistricts(currentHotspot, currentDistrict);
+
+    // Refresh theme text in selected language
+    updateThemeButtonText();
+
+    // Re-render current telemetry in memory if available
+    if (lastTelemetryData) {
+        renderTelemetry(lastTelemetryData);
     }
 
     // Refresh telemetry in new language
@@ -731,7 +919,7 @@ function setupEventListeners() {
         if ('speechSynthesis' in window) {
             window.speechSynthesis.cancel();
             const utter = new SpeechSynthesisUtterance(text);
-            utter.lang = currentLang === "hi" || currentLang === "pa" ? "hi-IN" : "en-US";
+            utter.lang = currentLang === "pa" ? "pa-IN" : (currentLang === "hi" ? "hi-IN" : "en-US");
             utter.rate = 0.95;
             window.speechSynthesis.speak(utter);
         } else {
@@ -740,48 +928,73 @@ function setupEventListeners() {
     });
 }
 
+// Static Telemetry Dataset Cache per Language
+window._telemetryCacheByLang = window._telemetryCacheByLang || {};
+
 // Load District Telemetry
-function loadDistrictData(district) {
+async function loadDistrictData(district) {
     currentDistrict = district;
-    fetch(`/api/telemetry?district=${encodeURIComponent(district)}&lang=${currentLang}`)
-        .then(res => {
-            if (!res.ok) throw new Error("HTTP " + res.status);
-            return res.json();
-        })
-        .then(data => {
+    const lang = (currentLang === "hi" || currentLang === "pa") ? currentLang : "en";
+    let loaded = false;
+
+    // 1. Try live API (FastAPI backend when running locally)
+    try {
+        const res = await fetch(`/api/telemetry?district=${encodeURIComponent(district)}&lang=${lang}`);
+        if (res.ok) {
+            const data = await res.json();
             lastTelemetryData = data;
             renderTelemetry(data);
-        })
-        .catch(async err => {
-            console.warn("API telemetry fetch error, trying static fallback:", err);
-            try {
-                if (!window._staticTelemetryCache) {
-                    const r = await fetch("data/telemetry_all.json");
-                    window._staticTelemetryCache = await r.json();
+            loaded = true;
+        }
+    } catch (e) {
+        // Fallback to static precomputed localized JSON
+    }
+
+    // 2. Static Precomputed Fallback (100% resilient on Netlify static host)
+    if (!loaded) {
+        try {
+            if (!window._telemetryCacheByLang[lang]) {
+                const r = await fetch(`data/telemetry_${lang}.json`);
+                if (r.ok) {
+                    window._telemetryCacheByLang[lang] = await r.json();
+                } else {
+                    const fallbackR = await fetch("data/telemetry_all.json");
+                    window._telemetryCacheByLang[lang] = await fallbackR.json();
                 }
-                const fallbackData = window._staticTelemetryCache[district] || window._staticTelemetryCache["Bathinda"];
-                if (fallbackData) {
-                    lastTelemetryData = fallbackData;
-                    renderTelemetry(fallbackData);
-                }
-            } catch (fallbackErr) {
-                console.error("Static telemetry fallback failed:", fallbackErr);
             }
-        });
+            const dataset = window._telemetryCacheByLang[lang];
+            const fallbackData = dataset[district] || dataset["Bathinda"] || Object.values(dataset)[0];
+            if (fallbackData) {
+                lastTelemetryData = fallbackData;
+                renderTelemetry(fallbackData);
+            }
+        } catch (staticErr) {
+            console.error("Static telemetry fallback error:", staticErr);
+        }
+    }
 }
 
 // Render Telemetry Data into DOM
 function renderTelemetry(data) {
-    // 1. Map Updates
+    if (!data) return;
+    const lang = (currentLang === "hi" || currentLang === "pa") ? currentLang : "en";
+
+    // 1. Map Updates & Marker Popup
     if (map && marker) {
         map.flyTo([data.lat, data.lon], data.is_hotspot ? 6 : 8, { duration: 0.8 });
         marker.setLatLng([data.lat, data.lon]);
+        
+        const locDistrict = getLocalizedDistrictName(data.district, lang);
+        const scoreLabel = lang === "pa" ? "ਤਣਾਅ ਸਕੋਰ" : (lang === "hi" ? "तनाव स्कोर" : "Stress Score");
+        const centroidLabel = lang === "pa" ? "ਕੇਂਦਰ ਬਿੰਦੂ" : (lang === "hi" ? "केन्द्रक" : "Centroid");
+        const zoneBadge = getZoneBadgeText(data.stress.zone, lang);
+
         marker.bindPopup(`
             <div class="marker-popup-card">
-                <div style="font-weight:700; color:#F59E0B; font-size:1rem; margin-bottom:4px;">📍 ${data.district}</div>
-                <div style="font-size:0.85rem; color:#E2E8F0; margin-bottom:4px;">Stress Score: <b>${data.stress.score}/100</b></div>
-                <div><span class="badge ${data.stress.zone === 'Red' ? 'badge-critical' : (data.stress.zone === 'Yellow' ? 'badge-warning' : 'badge-safe')}">${data.stress.zone} Risk Zone</span></div>
-                <div style="font-size:0.75rem; color:#94A3B8; margin-top:6px;">Centroid: ${data.lat.toFixed(4)}°N, ${data.lon.toFixed(4)}°E</div>
+                <div style="font-weight:700; color:#F59E0B; font-size:1rem; margin-bottom:4px;">📍 ${locDistrict}</div>
+                <div style="font-size:0.85rem; color:#E2E8F0; margin-bottom:4px;">${scoreLabel}: <b>${data.stress.score}/100</b></div>
+                <div><span class="badge ${data.stress.zone === 'Red' ? 'badge-critical' : (data.stress.zone === 'Yellow' ? 'badge-warning' : 'badge-safe')}">${zoneBadge}</span></div>
+                <div style="font-size:0.75rem; color:#94A3B8; margin-top:6px;">${centroidLabel}: ${data.lat.toFixed(4)}°N, ${data.lon.toFixed(4)}°E</div>
             </div>
         `);
     }
@@ -789,21 +1002,31 @@ function renderTelemetry(data) {
     // 2. Stress Card
     const stressScoreVal = document.getElementById("stressScoreVal");
     const stressBadge = document.getElementById("stressBadge");
-    stressScoreVal.innerText = `${data.stress.score}/100`;
-    stressBadge.innerText = `${data.stress.zone} Zone`;
-    stressBadge.className = `badge ${data.stress.zone === "Red" ? "badge-critical" : (data.stress.zone === "Yellow" ? "badge-warning" : "badge-safe")}`;
+    if (stressScoreVal) stressScoreVal.innerText = `${data.stress.score}/100`;
+    if (stressBadge) {
+        stressBadge.innerText = getZoneBadgeText(data.stress.zone, lang);
+        stressBadge.className = `badge ${data.stress.zone === "Red" ? "badge-critical" : (data.stress.zone === "Yellow" ? "badge-warning" : "badge-safe")}`;
+    }
 
     // 3. Soil Status
     const soilBadge = document.getElementById("soilBadge");
     const soilStatusText = document.getElementById("soilStatusText");
-    if (data.soil_diagnosis.alert_triggered) {
-        soilBadge.innerText = "Critical";
-        soilBadge.className = "badge badge-critical";
-        soilStatusText.innerText = "Alert: Low Organic Carbon & Alkaline";
-    } else {
-        soilBadge.innerText = "Optimal";
-        soilBadge.className = "badge badge-safe";
-        soilStatusText.innerText = "Optimal Soil Health & Carbon Balance";
+    const isAlert = Boolean(data.soil_diagnosis && data.soil_diagnosis.alert_triggered);
+    if (soilBadge) {
+        if (isAlert) {
+            soilBadge.innerText = lang === "pa" ? "ਗੰਭੀਰ" : (lang === "hi" ? "गंभीर" : "Critical");
+            soilBadge.className = "badge badge-critical";
+        } else {
+            soilBadge.innerText = lang === "pa" ? "ਸਰਵੋਤਮ" : (lang === "hi" ? "उत्कृष्ट" : "Optimal");
+            soilBadge.className = "badge badge-safe";
+        }
+    }
+    if (soilStatusText) {
+        if (isAlert) {
+            soilStatusText.innerText = lang === "pa" ? "ਚੇਤਾਵਨੀ: ਘੱਟ ਜੈਵਿਕ ਕਾਰਬਨ ਅਤੇ ਖਾਰੀਤਾ" : (lang === "hi" ? "चेतावनी: कम जैविक कार्बन एवं क्षारीयता" : "Alert: Low Organic Carbon & Alkaline");
+        } else {
+            soilStatusText.innerText = lang === "pa" ? "ਸਰਵੋਤਮ ਮਿੱਟੀ ਸਿਹਤ ਅਤੇ ਕਾਰਬਨ ਸੰਤੁਲਨ" : (lang === "hi" ? "उत्कृष्ट मिट्टी स्वास्थ्य एवं कार्बन संतुलन" : "Optimal Soil Health & Carbon Balance");
+        }
     }
 
     // 4. Advisory & WhatsApp
@@ -813,22 +1036,39 @@ function renderTelemetry(data) {
     }
     const advLine1 = document.getElementById("advLine1");
     const advLine2 = document.getElementById("advLine2");
-    advLine1.innerText = `• ${data.advisory.line1}`;
-    advLine2.innerText = `• ${data.advisory.line2}`;
+    if (advLine1 && advLine2 && data.advisory) {
+        advLine1.innerText = `• ${data.advisory.line1}`;
+        advLine2.innerText = `• ${data.advisory.line2}`;
+    }
 
-    const waMsg = `🌾 Punjab Farm Water Watch Alert - ${data.district}\nWater Stress: ${data.stress.score}/100 (${data.stress.zone})\n1. ${data.advisory.line1}\n2. ${data.advisory.line2}\nNASA Live Verified.`;
-    document.getElementById("btnWhatsApp").href = `https://wa.me/?text=${encodeURIComponent(waMsg)}`;
+    const waPrefix = lang === "pa" ? "🌾 ਪੰਜਾਬ ਫਾਰਮ ਵਾਟਰ ਵਾਚ ਅਲਰਟ" : (lang === "hi" ? "🌾 पंजाब फार्म वाटर वॉच अलर्ट" : "🌾 Punjab Farm Water Watch Alert");
+    const waStressLabel = lang === "pa" ? "ਵਾਟਰ ਸਟ੍ਰੈਸ" : (lang === "hi" ? "जल तनाव" : "Water Stress");
+    const waVerified = lang === "pa" ? "ਨਾਸਾ ਲਾਈਵ ਪ੍ਰਮਾਣਿਤ।" : (lang === "hi" ? "नासा लाइव प्रमाणित।" : "NASA Live Verified.");
+    const locDistrictName = getLocalizedDistrictName(data.district, lang);
+    const waMsg = `${waPrefix} - ${locDistrictName}\n${waStressLabel}: ${data.stress.score}/100 (${data.stress.zone})\n1. ${data.advisory.line1}\n2. ${data.advisory.line2}\n${waVerified}`;
+    const btnWhatsApp = document.getElementById("btnWhatsApp");
+    if (btnWhatsApp) {
+        btnWhatsApp.href = `https://wa.me/?text=${encodeURIComponent(waMsg)}`;
+    }
 
     // 5. Delta Cards
     const d = data.deltas;
-    document.getElementById("deltaSmNow").innerHTML = `${d.sm_now} <span style="font-size:0.82rem; color:#94A3B8;">m³/m³</span>`;
-    document.getElementById("deltaSmSub").innerHTML = `30d Ago: ${d.sm_old} | <b style="color:${d.sm_diff < -0.02 ? '#DC2626' : '#16A34A'};">${d.sm_diff > 0 ? '+' : ''}${d.sm_diff}</b>`;
+    const agoLabel = lang === "pa" ? "30 ਦਿਨ ਪਹਿਲਾਂ" : (lang === "hi" ? "30 दिन पूर्व" : "30d Ago");
+    const ptsUnit = lang === "pa" ? "ਅੰਕ" : (lang === "hi" ? "अंक" : "pts");
+    const deltaSmNow = document.getElementById("deltaSmNow");
+    const deltaSmSub = document.getElementById("deltaSmSub");
+    if (deltaSmNow) deltaSmNow.innerHTML = `${d.sm_now} <span style="font-size:0.82rem; color:#94A3B8;">m³/m³</span>`;
+    if (deltaSmSub) deltaSmSub.innerHTML = `${agoLabel}: ${d.sm_old} | <b style="color:${d.sm_diff < -0.02 ? '#DC2626' : '#16A34A'};">${d.sm_diff > 0 ? '+' : ''}${d.sm_diff}</b>`;
 
-    document.getElementById("deltaNdviNow").innerText = d.ndvi_now;
-    document.getElementById("deltaNdviSub").innerHTML = `30d Ago: ${d.ndvi_old} | <b style="color:${d.ndvi_diff < -0.04 ? '#DC2626' : '#16A34A'};">${d.ndvi_diff > 0 ? '+' : ''}${d.ndvi_diff}</b>`;
+    const deltaNdviNow = document.getElementById("deltaNdviNow");
+    const deltaNdviSub = document.getElementById("deltaNdviSub");
+    if (deltaNdviNow) deltaNdviNow.innerText = d.ndvi_now;
+    if (deltaNdviSub) deltaNdviSub.innerHTML = `${agoLabel}: ${d.ndvi_old} | <b style="color:${d.ndvi_diff < -0.04 ? '#DC2626' : '#16A34A'};">${d.ndvi_diff > 0 ? '+' : ''}${d.ndvi_diff}</b>`;
 
-    document.getElementById("deltaScoreNow").innerHTML = `${d.score_now} <span style="font-size:0.82rem; color:#94A3B8;">/ 100</span>`;
-    document.getElementById("deltaScoreSub").innerHTML = `30d Ago: ${d.score_old} | <b style="color:${d.score_diff > 5 ? '#DC2626' : '#16A34A'};">${d.score_diff > 0 ? '+' : ''}${d.score_diff} pts</b>`;
+    const deltaScoreNow = document.getElementById("deltaScoreNow");
+    const deltaScoreSub = document.getElementById("deltaScoreSub");
+    if (deltaScoreNow) deltaScoreNow.innerHTML = `${d.score_now} <span style="font-size:0.82rem; color:#94A3B8;">/ 100</span>`;
+    if (deltaScoreSub) deltaScoreSub.innerHTML = `${agoLabel}: ${d.score_old} | <b style="color:${d.score_diff > 5 ? '#DC2626' : '#16A34A'};">${d.score_diff > 0 ? '+' : ''}${d.score_diff} ${ptsUnit}</b>`;
 
     // 6. Forecast Chart & Dashboard Analytics
     renderForecastChart(data.chart_data);
@@ -839,14 +1079,16 @@ function renderTelemetry(data) {
     renderCalendar(data.calendar_days);
 
     // 8. Download Dossier Button
-    document.getElementById("btnDownloadReport").href = `/api/report/${encodeURIComponent(data.district)}`;
+    const btnDownload = document.getElementById("btnDownloadReport");
+    if (btnDownload) btnDownload.href = `/api/report/${encodeURIComponent(data.district)}`;
 
     // 9. Update Report Preview
     fetch(`/api/report/${encodeURIComponent(data.district)}`)
         .then(res => res.text())
         .then(txt => {
-            document.getElementById("reportPreview").innerText = txt;
-        });
+            const reportEl = document.getElementById("reportPreview");
+            if (reportEl) reportEl.innerText = txt;
+        }).catch(() => {});
 
     updateCalculator();
     updateCropSimulator();
