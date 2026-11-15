@@ -313,6 +313,10 @@ def send_verification_email(email: str, name: str, token: str) -> dict:
                     "template_params": {
                         "to_name": name,
                         "to_email": email,
+                        "user_email": email,
+                        "email": email,
+                        "from_name": "Punjab Farm Water Watch",
+                        "reply_to": "support@punjabfarms.gov.in",
                         "verification_link": verify_url,
                         "verify_url": verify_url
                     }
@@ -520,20 +524,11 @@ def signup_user(req: AuthRequest):
     # Trigger transactional verification email directly to inbox
     send_verification_email(email, user["name"], verification_token)
 
-    # Trigger SMS OTP verification directly to phone
-    send_sms_otp(user["phone"], sms_otp, user["name"])
-
-    masked_phone = user["phone"]
-    if len(masked_phone) >= 10:
-        masked_phone = f"+91 ******{masked_phone[-4:]}"
-
     return {
         "status": "pending_verification",
         "verification_status": "pending_verification",
-        "message": f"सुरक्षा सत्यापन: सत्यापन लिंक आपके ईमेल ({email}) पर भेजा गया है और 6-अंकों का OTP कोड आपके मोबाइल ({masked_phone}) पर SMS किया गया है।",
-        "email": email,
-        "phone_masked": masked_phone,
-        "has_otp": True
+        "message": f"सुरक्षा सत्यापन: सत्यापन लिंक आपके ईमेल ({email}) पर भेज दिया गया है! कृपया अपना इनबॉक्स खोलें और खाते को सक्रिय करने के लिए उस लिंक पर क्लिक करें।",
+        "email": email
     }
 
 
