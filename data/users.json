@@ -19,6 +19,27 @@
     "password_hash": "8a5d9288a2a1075c8b0eb4955afe7348510f8e7b320528fa0508e106b16b2b78",
     "created_at": "2026-11-14T16:11:20.076868"
   },
+  "hjn41101@gmail.com": {
+    "name": "Arnav Sharma",
+    "email": "hjn41101@gmail.com",
+    "phone": "+91 9718227495",
+    "role": "Registered Farmer & Water Sentinel",
+    "district": "Bathinda",
+    "farm_acres": 21.5,
+    "primary_crop": "Vegetables & Kinnow Citrus",
+    "irrigation_source": "Canal Lift + Tubewell",
+    "water_saved_litres": 3870000,
+    "electricity_saved_kwh": 3053,
+    "soil_health_grade": "A (Verified via NASA SMAP)",
+    "member_id": "PWW-2026-PB-5636",
+    "provider": "email",
+    "avatar_initials": "AS",
+    "password_hash": "d5ab58383fe048f832e9083c7831ef0db0c51adefadd235e79a06d603fc22b26",
+    "is_active": false,
+    "email_verified": false,
+    "verification_token": "ab9df0a3b2d188574706f87f7eeefabc9121852d",
+    "created_at": "2026-11-15T08:58:25.177862"
+  },
   "steward@punjab.gov.in": {
     "name": "Amritsar Steward",
     "email": "steward@punjab.gov.in",
@@ -31,13 +52,13 @@
     "water_saved_litres": 1440000,
     "electricity_saved_kwh": 1136,
     "soil_health_grade": "A (Verified via NASA SMAP)",
-    "member_id": "PWW-2026-PB-6171",
+    "member_id": "PWW-2026-PB-1352",
     "provider": "email",
     "avatar_initials": "AS",
     "password_hash": "8a5d9288a2a1075c8b0eb4955afe7348510f8e7b320528fa0508e106b16b2b78",
     "is_active": true,
     "email_verified": true,
-    "verification_token": "759bae8ad1cbb535dae401fa2ac39250d72bbf18",
-    "created_at": "2026-11-15T08:56:56.102367"
+    "verification_token": "4bbaf63bf85807ba814d65f5615dc7780062bd21",
+    "created_at": "2026-11-15T09:05:30.770233"
   }
 }

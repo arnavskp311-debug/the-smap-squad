@@ -42,6 +42,14 @@ from src.advisories.soil_testing_guide import SOIL_TESTING_STEPS, REMEDIES_GUIDE
 
 app = FastAPI(title="Punjab Farm Water Watch", version="2.0.0")
 
+@app.middleware("http")
+async def add_no_cache_headers(request, call_next):
+    response = await call_next(request)
+    response.headers["Cache-Control"] = "no-cache, no-store, must-revalidate"
+    response.headers["Pragma"] = "no-cache"
+    response.headers["Expires"] = "0"
+    return response
+
 # Initialize models
 stress_model = WaterStressModel()
 forecaster = SevenDayMoistureForecaster()
@@ -419,15 +427,13 @@ def signup_user(req: AuthRequest):
 
     # Trigger transactional verification email
     delivery = send_verification_email(email, user["name"], verification_token)
-    verification_link = f"/api/auth/verify?email={email}&token={verification_token}"
 
     return {
         "status": "pending_verification",
         "verification_status": "pending_verification",
-        "message": f"सुरक्षा सत्यापन: आपके ईमेल ({email}) पर वेरिफिकेशन लिंक भेजा गया है! जब तक आप लिंक पर क्लिक करके पुष्टि नहीं करते, खाता निष्क्रिय रहेगा।",
+        "message": f"सुरक्षा सत्यापन: आपके ईमेल ({email}) पर वेरिफिकेशन लिंक भेजा गया है! जब तक आप अपने इनबॉक्स में जाकर लिंक से पुष्टि नहीं करते, खाता सक्रिय नहीं होगा।",
         "email": email,
-        "verification_link": verification_link,
-        "user": user
+        "delivery_status": "dispatched" if delivery.get("sent") else "pending_smtp"
     }
 
 
@@ -488,24 +494,26 @@ def login_user(req: AuthRequest):
         }
     user = users[email]
 
-    # Verify password
+    # Verify password strictly - password is required
     entered_password = (req.password or "").strip()
+    if not entered_password:
+        return {
+            "status": "error",
+            "message": "कृपया खाता पासवर्ड दर्ज करें।"
+        }
     expected_hash = user.get("password_hash")
-    if expected_hash and entered_password:
-        if hash_password(entered_password) != expected_hash:
-            return {
-                "status": "error",
-                "message": "गलत पासवर्ड! कृपया सही पासवर्ड दर्ज करें। बिना सही पासवर्ड के खाता सुरक्षित रहेगा।"
-            }
+    if not expected_hash or hash_password(entered_password) != expected_hash:
+        return {
+            "status": "error",
+            "message": "गलत पासवर्ड! कृपया सही पासवर्ड दर्ज करें। बिना सही पासवर्ड के खाता सुरक्षित रहेगा।"
+        }
 
-    # Verify account activation via email
+    # Verify account activation via email - NEVER leak verification link/token
     if not user.get("is_active", False) or not user.get("email_verified", False):
-        vlink = f"/api/auth/verify?email={email}&token={user.get('verification_token', '')}"
         return {
             "status": "unverified",
-            "message": f"यह खाता अभी निष्क्रिय (Inactive) है! जब तक आप अपनी ईमेल ({email}) पर भेजे गए अप्रूवल लिंक पर क्लिक नहीं करते, लॉगिन नहीं हो सकता।",
-            "email": email,
-            "verification_link": vlink
+            "message": f"यह खाता अभी निष्क्रिय (Inactive) है! जब तक आप अपनी ईमेल ({email}) पर भेजे गए आधिकारिक सत्यापन लिंक पर क्लिक करके पुष्टि नहीं करते, लॉगिन नहीं हो सकता।",
+            "email": email
         }
 
     # Return safe user
