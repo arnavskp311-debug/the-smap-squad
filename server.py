@@ -311,8 +311,10 @@ def send_verification_email(email: str, name: str, token: str) -> dict:
                     "service_id": emailjs_service,
                     "template_id": emailjs_template,
                     "template_params": {
-                        "to_name": name,
                         "name": name,
+                        "to_name": name,
+                        "user_name": name,
+                        "farmer_name": name,
                         "to_email": email,
                         "user_email": email,
                         "email": email,
@@ -320,8 +322,21 @@ def send_verification_email(email: str, name: str, token: str) -> dict:
                         "from_name": "Punjab Farm Water Watch",
                         "reply_to": "support@punjabfarms.gov.in",
                         "verification_link": verify_url,
+                        "verify_link": verify_url,
                         "verify_url": verify_url,
-                        "message": f"नमस्ते {name},\n\nपंजाब फार्म वाटर वॉच में आपका स्वागत है। अपने खाते को सुरक्षित रूप से सक्रिय करने के लिए नीचे दिए गए लिंक पर क्लिक करें:\n{verify_url}\n\nसुरक्षा कारणों से सत्यापन पूर्ण होने तक खाता निष्क्रिय रहेगा।"
+                        "activation_link": verify_url,
+                        "link": verify_url,
+                        "url": verify_url,
+                        "message": f"नमस्ते {name},\n\nपंजाब फार्म वाटर वॉच में आपका स्वागत है।\n\nअपने खाते को सक्रिय (Activate) करने के लिए नीचे दिए गए लिंक पर क्लिक करें:\n{verify_url}\n\nधन्यवाद,\nपंजाब फार्म वाटर वॉच",
+                        "user_message": f"सत्यापन लिंक: {verify_url}",
+                        "content": f"सत्यापन लिंक: {verify_url}",
+                        "body": f"सत्यापन लिंक: {verify_url}",
+                        "description": f"सत्यापन लिंक: {verify_url}",
+                        "html_message": f'<p>सत्यापन लिंक: <a href="{verify_url}">{verify_url}</a></p>',
+                        "html": f'<p>सत्यापन लिंक: <a href="{verify_url}">{verify_url}</a></p>',
+                        "code": verify_url,
+                        "token": token,
+                        "otp": token
                     }
                 }).encode("utf-8"),
                 headers={

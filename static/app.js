@@ -411,6 +411,22 @@ const I18N_DICTIONARY = {
         "pre_lang_title": "🌐 Choose Your Language / भाषा चुनें / ਭਾਸ਼ਾ ਚੁਣੋ:",
         "auth_title": "Mandatory Farmer & Sentinel Access",
         "auth_subtitle": "Access to Punjab's live NASA SMAP telemetry, GIS spatial maps, and groundwater advisories requires verified farmer registration or direct sign-in.",
+        "tab_register_auth": "📝 New Farmer Registration",
+        "tab_login_auth": "🔑 Direct Sign-In",
+        "auth_lbl_name": "Full Name *",
+        "auth_lbl_email": "Email Address *",
+        "auth_lbl_pass": "Create Account Password *",
+        "auth_lbl_phone": "Mobile / WhatsApp No. (For Daily Telemetry Alerts) *",
+        "auth_lbl_acres": "Farm Holding (Acres) *",
+        "auth_lbl_crop": "Primary Cropping Cycle *",
+        "auth_lbl_source": "Tubewell / Irrigation Type *",
+        "auth_btn_register": "Register Account &amp; Unlock Water Pass",
+        "auth_note": "🔒 All farm information is securely cataloged into Punjab Ag-Stack for authentic telemetry.",
+        "login_lbl_email": "Registered Email Address *",
+        "login_lbl_pass": "Account Password *",
+        "login_btn_submit": "Direct Sign-In to Farm Account",
+        "login_no_acc_text": "Don't have an account yet?",
+        "login_switch_register": "Register Your Farm Here",
         "guide_hero_title": "📘 Punjab Farm Water Watch · User Guide",
         "guide_hero_subtitle": "Complete operational manual for farmers, agricultural officers, and water stewards to monitor groundwater, plan precision irrigation, and save power using NASA satellite data.",
         "guide_nav_1": "🛰️ Satellite Map",
@@ -501,6 +517,22 @@ const I18N_DICTIONARY = {
         "pre_lang_title": "🌐 अपनी पसंदीदा भाषा चुनें / Choose Language:",
         "auth_title": "किसान एवं प्रहरी आधिकारिक पोर्टल",
         "auth_subtitle": "पंजाब की लाइव नासा SMAP टेलीमेट्री, उपग्रह नक्शे और सटीक भूजल सलाहकारों तक पहुंच के लिए किसान पंजीकरण या सीधा साइन-इन अनिवार्य है।",
+        "tab_register_auth": "📝 नया किसान पंजीकरण",
+        "tab_login_auth": "🔑 सीधा साइन-इन",
+        "auth_lbl_name": "पूरा नाम *",
+        "auth_lbl_email": "ईमेल पता *",
+        "auth_lbl_pass": "खाता पासवर्ड बनाएं *",
+        "auth_lbl_phone": "मोबाइल / व्हाट्सएप नं. (दैनिक अलर्ट हेतु) *",
+        "auth_lbl_acres": "खेत का आकार (एकड़) *",
+        "auth_lbl_crop": "मुख्य फसल चक्र *",
+        "auth_lbl_source": "ट्यूबवेल / सिंचाई का साधन *",
+        "auth_btn_register": "खाता पंजीकृत करें व वाटर पास प्राप्त करें",
+        "auth_note": "🔒 सभी कृषि जानकारी प्रामाणिक टेलीमेट्री हेतु पंजाब एग-स्टैक में सुरक्षित दर्ज की जाती है।",
+        "login_lbl_email": "पंजीकृत ईमेल पता *",
+        "login_lbl_pass": "खाता पासवर्ड *",
+        "login_btn_submit": "खेत खाते में सीधा साइन-इन करें",
+        "login_no_acc_text": "क्या अभी तक खाता नहीं है?",
+        "login_switch_register": "यहाँ अपना खेत पंजीकृत करें",
         "guide_hero_title": "📘 पंजाब फार्म वाटर वॉच · उपयोगकर्ता मार्गदर्शिका",
         "guide_hero_subtitle": "नासा उपग्रह डेटा का उपयोग करके भूजल की निगरानी, सटीक सिंचाई योजना और बिजली बचाने के लिए किसानों और कृषि अधिकारियों हेतु संपूर्ण मार्गदर्शिका।",
         "guide_nav_1": "🛰️ उपग्रह नक्शा",
@@ -591,6 +623,22 @@ const I18N_DICTIONARY = {
         "pre_lang_title": "🌐 ਆਪਣੀ ਪਸੰਦੀਦਾ ਭਾਸ਼ਾ ਚੁਣੋ / Choose Language:",
         "auth_title": "ਕਿਸਾਨ ਅਤੇ ਪਹਿਰੇਦਾਰ ਅਧਿਕਾਰਤ ਪੋਰਟਲ",
         "auth_subtitle": "ਪੰਜਾਬ ਦੀ ਲਾਈਵ ਨਾਸਾ SMAP ਟੈਲੀਮੈਟਰੀ, ਉਪਗ੍ਰਹਿ ਨਕਸ਼ੇ ਅਤੇ ਧਰਤੀ ਹੇਠਲੇ ਪਾਣੀ ਦੀਆਂ ਸਲਾਹਾਂ ਲਈ ਕਿਸਾਨ ਰਜਿਸਟ੍ਰੇਸ਼ਨ ਜਾਂ ਸਿੱਧਾ ਸਾਈਨ-ਇਨ ਲਾਜ਼ਮੀ ਹੈ।",
+        "tab_register_auth": "📝 ਨਵਾਂ ਕਿਸਾਨ ਰਜਿਸਟ੍ਰੇਸ਼ਨ",
+        "tab_login_auth": "🔑 ਸਿੱਧਾ ਸਾਈਨ-ਇਨ",
+        "auth_lbl_name": "ਪੂਰਾ ਨਾਮ *",
+        "auth_lbl_email": "ਈਮੇਲ ਪਤਾ *",
+        "auth_lbl_pass": "ਖਾਤਾ ਪਾਸਵਰਡ ਬਣਾਓ *",
+        "auth_lbl_phone": "ਮੋਬਾਈਲ / ਵਟਸਐਪ ਨੰਬਰ (ਰੋਜ਼ਾਨਾ ਅਲਰਟ ਲਈ) *",
+        "auth_lbl_acres": "ਖੇਤ ਦਾ ਆਕਾਰ (ਏਕੜ) *",
+        "auth_lbl_crop": "ਮੁੱਖ ਫਸਲ ਚੱਕਰ *",
+        "auth_lbl_source": "ਟਿਊਬਵੈੱਲ / ਸਿੰਚਾਈ ਦਾ ਸਾਧਨ *",
+        "auth_btn_register": "ਖਾਤਾ ਰਜਿਸਟਰ ਕਰੋ ਅਤੇ ਵਾਟਰ ਪਾਸ ਪ੍ਰਾਪਤ ਕਰੋ",
+        "auth_note": "🔒 ਸਾਰੀ ਖੇਤੀ ਜਾਣਕਾਰੀ ਪ੍ਰਮਾਣਿਕ ਟੈਲੀਮੈਟਰੀ ਲਈ ਪੰਜਾਬ ਐਗ-ਸਟੈਕ ਵਿੱਚ ਸੁਰੱਖਿਅਤ ਦਰਜ ਕੀਤੀ ਜਾਂਦੀ ਹੈ।",
+        "login_lbl_email": "ਰਜਿਸਟਰਡ ਈਮੇਲ ਪਤਾ *",
+        "login_lbl_pass": "ਖਾਤਾ ਪਾਸਵਰਡ *",
+        "login_btn_submit": "ਖੇਤ ਖਾਤੇ ਵਿੱਚ ਸਿੱਧਾ ਸਾਈਨ-ਇਨ ਕਰੋ",
+        "login_no_acc_text": "ਕੀ ਅਜੇ ਤੱਕ ਖਾਤਾ ਨਹੀਂ ਹੈ?",
+        "login_switch_register": "ਇੱਥੇ ਆਪਣਾ ਖੇਤ ਰਜਿਸਟਰ ਕਰੋ",
         "guide_hero_title": "📘 ਪੰਜਾਬ ਫਾਰਮ ਵਾਟਰ ਵਾਚ · ਯੂਜ਼ਰ ਗਾਈਡ",
         "guide_hero_subtitle": "ਨਾਸਾ ਉਪਗ੍ਰਹਿ ਡੇਟਾ ਦੀ ਵਰਤੋਂ ਕਰਕੇ ਧਰਤੀ ਹੇਠਲੇ ਪਾਣੀ ਦੀ ਨਿਗਰਾਨੀ, ਸਹੀ ਸਿੰਚਾਈ ਯੋਜਨਾ ਅਤੇ ਬਿਜਲੀ ਬਚਾਉਣ ਲਈ ਕਿਸਾਨਾਂ ਅਤੇ ਖੇਤੀਬਾੜੀ ਅਧਿਕਾਰੀਆਂ ਲਈ ਸੰਪੂਰਨ ਗਾਈਡ।",
         "guide_nav_1": "🛰️ ਉਪਗ੍ਰਹਿ ਨਕਸ਼ਾ",
@@ -717,6 +765,73 @@ function applyLanguage(lang) {
     // Re-render current telemetry in memory if available
     if (lastTelemetryData) {
         renderTelemetry(lastTelemetryData);
+    }
+
+    // Dynamically re-translate active auth modal feedback if visible
+    const regFeedback = document.getElementById("registerFeedback");
+    if (regFeedback && regFeedback.style.display !== "none") {
+        const email = regFeedback.getAttribute("data-email") || (document.getElementById("authEmail") ? document.getElementById("authEmail").value.trim() : "");
+        if (email) {
+            const fb = getRegistrationFeedbackHTML(email, lang);
+            regFeedback.innerHTML = `
+                <div class="feedback-title">${fb.title}</div>
+                <div class="feedback-desc">${fb.desc}</div>
+                <div style="margin-top:14px; text-align:center;">
+                    <button type="button" class="btn-auth-primary" id="btnGoToLoginAfterReg" style="display:inline-block; width:auto; padding:10px 22px; font-size:0.88rem; background:linear-gradient(135deg, #0284C7, #0369A1); color:white; border:none; border-radius:8px; cursor:pointer; font-weight:700;">
+                        ${fb.btnText}
+                    </button>
+                </div>
+            `;
+            const btnGo = document.getElementById("btnGoToLoginAfterReg");
+            if (btnGo) {
+                btnGo.addEventListener("click", () => {
+                    const tabLoginAuth = document.getElementById("tabLoginAuth");
+                    const loginEmail = document.getElementById("loginEmail");
+                    if (tabLoginAuth) tabLoginAuth.click();
+                    if (loginEmail) loginEmail.value = email;
+                });
+            }
+        }
+    }
+
+    const loginFeedback = document.getElementById("loginFeedback");
+    if (loginFeedback && loginFeedback.style.display !== "none") {
+        const state = loginFeedback.getAttribute("data-feedback-state");
+        const email = loginFeedback.getAttribute("data-email") || (document.getElementById("loginEmail") ? document.getElementById("loginEmail").value.trim() : "");
+        if (state === "activated") {
+            const okTitle = lang === "pa" 
+                ? "✅ ਖਾਤਾ ਸਫਲਤਾਪੂਰਵਕ ਐਕਟੀਵੇਟ ਹੋ ਗਿਆ!" 
+                : (lang === "hi" 
+                    ? "✅ खाता सफलतापूर्वक सक्रिय (Activated) हुआ!" 
+                    : "✅ Account Successfully Activated!");
+            const okDesc = lang === "pa" 
+                ? `ਤੁਹਾਡਾ ਕਿਸਾਨ ਖਾਤਾ <b>${email}</b> ਹੁਣ ਐਕਟੀਵੇਟ ਹੋ ਗਿਆ ਹੈ। ਕਿਰਪਾ ਕਰਕੇ ਹੇਠਾਂ ਆਪਣਾ ਪਾਸਵਰਡ ਦਰਜ ਕਰਕੇ ਲੌਗਇਨ ਕਰੋ।` 
+                : (lang === "hi" 
+                    ? `आपका किसान खाता <b>${email}</b> अब सक्रिय हो चुका है। कृपया नीचे अपना सही पासवर्ड दर्ज करके लॉगिन करें।` 
+                    : `Your farmer account <b>${email}</b> is now verified and active. Please enter your password below to sign in.`);
+            loginFeedback.innerHTML = `
+                <div class="feedback-title">${okTitle}</div>
+                <div class="feedback-desc">${okDesc}</div>
+            `;
+        } else if (state) {
+            const errs = getLoginErrorMessages(email, lang);
+            if (state === "unverified") {
+                loginFeedback.innerHTML = `
+                    <div class="feedback-title">${errs.unverifiedTitle}</div>
+                    <div class="feedback-desc">${errs.unverifiedDesc}</div>
+                `;
+            } else if (state === "invalid_pass") {
+                loginFeedback.innerHTML = `
+                    <div class="feedback-title">${errs.invalidPassTitle}</div>
+                    <div class="feedback-desc">${errs.invalidPassDesc}</div>
+                `;
+            } else if (state === "not_found") {
+                loginFeedback.innerHTML = `
+                    <div class="feedback-title">${errs.notFoundTitle}</div>
+                    <div class="feedback-desc">${errs.notFoundDesc}</div>
+                `;
+            }
+        }
     }
 
     // Refresh telemetry in new language
@@ -1807,9 +1922,22 @@ function initAuth() {
             if (loginFeedback) {
                 loginFeedback.style.display = "block";
                 loginFeedback.className = "auth-feedback auth-feedback-success";
+                loginFeedback.setAttribute("data-feedback-state", "activated");
+                loginFeedback.setAttribute("data-email", verifyEmail);
+                const l = currentLang || "en";
+                const okTitle = l === "pa" 
+                    ? "✅ ਖਾਤਾ ਸਫਲਤਾਪੂਰਵਕ ਐਕਟੀਵੇਟ ਹੋ ਗਿਆ!" 
+                    : (l === "hi" 
+                        ? "✅ खाता सफलतापूर्वक सक्रिय (Activated) हुआ!" 
+                        : "✅ Account Successfully Activated!");
+                const okDesc = l === "pa" 
+                    ? `ਤੁਹਾਡਾ ਕਿਸਾਨ ਖਾਤਾ <b>${verifyEmail}</b> ਹੁਣ ਐਕਟੀਵੇਟ ਹੋ ਗਿਆ ਹੈ। ਕਿਰਪਾ ਕਰਕੇ ਹੇਠਾਂ ਆਪਣਾ ਪਾਸਵਰਡ ਦਰਜ ਕਰਕੇ ਲੌਗਇਨ ਕਰੋ।` 
+                    : (l === "hi" 
+                        ? `आपका किसान खाता <b>${verifyEmail}</b> अब सक्रिय हो चुका है। कृपया नीचे अपना सही पासवर्ड दर्ज करके लॉगिन करें।` 
+                        : `Your farmer account <b>${verifyEmail}</b> is now verified and active. Please enter your password below to sign in.`);
                 loginFeedback.innerHTML = `
-                    <div class="feedback-title">✅ खाता सफलतापूर्वक सक्रिय (Activated) हुआ!</div>
-                    <div class="feedback-desc">आपका किसान खाता <b>${verifyEmail}</b> अब सक्रिय हो चुका है। कृपया नीचे अपना सही पासवर्ड दर्ज करके लॉगिन करें।</div>
+                    <div class="feedback-title">${okTitle}</div>
+                    <div class="feedback-desc">${okDesc}</div>
                 `;
             }
         }, 350);
@@ -1938,25 +2066,107 @@ function updateUserUI(user) {
     }
 }
 
+// Trilingual Registration Feedback Message Builder
+function getRegistrationFeedbackHTML(email, lang) {
+    const l = lang || currentLang || "en";
+    if (l === "pa") {
+        return {
+            title: "✉️ ਸੁਰੱਖਿਆ ਤਸਦੀਕ ਈਮੇਲ ਭੇਜੀ ਗਈ!",
+            desc: `ਸੁਰੱਖਿਅਤ ਖਾਤਾ ਐਕਟੀਵੇਸ਼ਨ ਲਿੰਕ ਤੁਹਾਡੇ ਅਧਿਕਾਰਤ ਈਮੇਲ <b>${email}</b> 'ਤੇ ਭੇਜ ਦਿੱਤਾ ਗਿਆ ਹੈ।<br><br>🔒 <b>ਗੋਪਨੀਯਤਾ ਅਤੇ ਸੁਰੱਖਿਆ ਨਿਯਮ:</b> ਤੁਹਾਡੇ ਡੇਟਾ ਦੀ ਸੁਰੱਖਿਆ ਲਈ, ਖਾਤਾ ਕੇਵਲ ਤੁਹਾਡੀ ਨਿੱਜੀ ਈਮੇਲ ਇਨਬਾਕਸ ਵਿੱਚ ਭੇਜੇ ਗਏ ਲਿੰਕ ਤੋਂ ਹੀ ਐਕਟੀਵੇਟ ਕੀਤਾ ਜਾ ਸਕਦਾ ਹੈ।<br><br>ਕਿਰਪਾ ਕਰਕੇ ਆਪਣਾ <b>ਈਮੇਲ ਇਨਬਾਕਸ</b> (ਜਾਂ ਸਪੈਮ ਫੋਲਡਰ) ਖੋਲ੍ਹੋ ਅਤੇ ਲਿੰਕ 'ਤੇ ਕਲਿੱਕ ਕਰਕੇ ਖਾਤਾ ਚਾਲੂ ਕਰੋ। ਪੁਸ਼ਟੀ ਤੋਂ ਬਾਅਦ <b>Direct Sign-In</b> ਤੋਂ ਲੌਗਇਨ ਕਰੋ।`,
+            btnText: "🔑 Direct Sign-In 'ਤੇ ਜਾਓ (Go to Sign-In)"
+        };
+    }
+    if (l === "hi") {
+        return {
+            title: "✉️ सुरक्षा सत्यापन ईमेल भेजा गया!",
+            desc: `सत्यापन लिंक आपके आधिकारिक ईमेल <b>${email}</b> पर सफलतापूर्वक भेज दिया गया है।<br><br>🔒 <b>गोपनीयता व सुरक्षा निर्देश:</b> आपकी सुरक्षा और डेटा अखंडता के लिए, खाता केवल आपकी व्यक्तिगत ईमेल इनबॉक्स में भेजे गए सुरक्षित लिंक से ही सक्रिय किया जा सकता है।<br><br>कृपया अपना <b>ईमेल इनबॉक्स</b> (या स्पैम/जंक फ़ोल्डर) खोलें और लिंक पर क्लिक करके खाता सक्रिय करें। पुष्टि के पश्चात <b>Direct Sign-In</b> से लॉगिन करें।`,
+            btnText: "🔑 Direct Sign-In पर जाएं (Go to Sign-In)"
+        };
+    }
+    return {
+        title: "✉️ Security Verification Email Dispatched!",
+        desc: `A secure account activation link has been sent to your official email <b>${email}</b>.<br><br>🔒 <b>Security & Privacy Policy:</b> To protect your data and prevent unauthorized registrations, your account can only be activated by clicking the link sent directly to your private email inbox.<br><br>Please check your <b>Email Inbox</b> (or Spam folder) and click the activation link. Once verified, log in using <b>Direct Sign-In</b>.`,
+        btnText: "🔑 Proceed to Direct Sign-In"
+    };
+}
+
+// Trilingual Login Error Messages
+function getLoginErrorMessages(email, lang) {
+    const l = lang || currentLang || "en";
+    if (l === "pa") {
+        return {
+            unverifiedTitle: "⚠️ ਖਾਤਾ ਅਜੇ ਐਕਟੀਵੇਟ ਨਹੀਂ ਹੈ (Activation Required)",
+            unverifiedDesc: `ਤੁਹਾਡਾ ਕਿਸਾਨ ਖਾਤਾ ਰਜਿਸਟਰਡ ਹੈ ਪਰ ਅਜੇ ਐਕਟੀਵੇਟ ਨਹੀਂ ਹੋਇਆ। ਕਿਰਪਾ ਕਰਕੇ ਆਪਣੇ ਈਮੇਲ ਇਨਬਾਕਸ (<b>${email}</b>) ਵਿੱਚ ਭੇਜੇ ਗਏ ਲਿੰਕ 'ਤੇ ਕਲਿੱਕ ਕਰਕੇ ਖਾਤਾ ਐਕਟੀਵੇਟ ਕਰੋ।`,
+            invalidPassTitle: "❌ ਗਲਤ ਪਾਸਵਰਡ (Invalid Password)",
+            invalidPassDesc: "ਦਰਜ ਕੀਤਾ ਗਿਆ ਪਾਸਵਰਡ ਗਲਤ ਹੈ। ਕਿਰਪਾ ਕਰਕੇ ਸਹੀ ਪਾਸਵਰਡ ਦਰਜ ਕਰੋ।",
+            notFoundTitle: "❌ ਖਾਤਾ ਨਹੀਂ ਮਿਲਿਆ (User Not Found)",
+            notFoundDesc: `ਈਮੇਲ '<b>${email}</b>' ਰਜਿਸਟਰਡ ਨਹੀਂ ਹੈ। ਕਿਰਪਾ ਕਰਕੇ ਪਹਿਲਾਂ 'New Farmer Registration' ਟੈਬ ਵਿੱਚ ਜਾ ਕੇ ਰਜਿਸਟਰ ਕਰੋ।`
+        };
+    }
+    if (l === "hi") {
+        return {
+            unverifiedTitle: "⚠️ खाता अभी सक्रिय नहीं है (Activation Required)",
+            unverifiedDesc: `आपका किसान खाता पंजीकृत है लेकिन अभी सक्रिय नहीं हुआ है। कृपया अपने ईमेल इनबॉक्स (<b>${email}</b>) में भेजे गए लिंक पर क्लिक करके खाता सक्रिय करें।`,
+            invalidPassTitle: "❌ गलत पासवर्ड (Invalid Password)",
+            invalidPassDesc: "दर्ज किया गया पासवर्ड गलत है। कृपया सही पासवर्ड प्रविष्ट करें।",
+            notFoundTitle: "❌ खाता नहीं मिला (User Not Found)",
+            notFoundDesc: `ईमेल '<b>${email}</b>' पंजीकृत नहीं है। कृपया पहले 'New Farmer Registration' टैब से पंजीकरण करें।`
+        };
+    }
+    return {
+        unverifiedTitle: "⚠️ Account Not Activated Yet (Activation Required)",
+        unverifiedDesc: `Your farmer account is registered but pending activation. Please check your email inbox at <b>${email}</b> and click the verification link sent there before signing in.`,
+        invalidPassTitle: "❌ Invalid Password",
+        invalidPassDesc: "The password you entered is incorrect. Please enter the correct password.",
+        notFoundTitle: "❌ Account Not Found",
+        notFoundDesc: `Email '<b>${email}</b>' is not registered. Please register your farm first under 'New Farmer Registration'.`
+    };
+}
+
 // Client-Side Transactional Verification Email Dispatch via EmailJS
 async function sendClientVerificationEmail(email, name, verifyUrl) {
     try {
+        const userLang = currentLang || "en";
+        let emailMsg = "";
+        if (userLang === "pa") {
+            emailMsg = `ਸਤਿ ਸ੍ਰੀ ਅਕਾਲ ${name || 'ਕਿਸਾਨ ਸਾਥੀ'},\n\nਪੰਜਾਬ ਫਾਰਮ ਵਾਟਰ ਵਾਚ ਵਿੱਚ ਤੁਹਾਡਾ ਸੁਆਗਤ ਹੈ।\n\nਆਪਣੇ ਖਾਤੇ ਨੂੰ ਸੁਰੱਖਿਅਤ ਢੰਗ ਨਾਲ ਐਕਟੀਵੇਟ ਕਰਨ ਲਈ ਹੇਠਾਂ ਦਿੱਤੇ ਲਿੰਕ 'ਤੇ ਕਲਿੱਕ ਕਰੋ:\n${verifyUrl}\n\nਧੰਨਵਾਦ,\nਟੀਮ ਪੰਜਾਬ ਫਾਰਮ ਵਾਟਰ ਵਾਚ`;
+        } else if (userLang === "hi") {
+            emailMsg = `नमस्ते ${name || 'किसान साथी'},\n\nपंजाब फार्म वाटर वॉच में आपका स्वागत है।\n\nअपने खाते को सुरक्षित रूप से सक्रिय (Activate) करने के लिए नीचे दिए गए लिंक पर क्लिक करें:\n${verifyUrl}\n\nधन्यवाद,\nटीम पंजाब फार्म वाटर वॉच`;
+        } else {
+            emailMsg = `Hello ${name || 'Farmer'},\n\nWelcome to Punjab Farm Water Watch.\n\nTo securely activate your farmer account and unlock NASA SMAP satellite telemetry, please click the link below:\n${verifyUrl}\n\nBest regards,\nPunjab Farm Water Watch Team`;
+        }
+
         const payload = {
             service_id: "service_vshdx6m",
             template_id: "template_70yzbhi",
             user_id: "7QVPtO4Sw7ckfLZKe",
             template_params: {
-                to_name: name || "Farmer",
                 name: name || "Farmer",
+                to_name: name || "Farmer",
+                user_name: name || "Farmer",
+                farmer_name: name || "Farmer",
                 email: email,
                 to_email: email,
                 user_email: email,
                 to: email,
-                from_name: "Punjab Farm Water Watch",
                 reply_to: "support@punjabfarms.gov.in",
+                from_name: "Punjab Farm Water Watch",
                 verification_link: verifyUrl,
+                verify_link: verifyUrl,
                 verify_url: verifyUrl,
-                message: `नमस्ते ${name || 'किसान साथी'},\n\nपंजाब फार्म वाटर वॉच में आपका स्वागत है। अपने खाते को सुरक्षित रूप से सक्रिय करने के लिए नीचे दिए गए लिंक पर क्लिक करें:\n\n${verifyUrl}\n\nसुरक्षा कारणों से सत्यापन पूर्ण होने तक खाता निष्क्रिय रहेगा।`
+                activation_link: verifyUrl,
+                link: verifyUrl,
+                url: verifyUrl,
+                message: emailMsg,
+                user_message: `Activation Link: ${verifyUrl}`,
+                content: `Activation Link: ${verifyUrl}`,
+                body: `Activation Link: ${verifyUrl}`,
+                description: `Activation Link: ${verifyUrl}`,
+                html_message: `<p>Activate Account:</p><p><a href="${verifyUrl}">${verifyUrl}</a></p>`,
+                html: `<p>Activate Account:</p><p><a href="${verifyUrl}">${verifyUrl}</a></p>`,
+                code: verifyUrl,
+                token: verifyUrl,
+                otp: verifyUrl
             }
         };
 
@@ -2094,19 +2304,17 @@ function setupAuthListeners() {
                 if (data.status === "pending_verification") {
                     const authPasswordEl = document.getElementById("authPassword");
                     if (authPasswordEl) authPasswordEl.value = "";
+                    const fb = getRegistrationFeedbackHTML(email, currentLang);
                     if (feedback) {
                         feedback.style.display = "block";
                         feedback.className = "auth-feedback auth-feedback-warning";
+                        feedback.setAttribute("data-email", email);
                         feedback.innerHTML = `
-                            <div class="feedback-title">✉️ सुरक्षा सत्यापन ईमेल भेजा गया!</div>
-                            <div class="feedback-desc">
-                                सत्यापन लिंक आपके आधिकारिक ईमेल <b>${email}</b> पर भेज दिया गया है।<br><br>
-                                🔒 <b>गोपनीयता व सुरक्षा निर्देश:</b> आपकी सुरक्षा के लिए, खाता केवल आपकी व्यक्तिगत ईमेल इनबॉक्स में भेजे गए लिंक से ही सक्रिय किया जा सकता है।<br><br>
-                                कृपया अपना <b>ईमेल इनबॉक्स</b> खोलें और लिंक पर क्लिक करके खाता सक्रिय करें। पुष्टि के पश्चात <b>Direct Sign-In</b> से लॉगिन करें।
-                            </div>
+                            <div class="feedback-title">${fb.title}</div>
+                            <div class="feedback-desc">${fb.desc}</div>
                             <div style="margin-top:14px; text-align:center;">
                                 <button type="button" class="btn-auth-primary" id="btnGoToLoginFastAPI" style="display:inline-block; width:auto; padding:10px 22px; font-size:0.88rem; background:linear-gradient(135deg, #0284C7, #0369A1); color:white; border:none; border-radius:8px; cursor:pointer; font-weight:700;">
-                                    🔑 Direct Sign-In पर जाएं (Go to Sign-In)
+                                    ${fb.btnText}
                                 </button>
                             </div>
                         `;
@@ -2137,9 +2345,10 @@ function setupAuthListeners() {
                     if (feedback) {
                         feedback.style.display = "block";
                         feedback.className = "auth-feedback auth-feedback-error";
+                        const errHead = currentLang === "pa" ? "❌ ਰਜਿਸਟ੍ਰੇਸ਼ਨ ਅਸਫਲ" : (currentLang === "en" ? "❌ Registration Error" : "❌ पंजीकरण विफल");
                         feedback.innerHTML = `
-                            <div class="feedback-title">❌ पंजीकरण विफल (Registration Error)</div>
-                            <div class="feedback-desc">${data.message || "कृपया अपनी प्रविष्टियों की जाँच करें।"}</div>
+                            <div class="feedback-title">${errHead}</div>
+                            <div class="feedback-desc">${data.message || (currentLang === "pa" ? "ਕਿਰਪਾ ਕਰਕੇ ਆਪਣੇ ਵੇਰਵੇ ਜਾਂਚੋ।" : (currentLang === "en" ? "Please check your entries." : "कृपया अपनी प्रविष्टियों की जाँच करें।"))}</div>
                         `;
                     }
                 }
@@ -2185,16 +2394,14 @@ function setupAuthListeners() {
                     if (feedback) {
                         feedback.style.display = "block";
                         feedback.className = "auth-feedback auth-feedback-warning";
+                        feedback.setAttribute("data-email", email);
+                        const fb = getRegistrationFeedbackHTML(email, currentLang);
                         feedback.innerHTML = `
-                            <div class="feedback-title">✉️ सुरक्षा सत्यापन ईमेल भेजा गया!</div>
-                            <div class="feedback-desc">
-                                सत्यापन लिंक आपके आधिकारिक ईमेल <b>${email}</b> पर सफलतापूर्वक भेज दिया गया है।<br><br>
-                                🔒 <b>गोपनीयता व सुरक्षा निर्देश:</b> आपकी सुरक्षा और डेटा अखंडता के लिए, खाता केवल आपकी व्यक्तिगत ईमेल इनबॉक्स में भेजे गए सुरक्षित लिंक से ही सक्रिय किया जा सकता है।<br><br>
-                                कृपया अपना <b>ईमेल इनबॉक्स</b> (या स्पैम/जंक फ़ोल्डर) खोलें और लिंक पर क्लिक करके खाता सक्रिय करें। पुष्टि के पश्चात <b>Direct Sign-In</b> से लॉगिन करें।
-                            </div>
+                            <div class="feedback-title">${fb.title}</div>
+                            <div class="feedback-desc">${fb.desc}</div>
                             <div style="margin-top:14px; text-align:center;">
                                 <button type="button" class="btn-auth-primary" id="btnGoToLoginAfterReg" style="display:inline-block; width:auto; padding:10px 22px; font-size:0.88rem; background:linear-gradient(135deg, #0284C7, #0369A1); color:white; border:none; border-radius:8px; cursor:pointer; font-weight:700;">
-                                    🔑 Direct Sign-In पर जाएं (Go to Sign-In)
+                                    ${fb.btnText}
                                 </button>
                             </div>
                         `;
@@ -2214,9 +2421,11 @@ function setupAuthListeners() {
                 if (feedback) {
                     feedback.style.display = "block";
                     feedback.className = "auth-feedback auth-feedback-error";
+                    const netTitle = currentLang === "pa" ? "❌ ਨੈੱਟਵਰਕ ਸਮੱਸਿਆ (Network Error)" : (currentLang === "hi" ? "❌ नेटवर्क समस्या (Network Error)" : "❌ Network Connection Error");
+                    const netDesc = currentLang === "pa" ? "ਸਰਵਰ ਨਾਲ ਸੰਪਰਕ ਨਹੀਂ ਹੋ ਸਕਿਆ। ਕਿਰਪਾ ਕਰਕੇ ਆਪਣਾ ਇੰਟਰਨੈਟ ਕਨੈਕਸ਼ਨ ਜਾਂਚੋ।" : (currentLang === "hi" ? "सर्वर से संपर्क नहीं हो पाया। कृपया अपना इंटरनेट कनेक्शन जाँचें।" : "Unable to reach server. Please check your internet connection.");
                     feedback.innerHTML = `
-                        <div class="feedback-title">❌ नेटवर्क समस्या (Network Error)</div>
-                        <div class="feedback-desc">सर्वर से संपर्क नहीं हो पाया। कृपया अपना इंटरनेट कनेक्शन जाँचें।</div>
+                        <div class="feedback-title">${netTitle}</div>
+                        <div class="feedback-desc">${netDesc}</div>
                     `;
                 }
             } finally {
@@ -2263,24 +2472,27 @@ function setupAuthListeners() {
                     }
                     openProfileModal();
                 } else if (data.status === "unverified") {
+                    const errs = getLoginErrorMessages(email, currentLang);
                     if (feedback) {
                         feedback.style.display = "block";
                         feedback.className = "auth-feedback auth-feedback-warning";
+                        feedback.setAttribute("data-feedback-state", "unverified");
+                        feedback.setAttribute("data-email", email);
                         feedback.innerHTML = `
-                            <div class="feedback-title">⚠️ खाता अभी निष्क्रिय है (Verification Pending)</div>
-                            <div class="feedback-desc">
-                                आपका खाता सुरक्षित रूप से पंजीकृत है लेकिन अभी सक्रिय नहीं हुआ है।<br>
-                                कृपया अपने ईमेल इनबॉक्स पर भेजा गया सक्रियण लिंक खोलकर पुष्टि करें।
-                            </div>
+                            <div class="feedback-title">${errs.unverifiedTitle}</div>
+                            <div class="feedback-desc">${errs.unverifiedDesc}</div>
                         `;
                     }
                 } else {
+                    const errs = getLoginErrorMessages(email, currentLang);
                     if (feedback) {
                         feedback.style.display = "block";
                         feedback.className = "auth-feedback auth-feedback-error";
+                        feedback.setAttribute("data-feedback-state", "not_found");
+                        feedback.setAttribute("data-email", email);
                         feedback.innerHTML = `
-                            <div class="feedback-title">❌ लॉगिन विफल (Login Error)</div>
-                            <div class="feedback-desc">${data.message || "गलत ईमेल अथवा पासवर्ड। कृपया पुनः प्रयास करें।"}</div>
+                            <div class="feedback-title">${errs.notFoundTitle}</div>
+                            <div class="feedback-desc">${data.message || errs.invalidPassDesc}</div>
                         `;
                     }
                 }
@@ -2292,31 +2504,29 @@ function setupAuthListeners() {
                     const matched = localUsers[email.toLowerCase()];
                     if (matched) {
                         if (matched.password !== password) {
+                            const errs = getLoginErrorMessages(email, currentLang);
                             if (feedback) {
                                 feedback.style.display = "block";
                                 feedback.className = "auth-feedback auth-feedback-error";
+                                feedback.setAttribute("data-feedback-state", "invalid_pass");
+                                feedback.setAttribute("data-email", email);
                                 feedback.innerHTML = `
-                                    <div class="feedback-title">❌ गलत पासवर्ड (Invalid Password)</div>
-                                    <div class="feedback-desc">दर्ज किया गया पासवर्ड अमान्य है। कृपया सही पासवर्ड दर्ज करें।</div>
+                                    <div class="feedback-title">${errs.invalidPassTitle}</div>
+                                    <div class="feedback-desc">${errs.invalidPassDesc}</div>
                                 `;
                             }
                             return;
                         }
                         if (!matched.email_verified) {
-                            const verifyUrl = `${window.location.origin}/?verify_email=${encodeURIComponent(email)}&token=${matched.verification_token || "tok"}`;
+                            const errs = getLoginErrorMessages(email, currentLang);
                             if (feedback) {
                                 feedback.style.display = "block";
                                 feedback.className = "auth-feedback auth-feedback-warning";
+                                feedback.setAttribute("data-feedback-state", "unverified");
+                                feedback.setAttribute("data-email", email);
                                 feedback.innerHTML = `
-                                    <div class="feedback-title">⚠️ खाता सक्रिय नहीं है (Account Not Active)</div>
-                                    <div class="feedback-desc">
-                                        आपका खाता पंजीकृत है लेकिन अभी सक्रिय नहीं हुआ है। सीधे लॉगिन से पहले खाता सक्रिय करें:
-                                    </div>
-                                    <div style="margin-top:10px; text-align:center;">
-                                        <a href="${verifyUrl}" style="display:inline-block; font-weight:700; background:#0284C7; color:white; padding:8px 14px; border-radius:6px; text-decoration:none; font-size:0.84rem;">
-                                            🔗 खाता सक्रिय करें (Activate Account)
-                                        </a>
-                                    </div>
+                                    <div class="feedback-title">${errs.unverifiedTitle}</div>
+                                    <div class="feedback-desc">${errs.unverifiedDesc}</div>
                                 `;
                             }
                             return;
@@ -2374,22 +2584,15 @@ function setupAuthListeners() {
                     }
 
                     // Strict rejection: Random credentials or incorrect password NEVER log in!
+                    const errs = getLoginErrorMessages(email, currentLang);
                     if (feedback) {
                         feedback.style.display = "block";
                         feedback.className = "auth-feedback auth-feedback-error";
-                        const errTitle = currentLang === "pa" 
-                            ? "❌ ਗਲਤ ਪ੍ਰਮਾਣ ਪੱਤਰ (Login Failed)" 
-                            : (currentLang === "hi" 
-                                ? "❌ अमान्य क्रेडेंशियल (Login Failed)" 
-                                : "❌ Invalid Credentials (Login Failed)");
-                        const errDesc = currentLang === "pa" 
-                            ? "ਗਲਤ ਈਮੇਲ ਜਾਂ ਪਾਸਵਰਡ। ਜੇਕਰ ਤੁਹਾਡਾ ਖਾਤਾ ਨਹੀਂ ਹੈ, ਤਾਂ ਕਿਰਪਾ ਕਰਕੇ ਪਹਿਲਾਂ 'Register' ਟੈਬ ਵਿੱਚ ਜਾ ਕੇ ਰਜਿਸਟਰ ਕਰੋ।" 
-                            : (currentLang === "hi" 
-                                ? "गलत ईमेल अथवा पासवर्ड। यदि आपके पास खाता नहीं है, तो कृपया पहले 'Register' टैब में जाकर नया खाता बनाएं।" 
-                                : "Invalid email address or password. If you do not have an account yet, please register your farm first.");
+                        feedback.setAttribute("data-feedback-state", "not_found");
+                        feedback.setAttribute("data-email", email);
                         feedback.innerHTML = `
-                            <div class="feedback-title">${errTitle}</div>
-                            <div class="feedback-desc">${errDesc}</div>
+                            <div class="feedback-title">${errs.notFoundTitle}</div>
+                            <div class="feedback-desc">${errs.notFoundDesc}</div>
                         `;
                     }
                     return;
@@ -2397,9 +2600,11 @@ function setupAuthListeners() {
                 if (feedback) {
                     feedback.style.display = "block";
                     feedback.className = "auth-feedback auth-feedback-error";
+                    const netTitle = currentLang === "pa" ? "❌ ਨੈੱਟਵਰਕ ਸਮੱਸਿਆ (Network Error)" : (currentLang === "hi" ? "❌ नेटवर्क समस्या (Network Error)" : "❌ Network Connection Error");
+                    const netDesc = currentLang === "pa" ? "ਸਰਵਰ ਨਾਲ ਸੰਪਰਕ ਨਹੀਂ ਹੋ ਸਕਿਆ। ਕਿਰਪਾ ਕਰਕੇ ਆਪਣਾ ਇੰਟਰਨੈਟ ਕਨੈਕਸ਼ਨ ਜਾਂਚੋ।" : (currentLang === "hi" ? "सर्वर से संपर्क नहीं हो पाया। कृपया अपना इंटरनेट कनेक्शन जाँचें।" : "Unable to reach server. Please check your internet connection.");
                     feedback.innerHTML = `
-                        <div class="feedback-title">❌ नेटवर्क समस्या (Network Error)</div>
-                        <div class="feedback-desc">सर्वर से संपर्क नहीं हो पाया। कृपया अपना इंटरनेट कनेक्शन जाँचें।</div>
+                        <div class="feedback-title">${netTitle}</div>
+                        <div class="feedback-desc">${netDesc}</div>
                     `;
                 }
             } finally {

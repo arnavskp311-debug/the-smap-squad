@@ -15,7 +15,7 @@
     <link rel="apple-touch-icon" href="/logo.png">
     <!-- Leaflet CSS -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-    <link rel="stylesheet" href="/style.css?v=2026.11.15.v9">
+    <link rel="stylesheet" href="/style.css?v=2026.11.15.v10">
     <!-- Chart.js & Leaflet JS -->
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -1349,41 +1349,41 @@
             </div>
 
             <div class="auth-tabs">
-                <button type="button" class="auth-tab active" id="tabRegisterAuth" data-mode="register">📝 New Farmer Registration</button>
-                <button type="button" class="auth-tab" id="tabLoginAuth" data-mode="login">🔑 Direct Sign-In</button>
+                <button type="button" class="auth-tab active" id="tabRegisterAuth" data-mode="register" data-i18n="tab_register_auth">📝 New Farmer Registration</button>
+                <button type="button" class="auth-tab" id="tabLoginAuth" data-mode="login" data-i18n="tab_login_auth">🔑 Direct Sign-In</button>
             </div>
 
             <!-- Farmer Registration Panel (Mandatory Data Capture) -->
             <form class="auth-panel" id="panelRegisterAuth">
                 <div class="form-row-2">
                     <div class="auth-input-group">
-                        <label for="authName">Full Name *</label>
+                        <label for="authName" data-i18n="auth_lbl_name">Full Name *</label>
                         <input type="text" id="authName" class="auth-input" placeholder="e.g. Gurpreet Singh" required>
                     </div>
                     <div class="auth-input-group">
-                        <label for="authEmail">Email Address *</label>
+                        <label for="authEmail" data-i18n="auth_lbl_email">Email Address *</label>
                         <input type="email" id="authEmail" class="auth-input" placeholder="farmer@punjab.gov.in" required>
                     </div>
                 </div>
 
                 <div class="form-row-2">
                     <div class="auth-input-group">
-                        <label for="authPassword">Create Account Password *</label>
+                        <label for="authPassword" data-i18n="auth_lbl_pass">Create Account Password *</label>
                         <input type="password" id="authPassword" class="auth-input" placeholder="Min 6 characters (e.g. ••••••••)" minlength="6" required>
                     </div>
                     <div class="auth-input-group">
-                        <label for="authPhone">Mobile / WhatsApp No. (For Daily Telemetry Alerts) *</label>
+                        <label for="authPhone" data-i18n="auth_lbl_phone">Mobile / WhatsApp No. (For Daily Telemetry Alerts) *</label>
                         <input type="tel" id="authPhone" class="auth-input" placeholder="+91 98765 43210" required>
                     </div>
                 </div>
 
                 <div class="form-row-3">
                     <div class="auth-input-group">
-                        <label for="authAcres">Farm Holding (Acres) *</label>
+                        <label for="authAcres" data-i18n="auth_lbl_acres">Farm Holding (Acres) *</label>
                         <input type="number" id="authAcres" class="auth-input" min="0.5" max="500" step="0.5" value="10" required>
                     </div>
                     <div class="auth-input-group">
-                        <label for="authCrop">Primary Cropping Cycle *</label>
+                        <label for="authCrop" data-i18n="auth_lbl_crop">Primary Cropping Cycle *</label>
                         <select id="authCrop" class="auth-input">
                             <option value="Wheat & Direct Seeded Rice (DSR)">Wheat &amp; DSR Rice</option>
                             <option value="Conventional Puddled Rice">Conventional Rice</option>
@@ -1393,7 +1393,7 @@
                         </select>
                     </div>
                     <div class="auth-input-group">
-                        <label for="authSource">Tubewell / Irrigation Type *</label>
+                        <label for="authSource" data-i18n="auth_lbl_source">Tubewell / Irrigation Type *</label>
                         <select id="authSource" class="auth-input">
                             <option value="Deep Submersible Tubewell">Deep Submersible Tubewell</option>
                             <option value="Canal Lift + Tubewell">Canal Lift + Tubewell</option>
@@ -1406,9 +1406,9 @@
                 <div id="registerFeedback" style="display:none;"></div>
 
                 <button type="submit" class="btn-auth-primary" id="btnRegisterSubmit">
-                    <span>Register Account &amp; Unlock Water Pass</span>
+                    <span data-i18n="auth_btn_register">Register Account &amp; Unlock Water Pass</span>
                 </button>
-                <div class="auth-helper-note">
+                <div class="auth-helper-note" data-i18n="auth_note">
                     🔒 All farm information is securely cataloged into Punjab Ag-Stack for authentic telemetry.
                 </div>
             </form>
@@ -1416,23 +1416,23 @@
             <!-- Direct Sign-In Panel (Registered Users Only) -->
             <form class="auth-panel" id="panelLoginAuth" style="display: none;">
                 <div class="auth-input-group" style="margin-bottom: 16px;">
-                    <label for="loginEmail">Registered Email Address *</label>
+                    <label for="loginEmail" data-i18n="login_lbl_email">Registered Email Address *</label>
                     <input type="email" id="loginEmail" class="auth-input" placeholder="e.g. yourname@punjabfarms.gov.in" required>
                 </div>
                 <div class="auth-input-group" style="margin-bottom: 16px;">
-                    <label for="loginPassword">Account Password *</label>
+                    <label for="loginPassword" data-i18n="login_lbl_pass">Account Password *</label>
                     <input type="password" id="loginPassword" class="auth-input" placeholder="Enter your secret password" required>
                 </div>
 
                 <div id="loginFeedback" style="display:none;"></div>
 
                 <button type="submit" class="btn-auth-primary" id="btnLoginSubmit">
-                    <span>Direct Sign-In to Farm Account</span>
+                    <span data-i18n="login_btn_submit">Direct Sign-In to Farm Account</span>
                 </button>
 
                 <div style="text-align:center; margin-top:14px; font-size:0.8rem; color:var(--text-muted);">
-                    Don't have an account yet? 
-                    <button type="button" id="linkSwitchToRegister" style="background:none; border:none; color:var(--accent-teal); cursor:pointer; font-weight:700; text-decoration:underline;">
+                    <span data-i18n="login_no_acc_text">Don't have an account yet?</span> 
+                    <button type="button" id="linkSwitchToRegister" style="background:none; border:none; color:var(--accent-teal); cursor:pointer; font-weight:700; text-decoration:underline;" data-i18n="login_switch_register">
                         Register Your Farm Here
                     </button>
                 </div>
@@ -1572,6 +1572,6 @@
         </button>
     </nav>
 
-    <script src="/app.js?v=2026.11.15.v9"></script>
+    <script src="/app.js?v=2026.11.15.v10"></script>
 </body>
 </html>
