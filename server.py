@@ -293,8 +293,42 @@ def send_verification_email(email: str, name: str, token: str) -> dict:
     verify_url = f"http://localhost:8000/api/auth/verify?email={email}&token={token}"
     resend_key = os.getenv("RESEND_API_KEY", "").strip()
     email_key = os.getenv("EMAIL_API_KEY", "").strip() or resend_key
+    emailjs_pub = os.getenv("EMAILJS_PUBLIC_KEY", "").strip()
+    emailjs_priv = os.getenv("EMAILJS_PRIVATE_KEY", "").strip()
+    emailjs_service = os.getenv("EMAILJS_SERVICE_ID", "").strip()
+    emailjs_template = os.getenv("EMAILJS_TEMPLATE_ID", "").strip()
 
     print(f"\n[AUTH EMAIL DISPATCH] To: {email} | Name: {name}\n[AUTH VERIFY LINK] {verify_url}\n")
+
+    # 0. EmailJS REST API
+    if emailjs_pub and emailjs_priv and emailjs_service and emailjs_template:
+        try:
+            req = urllib.request.Request(
+                "https://api.emailjs.com/api/v1.0/email/send",
+                data=json.dumps({
+                    "user_id": emailjs_pub,
+                    "accessToken": emailjs_priv,
+                    "service_id": emailjs_service,
+                    "template_id": emailjs_template,
+                    "template_params": {
+                        "to_name": name,
+                        "to_email": email,
+                        "verification_link": verify_url,
+                        "verify_url": verify_url
+                    }
+                }).encode("utf-8"),
+                headers={
+                    "Content-Type": "application/json",
+                    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)",
+                    "Origin": "http://localhost:8000"
+                },
+                method="POST"
+            )
+            with urllib.request.urlopen(req, timeout=5) as resp:
+                print(f"[AUTH EMAIL SUCCESS] EmailJS email dispatched to {email}")
+                return {"sent": True, "method": "emailjs", "verify_url": verify_url}
+        except Exception as e:
+            print("[AUTH EMAIL NOTICE] EmailJS delivery attempt:", e)
 
     # 1. Resend API (starts with re_)
     if resend_key and resend_key.startswith("re_"):
