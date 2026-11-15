@@ -1448,8 +1448,24 @@ function initMap() {
                     });
                 }
             }).addTo(map);
+
+            // Invalidate size once GeoJSON is loaded
+            setTimeout(() => { if (map) map.invalidateSize(true); }, 150);
         })
         .catch(err => console.error("Error loading GeoJSON:", err));
+
+    // Force Leaflet recalculations to ensure tiles render immediately on mobile & iOS
+    setTimeout(() => { if (map) map.invalidateSize(true); }, 50);
+    setTimeout(() => { if (map) map.invalidateSize(true); }, 250);
+    setTimeout(() => { if (map) map.invalidateSize(true); }, 750);
+    setTimeout(() => { if (map) map.invalidateSize(true); }, 1500);
+
+    window.addEventListener("resize", () => {
+        if (map) map.invalidateSize();
+    });
+    window.addEventListener("orientationchange", () => {
+        setTimeout(() => { if (map) map.invalidateSize(true); }, 300);
+    });
 }
 
 // Map Fullscreen Toggle System

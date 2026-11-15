@@ -5898,30 +5898,51 @@ input {
         border-radius: 14px !important;
     }
 
-    /* UPGRADE 5: Generous Map Height (56dvh) with rounded corners & smooth touch panning */
+    /* UPGRADE 5: Mobile Robust Map Height & Toolbar (385px explicit height + flex column) */
     .map-wrapper {
         order: -1 !important;
-        margin: 4px 0 10px 0 !important;
+        display: flex !important;
+        flex-direction: column !important;
+        width: 100% !important;
+        height: 385px !important;
+        min-height: 385px !important;
+        margin: 4px 0 12px 0 !important;
         border-radius: 16px !important;
         overflow: hidden !important;
         border: 1px solid var(--border-color) !important;
         position: relative !important;
+        background: #0b1120 !important;
+        box-sizing: border-box !important;
+    }
+
+    [data-theme="light"] .map-wrapper {
+        background: #F1F5F9 !important;
+        border-color: #CBD5E1 !important;
     }
 
     #map {
-        height: 56dvh !important;
-        min-height: 350px !important;
-        max-height: 520px !important;
+        flex: 1 1 auto !important;
+        height: calc(100% - 44px) !important;
+        min-height: 335px !important;
         width: 100% !important;
-        border-radius: 16px !important;
+        border-radius: 0 0 16px 16px !important;
         touch-action: pan-x pan-y !important;
+        z-index: 1 !important;
     }
 
     .map-layer-toolbar {
+        position: relative !important;
+        top: auto !important;
+        left: auto !important;
+        right: auto !important;
+        z-index: 10 !important;
         display: flex !important;
+        height: 44px !important;
+        min-height: 44px !important;
+        box-sizing: border-box !important;
         align-items: center !important;
         justify-content: space-between !important;
-        padding: 6px 10px !important;
+        padding: 4px 10px !important;
         background: var(--card-bg) !important;
         border-bottom: 1px solid var(--border-color) !important;
         gap: 6px !important;
