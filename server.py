@@ -203,6 +203,11 @@ class AuthRequest(BaseModel):
     irrigation_source: Optional[str] = "Submersible Tubewell"
 
 
+class VerifyOtpRequest(BaseModel):
+    email: str
+    otp: str
+
+
 USERS_FILE = "data/users.json"
 
 
@@ -368,6 +373,56 @@ def send_verification_email(email: str, name: str, token: str) -> dict:
     return {"sent": False, "method": "simulation", "verify_url": verify_url}
 
 
+def format_e164_phone(phone: str) -> str:
+    cleaned = re.sub(r"[^\d+]", "", str(phone).strip())
+    if cleaned.startswith("+"):
+        return cleaned
+    if len(cleaned) == 10:
+        return f"+91{cleaned}"
+    if len(cleaned) == 12 and cleaned.startswith("91"):
+        return f"+{cleaned}"
+    return f"+91{cleaned}"
+
+
+def send_sms_otp(phone: str, otp: str, name: str = "Farmer") -> dict:
+    import urllib.request
+    formatted_phone = format_e164_phone(phone)
+    brevo_key = os.getenv("BREVO_API_KEY", "").strip() or os.getenv("EMAIL_API_KEY", "").strip()
+
+    print(f"\n=======================================================")
+    print(f"[SMS DISPATCH] To: {formatted_phone} | Name: {name}")
+    print(f"[SMS 6-DIGIT OTP] {otp}")
+    print(f"=======================================================\n")
+
+    if brevo_key:
+        try:
+            sms_payload = json.dumps({
+                "type": "transactional",
+                "unicodeEnabled": True,
+                "sender": "FarmWatch",
+                "recipient": formatted_phone,
+                "content": f"पंजाब फार्म वाटर वॉच: आपका सुरक्षा सत्यापन कोड (OTP) {otp} है। यह 10 मिनट के लिए मान्य है।"
+            }).encode("utf-8")
+
+            req = urllib.request.Request(
+                "https://api.brevo.com/v3/transactionalSMS/send",
+                data=sms_payload,
+                headers={
+                    "api-key": brevo_key,
+                    "Content-Type": "application/json",
+                    "Accept": "application/json"
+                },
+                method="POST"
+            )
+            with urllib.request.urlopen(req, timeout=5) as resp:
+                print(f"[SMS SUCCESS] Brevo SMS OTP dispatched to {formatted_phone}")
+                return {"sent": True, "method": "brevo_sms", "recipient": formatted_phone}
+        except Exception as e:
+            print("[SMS BREVO NOTICE] Brevo SMS dispatch attempt:", e)
+
+    return {"sent": False, "method": "simulation", "recipient": formatted_phone}
+
+
 @app.post("/api/auth/signup")
 def signup_user(req: AuthRequest):
     users = load_users()
@@ -393,8 +448,9 @@ def signup_user(req: AuthRequest):
             "message": "सुरक्षा के लिए पासवर्ड कम से कम 6 अक्षरों का होना आवश्यक है।"
         }
 
-    # 4. Generate secure verification token
+    # 4. Generate secure verification token & SMS OTP
     verification_token = secrets.token_hex(20)
+    sms_otp = f"{secrets.randbelow(900000) + 100000}"
     initials = "".join([part[0].upper() for part in (req.name or "PB").split()[:2]]) or "PB"
     member_id = f"PWW-2026-PB-{random.randint(1000, 9999)}"
     acres = float(req.farm_acres or 10.0)
@@ -419,22 +475,73 @@ def signup_user(req: AuthRequest):
         "password_hash": hash_password(password),
         "is_active": False,
         "email_verified": False,
+        "sms_verified": False,
+        "sms_otp": sms_otp,
         "verification_token": verification_token,
         "created_at": datetime.now().isoformat()
     }
     users[email] = user
     save_users(users)
 
-    # Trigger transactional verification email
-    delivery = send_verification_email(email, user["name"], verification_token)
+    # Trigger transactional verification email directly to inbox
+    send_verification_email(email, user["name"], verification_token)
+
+    # Trigger SMS OTP verification directly to phone
+    send_sms_otp(user["phone"], sms_otp, user["name"])
+
+    masked_phone = user["phone"]
+    if len(masked_phone) >= 10:
+        masked_phone = f"+91 ******{masked_phone[-4:]}"
 
     return {
         "status": "pending_verification",
         "verification_status": "pending_verification",
-        "message": f"सुरक्षा सत्यापन: आपके ईमेल ({email}) पर वेरिफिकेशन लिंक भेजा गया है! जब तक आप अपने इनबॉक्स में जाकर लिंक से पुष्टि नहीं करते, खाता सक्रिय नहीं होगा।",
+        "message": f"सुरक्षा सत्यापन: सत्यापन लिंक आपके ईमेल ({email}) पर भेजा गया है और 6-अंकों का OTP कोड आपके मोबाइल ({masked_phone}) पर SMS किया गया है।",
         "email": email,
-        "delivery_status": "dispatched" if delivery.get("sent") else "pending_smtp"
+        "phone_masked": masked_phone,
+        "has_otp": True
     }
+
+
+@app.post("/api/auth/verify-otp")
+def verify_otp_endpoint(req: VerifyOtpRequest):
+    users = load_users()
+    email = req.email.strip().lower()
+    if email not in users:
+        return {"status": "error", "message": "उपयोगकर्ता नहीं मिला। कृपया पहले पंजीकरण करें।"}
+    user = users[email]
+    submitted = str(req.otp).strip()
+    actual = str(user.get("sms_otp", "")).strip()
+
+    if not actual or submitted != actual:
+        return {"status": "error", "message": "गलत OTP कोड! कृपया SMS में प्राप्त सही 6 अंकों का कोड दर्ज करें।"}
+
+    user["is_active"] = True
+    user["sms_verified"] = True
+    user["email_verified"] = True
+    user["sms_otp"] = None
+    save_users(users)
+
+    safe_user = {k: v for k, v in user.items() if k not in ("password_hash", "verification_token", "sms_otp")}
+    return {
+        "status": "success",
+        "message": "OTP सफलतापूर्वक सत्यापित हुआ! आपका किसान वाटर पास सक्रिय हो चुका है।",
+        "user": safe_user
+    }
+
+
+@app.post("/api/auth/resend-otp")
+def resend_otp_endpoint(req: VerifyOtpRequest):
+    users = load_users()
+    email = req.email.strip().lower()
+    if email not in users:
+        return {"status": "error", "message": "ईमेल पंजीकृत नहीं है।"}
+    user = users[email]
+    new_otp = f"{secrets.randbelow(900000) + 100000}"
+    user["sms_otp"] = new_otp
+    save_users(users)
+    send_sms_otp(user["phone"], new_otp, user["name"])
+    return {"status": "success", "message": "नया OTP कोड आपके मोबाइल पर पुनः भेज दिया गया है!"}
 
 
 @app.get("/api/auth/verify")

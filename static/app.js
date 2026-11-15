@@ -1377,15 +1377,110 @@ function setupAuthListeners() {
                 if (data.status === "pending_verification") {
                     if (feedback) {
                         feedback.style.display = "block";
-                        feedback.className = "auth-feedback auth-feedback-warning";
+                        feedback.className = "sms-otp-card";
                         feedback.innerHTML = `
-                            <div class="feedback-title">✉️ सत्यापन ईमेल भेज दिया गया है!</div>
-                            <div class="feedback-desc">
-                                हमने आपके ईमेल <b>${email}</b> पर खाता सक्रिय करने का सुरक्षित लिंक भेज दिया है।<br>
-                                कृपया अपना <b>ईमेल इनबॉक्स</b> (या स्पैम/जंक फ़ोल्डर) खोलें और उस लिंक पर क्लिक करके खाता सक्रिय करें।<br>
-                                <span style="font-size:0.85rem; opacity:0.9;">सुरक्षा कारणों से सत्यापन पूर्ण होने तक खाता निष्क्रिय रहेगा।</span>
+                            <div class="otp-header">
+                                <span class="otp-icon">📱</span>
+                                <div>
+                                    <div class="otp-title">मोबाइल SMS सत्यापन (Enter SMS OTP)</div>
+                                    <div class="otp-subtitle">सुरक्षा के लिए आपके मोबाइल नंबर <b>${data.phone_masked || phone}</b> पर 6-अंकों का गुप्त कोड (OTP) भेजा गया है।</div>
+                                </div>
+                            </div>
+                            <div class="otp-input-container">
+                                <input type="text" id="smsOtpInput" maxlength="6" placeholder="6-अंकों का OTP कोड" class="sms-otp-field" autofocus autocomplete="one-time-code" />
+                                <button type="button" id="btnVerifyOtp" class="btn-verify-otp">
+                                    <span>सत्यापित करें (Verify OTP)</span>
+                                </button>
+                            </div>
+                            <div id="otpErrorFeedback" style="display:none;" class="auth-feedback auth-feedback-error"></div>
+                            <div class="otp-footer">
+                                <span>SMS नहीं मिला? </span>
+                                <button type="button" id="btnResendOtp" class="btn-resend-link">पुनः OTP भेजें (Resend SMS)</button>
                             </div>
                         `;
+
+                        if (submitBtn) submitBtn.style.display = "none";
+
+                        const btnVerifyOtp = document.getElementById("btnVerifyOtp");
+                        const smsOtpInput = document.getElementById("smsOtpInput");
+                        const otpError = document.getElementById("otpErrorFeedback");
+                        const btnResendOtp = document.getElementById("btnResendOtp");
+
+                        if (smsOtpInput) smsOtpInput.focus();
+
+                        const handleVerify = async () => {
+                            const otpVal = smsOtpInput ? smsOtpInput.value.trim() : "";
+                            if (!otpVal || otpVal.length < 6) {
+                                if (otpError) {
+                                    otpError.style.display = "block";
+                                    otpError.innerHTML = `<div class="feedback-title">⚠️ अमान्य कोड</div><div class="feedback-desc">कृपया पूरा 6-अंकों का SMS OTP दर्ज करें।</div>`;
+                                }
+                                return;
+                            }
+                            if (btnVerifyOtp) btnVerifyOtp.innerHTML = `<span>⏳ जाँच हो रही है...</span>`;
+                            try {
+                                const vRes = await fetch("/api/auth/verify-otp", {
+                                    method: "POST",
+                                    headers: { "Content-Type": "application/json" },
+                                    body: JSON.stringify({ email, otp: otpVal })
+                                });
+                                const vData = await vRes.json();
+                                if (vData.status === "success" && vData.user) {
+                                    currentUser = vData.user;
+                                    localStorage.setItem("pww_user", JSON.stringify(currentUser));
+                                    updateUserUI(currentUser);
+                                    unlockAuthGate();
+                                    if (currentUser.district) {
+                                        const select = document.getElementById("districtSelect");
+                                        if (select) {
+                                            select.value = currentUser.district;
+                                            loadDistrictData(currentUser.district);
+                                        }
+                                    }
+                                    openProfileModal();
+                                } else {
+                                    if (otpError) {
+                                        otpError.style.display = "block";
+                                        otpError.innerHTML = `<div class="feedback-title">❌ सत्यापन विफल</div><div class="feedback-desc">${vData.message || "गलत OTP कोड। कृपया पुनः प्रयास करें।"}</div>`;
+                                    }
+                                    if (btnVerifyOtp) btnVerifyOtp.innerHTML = `<span>सत्यापित करें (Verify OTP)</span>`;
+                                }
+                            } catch (err) {
+                                console.error("OTP verification error:", err);
+                                if (otpError) {
+                                    otpError.style.display = "block";
+                                    otpError.innerHTML = `<div class="feedback-title">❌ नेटवर्क समस्या</div><div class="feedback-desc">सर्वर से संपर्क नहीं हो पाया।</div>`;
+                                }
+                                if (btnVerifyOtp) btnVerifyOtp.innerHTML = `<span>सत्यापित करें (Verify OTP)</span>`;
+                            }
+                        };
+
+                        if (btnVerifyOtp) btnVerifyOtp.addEventListener("click", handleVerify);
+                        if (smsOtpInput) {
+                            smsOtpInput.addEventListener("keypress", (ev) => {
+                                if (ev.key === "Enter") {
+                                    ev.preventDefault();
+                                    handleVerify();
+                                }
+                            });
+                        }
+
+                        if (btnResendOtp) {
+                            btnResendOtp.addEventListener("click", async () => {
+                                btnResendOtp.innerText = "⏳ भेजा जा रहा है...";
+                                try {
+                                    await fetch("/api/auth/resend-otp", {
+                                        method: "POST",
+                                        headers: { "Content-Type": "application/json" },
+                                        body: JSON.stringify({ email, otp: "" })
+                                    });
+                                    btnResendOtp.innerText = "✅ नया OTP भेजा गया!";
+                                    setTimeout(() => { btnResendOtp.innerText = "पुनः OTP भेजें (Resend SMS)"; }, 5000);
+                                } catch (e) {
+                                    btnResendOtp.innerText = "पुनः OTP भेजें (Resend SMS)";
+                                }
+                            });
+                        }
                     }
                 } else if (data.status === "success" && data.user) {
                     currentUser = data.user;

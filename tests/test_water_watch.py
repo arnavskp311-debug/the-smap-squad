@@ -206,6 +206,18 @@ def test_auth_system():
     from server import verify_user_email
     verify_user_email(req.email, token)
 
+    # Test SMS OTP verification endpoint
+    from server import verify_otp_endpoint, VerifyOtpRequest
+    otp_req_bad = VerifyOtpRequest(email=req.email, otp="000000")
+    bad_res = verify_otp_endpoint(otp_req_bad)
+    assert bad_res["status"] == "error"
+
+    saved_otp = saved_user["sms_otp"]
+    otp_req_good = VerifyOtpRequest(email=req.email, otp=saved_otp)
+    good_res = verify_otp_endpoint(otp_req_good)
+    assert good_res["status"] == "success"
+    assert good_res["user"]["email"] == req.email
+
     # Test login with newly registered and verified email succeeds
     req.password = "farmer123"
     login_res2 = login_user(req)
