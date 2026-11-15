@@ -15,15 +15,15 @@
     <link rel="apple-touch-icon" href="/logo.png">
     <!-- Leaflet CSS -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-    <link rel="stylesheet" href="/style.css?v=2026.11.15.v17">
-    <!-- Immediate Cache Purge for Version v17 -->
+    <link rel="stylesheet" href="/style.css?v=2026.11.15.v18">
+    <!-- Immediate Cache Purge for Version v18 -->
     <script>
-        if (localStorage.getItem("pww_cache_v") !== "2026.11.15.v17") {
-            localStorage.setItem("pww_cache_v", "2026.11.15.v17");
+        if (localStorage.getItem("pww_cache_v") !== "2026.11.15.v18") {
+            localStorage.setItem("pww_cache_v", "2026.11.15.v18");
             if ("caches" in window) {
                 caches.keys().then(keys => {
                     keys.forEach(k => {
-                        if (!k.includes("v2026.11.15.v14")) caches.delete(k);
+                        if (!k.includes("v2026.11.15.v18")) caches.delete(k);
                     });
                 });
             }
@@ -209,7 +209,7 @@
         <!-- TAB 1: LIVE MISSION CONTROL -->
         <section id="tab-overview" class="tab-content active">
             <div class="grid-top">
-                <div class="map-wrapper">
+                <div class="map-wrapper" id="mapWrapper">
                     <div class="map-layer-toolbar">
                         <span class="map-layer-label" data-i18n="lbl_basemap">🛰️ Basemap Layer:</span>
                         <div class="layer-pill-group">
@@ -218,6 +218,10 @@
                             <button type="button" class="layer-pill-btn" data-layer-id="nasaGibs" data-i18n="layer_nasa_gibs">🛰️ NASA GIBS Live</button>
                             <button type="button" class="layer-pill-btn" data-layer-id="nasaBlackMarble" data-i18n="layer_black_marble">🌌 NASA Black Marble</button>
                         </div>
+                        <button type="button" id="btnMapFullscreen" class="map-fullscreen-btn" title="Toggle Fullscreen Map">
+                            <span id="fullscreenIcon">⛶</span>
+                            <span id="fullscreenText">Full Screen</span>
+                        </button>
                     </div>
                     <div id="map"></div>
                 </div>
@@ -2078,6 +2082,6 @@
         </button>
     </nav>
 
-    <script src="/app.js?v=2026.11.15.v17"></script>
+    <script src="/app.js?v=2026.11.15.v18"></script>
 </body>
 </html>

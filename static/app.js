@@ -23,6 +23,7 @@ document.addEventListener("DOMContentLoaded", () => {
     initDrawer();
     initTabs();
     initMap();
+    initMapFullscreen();
     initNasaStatus();
     initNetworkMonitor();
     initServiceWorker();
@@ -1080,6 +1081,34 @@ function initMap() {
         .catch(err => console.error("Error loading GeoJSON:", err));
 }
 
+// Map Fullscreen Toggle System
+function initMapFullscreen() {
+    const btn = document.getElementById("btnMapFullscreen");
+    const wrapper = document.getElementById("mapWrapper");
+    const icon = document.getElementById("fullscreenIcon");
+    const text = document.getElementById("fullscreenText");
+    if (!btn || !wrapper) return;
+
+    function toggleFullscreen() {
+        const isFull = wrapper.classList.toggle("is-fullscreen");
+        if (icon) icon.innerText = isFull ? "✕" : "⛶";
+        if (text) {
+            text.innerText = isFull 
+                ? (currentLang === "hi" ? "फुलस्क्रीन बंद करें" : (currentLang === "pa" ? "ਫੁੱਲਸਕ੍ਰੀਨ ਬੰਦ ਕਰੋ" : "Exit Fullscreen"))
+                : (currentLang === "hi" ? "फुल स्क्रीन" : (currentLang === "pa" ? "ਪੂਰੀ ਸਕ੍ਰੀਨ" : "Full Screen"));
+        }
+        setTimeout(() => { if (map) map.invalidateSize(); }, 120);
+        setTimeout(() => { if (map) map.invalidateSize(); }, 320);
+    }
+
+    btn.addEventListener("click", toggleFullscreen);
+    document.addEventListener("keydown", (e) => {
+        if (e.key === "Escape" && wrapper.classList.contains("is-fullscreen")) {
+            toggleFullscreen();
+        }
+    });
+}
+
 // Select district from map or UI
 function selectDistrict(name) {
     const hotspotSelect = document.getElementById("hotspotSelect");
@@ -1369,33 +1398,43 @@ function renderTelemetry(data) {
 // ==========================================
 function getChartThemeColors() {
     const isLight = document.documentElement.getAttribute("data-theme") === "light";
+    if (typeof Chart !== "undefined") {
+        Chart.defaults.color = isLight ? "#1C2D5B" : "#EFF8FF";
+        Chart.defaults.borderColor = isLight ? "rgba(28, 45, 91, 0.15)" : "rgba(199, 225, 212, 0.15)";
+        if (!Chart.defaults.font) Chart.defaults.font = {};
+        Chart.defaults.font.weight = "700";
+    }
     if (isLight) {
         return {
             isLight: true,
-            text: "#1C2D5B",
-            muted: "#3E7D60",
-            grid: "rgba(28, 45, 91, 0.08)",
-            primary: "#3E7D60",          // Forest Sage
-            secondary: "#C7E1D4",        // Soft Mint
-            accent: "#8C7B20",           // Contrast Warm Gold/Cream
-            cream: "#F7F7D5",
+            text: "#1C2D5B",             // High-contrast Midnight Navy (14:1 contrast ratio against white)
+            muted: "#1C2D5B",            // Razor-sharp readable axis text and ticks
+            grid: "rgba(28, 45, 91, 0.14)",
+            primary: "#236B48",          // Deep forest sage green
+            secondary: "#1C2D5B",        // Midnight navy line
+            accent: "#B45309",           // Rich amber ochre (replaces pale cream)
+            saviColor: "#059669",        // Crisp emerald
+            ndwiColor: "#0284C7",        // Rich deep cyan blue
+            cream: "#D97706",
             navy: "#1C2D5B",
-            ice: "#EFF8FF",
-            fillPrimary: "rgba(62, 125, 96, 0.15)",
+            ice: "#0F172A",
+            fillPrimary: "rgba(35, 107, 72, 0.22)",
             tooltipBg: "#FFFFFF",
-            tooltipBorder: "#C7E1D4",
-            barWater: "rgba(62, 125, 96, 0.85)",
-            barPower: "rgba(28, 45, 91, 0.80)"
+            tooltipBorder: "#1C2D5B",
+            barWater: "rgba(35, 107, 72, 0.88)",
+            barPower: "rgba(28, 45, 91, 0.88)"
         };
     } else {
         return {
             isLight: false,
-            text: "#EFF8FF",
-            muted: "#C7E1D4",
-            grid: "rgba(199, 225, 212, 0.12)",
+            text: "#EFF8FF",             // High-contrast Ice White
+            muted: "#EFF8FF",            // Visible ticks & labels
+            grid: "rgba(199, 225, 212, 0.14)",
             primary: "#3E7D60",          // Forest Sage
             secondary: "#C7E1D4",        // Soft Mint
             accent: "#F7F7D5",           // Vanilla Cream
+            saviColor: "#84CC16",
+            ndwiColor: "#38BDF8",
             cream: "#F7F7D5",
             navy: "#1C2D5B",
             ice: "#EFF8FF",
@@ -1477,14 +1516,14 @@ function renderForecastChart(chartData) {
             scales: {
                 x: {
                     grid: { color: c.grid },
-                    ticks: { color: c.muted, maxTicksLimit: 7, font: { size: 11 } }
+                    ticks: { color: c.text, maxTicksLimit: 7, font: { weight: "600", size: 11 } }
                 },
                 y: {
                     min: 0.0,
                     max: 0.65,
                     grid: { color: c.grid },
-                    ticks: { color: c.muted, font: { size: 11 } },
-                    title: { display: true, text: "Soil Moisture (m³/m³)", color: c.muted, font: { weight: "600", size: 11 } }
+                    ticks: { color: c.text, font: { weight: "600", size: 11 } },
+                    title: { display: true, text: "Soil Moisture (m³/m³)", color: c.text, font: { weight: "700", size: 11 } }
                 }
             }
         }
@@ -1581,6 +1620,12 @@ function updateSoilPrescription() {
 // VISUAL ANALYTICS & GRAPHS DASHBOARD FUNCTIONS
 // ==========================================================================
 
+function renderDashboard(data) {
+    if (!data) return;
+    renderDashboardKPIs(data);
+    renderDashboardCharts(data);
+}
+
 function renderDashboardKPIs(data) {
     const dName = document.getElementById("dashDistrictName");
     if (dName) dName.innerText = data.district;
@@ -1644,15 +1689,15 @@ function renderDashMoistureChart(cd) {
                     data: rzPoints,
                     borderColor: c.primary,
                     backgroundColor: c.fillPrimary,
-                    borderWidth: 2.5,
+                    borderWidth: 2.8,
                     pointRadius: 0,
                     tension: 0.2
                 },
                 {
                     label: "Surface SM (0–5cm)",
                     data: surfPoints,
-                    borderColor: c.secondary,
-                    borderWidth: 2.0,
+                    borderColor: c.isLight ? c.navy : c.secondary,
+                    borderWidth: 2.5,
                     pointRadius: 0,
                     tension: 0.2
                 },
@@ -1661,25 +1706,25 @@ function renderDashMoistureChart(cd) {
                     data: fcPoints,
                     borderColor: c.accent,
                     borderDash: [5, 5],
-                    borderWidth: 2.5,
-                    pointRadius: 3,
+                    borderWidth: 2.8,
+                    pointRadius: 3.5,
                     pointBackgroundColor: c.accent,
                     tension: 0.2
                 },
                 {
                     label: "Field Capacity (0.36)",
                     data: new Array(labels.length).fill(0.36),
-                    borderColor: "rgba(62, 125, 96, 0.6)",
+                    borderColor: c.isLight ? "#059669" : "rgba(62, 125, 96, 0.8)",
                     borderDash: [3, 3],
-                    borderWidth: 1.5,
+                    borderWidth: 1.8,
                     pointRadius: 0
                 },
                 {
                     label: "Wilting Point (0.10)",
                     data: new Array(labels.length).fill(0.10),
-                    borderColor: "rgba(224, 82, 82, 0.6)",
+                    borderColor: c.isLight ? "#DC2626" : "rgba(224, 82, 82, 0.8)",
                     borderDash: [3, 3],
-                    borderWidth: 1.5,
+                    borderWidth: 1.8,
                     pointRadius: 0
                 }
             ]
@@ -1688,12 +1733,12 @@ function renderDashMoistureChart(cd) {
             responsive: true,
             maintainAspectRatio: false,
             plugins: {
-                legend: { position: "top", labels: { color: c.text, font: { size: 10 } } },
+                legend: { position: "top", labels: { color: c.text, font: { weight: "700", size: 11 }, padding: 10 } },
                 tooltip: { backgroundColor: c.tooltipBg, titleColor: c.text, bodyColor: c.muted, borderColor: c.tooltipBorder, borderWidth: 1 }
             },
             scales: {
-                x: { grid: { color: c.grid }, ticks: { color: c.muted, maxTicksLimit: 7 } },
-                y: { min: 0.05, max: 0.42, grid: { color: c.grid }, ticks: { color: c.muted }, title: { display: true, text: "m³/m³", color: c.muted } }
+                x: { grid: { color: c.grid }, ticks: { color: c.text, font: { weight: "600", size: 11 }, maxTicksLimit: 7 } },
+                y: { min: 0.05, max: 0.42, grid: { color: c.grid }, ticks: { color: c.text, font: { weight: "600", size: 11 } }, title: { display: true, text: "m³/m³", color: c.text, font: { weight: "700", size: 11 } } }
             }
         }
     });
@@ -1713,7 +1758,7 @@ function renderDashRainChart(cd) {
                 {
                     label: "Daily Precipitation (mm)",
                     data: cd.history_rain,
-                    backgroundColor: c.fillPrimary,
+                    backgroundColor: c.isLight ? "rgba(35, 107, 72, 0.70)" : c.fillPrimary,
                     borderColor: c.primary,
                     borderWidth: 1.5,
                     yAxisID: "y"
@@ -1723,7 +1768,7 @@ function renderDashRainChart(cd) {
                     label: "30d Cumulative Rain (mm)",
                     data: cd.history_cum_rain,
                     borderColor: c.isLight ? c.navy : c.secondary,
-                    borderWidth: 2.2,
+                    borderWidth: 2.5,
                     pointRadius: 0,
                     tension: 0.1,
                     yAxisID: "y1"
@@ -1732,9 +1777,9 @@ function renderDashRainChart(cd) {
                     type: "line",
                     label: "50mm Buffer Threshold",
                     data: new Array(cd.history_dates.length).fill(50),
-                    borderColor: "rgba(224, 82, 82, 0.6)",
+                    borderColor: c.isLight ? "#DC2626" : "rgba(224, 82, 82, 0.8)",
                     borderDash: [4, 4],
-                    borderWidth: 1.5,
+                    borderWidth: 1.8,
                     pointRadius: 0,
                     yAxisID: "y1"
                 }
@@ -1744,13 +1789,13 @@ function renderDashRainChart(cd) {
             responsive: true,
             maintainAspectRatio: false,
             plugins: {
-                legend: { position: "top", labels: { color: c.text, font: { size: 10 } } },
+                legend: { position: "top", labels: { color: c.text, font: { weight: "700", size: 11 }, padding: 10 } },
                 tooltip: { backgroundColor: c.tooltipBg, titleColor: c.text, bodyColor: c.muted, borderColor: c.tooltipBorder, borderWidth: 1 }
             },
             scales: {
-                x: { grid: { color: c.grid }, ticks: { color: c.muted, maxTicksLimit: 7 } },
-                y: { type: "linear", position: "left", min: 0, max: 20, grid: { color: c.grid }, ticks: { color: c.muted }, title: { display: true, text: "Daily mm", color: c.muted } },
-                y1: { type: "linear", position: "right", min: 0, max: 65, grid: { drawOnChartArea: false }, ticks: { color: c.primary }, title: { display: true, text: "Cumul mm", color: c.primary } }
+                x: { grid: { color: c.grid }, ticks: { color: c.text, font: { weight: "700", size: 11 }, maxTicksLimit: 7 } },
+                y: { type: "linear", position: "left", min: 0, max: 20, grid: { color: c.grid }, ticks: { color: c.text, font: { weight: "700", size: 11 } }, title: { display: true, text: "Daily mm", color: c.text, font: { weight: "700", size: 11 } } },
+                y1: { type: "linear", position: "right", min: 0, max: 65, grid: { drawOnChartArea: false }, ticks: { color: c.isLight ? "#1C2D5B" : c.secondary, font: { weight: "700", size: 11 } }, title: { display: true, text: "Cumul mm", color: c.isLight ? "#1C2D5B" : c.secondary, font: { weight: "700", size: 11 } } }
             }
         }
     });
@@ -1773,23 +1818,23 @@ function renderDashVigorChart(cd) {
                     borderColor: c.primary,
                     backgroundColor: c.fillPrimary,
                     fill: true,
-                    borderWidth: 2.2,
+                    borderWidth: 2.8,
                     pointRadius: 0,
                     tension: 0.25
                 },
                 {
                     label: "SAVI (Soil-Adjusted)",
                     data: cd.history_savi,
-                    borderColor: c.secondary,
-                    borderWidth: 2.0,
+                    borderColor: c.saviColor,
+                    borderWidth: 2.5,
                     pointRadius: 0,
                     tension: 0.25
                 },
                 {
                     label: "NDWI (Canopy Water)",
                     data: cd.history_ndwi,
-                    borderColor: c.accent,
-                    borderWidth: 2.0,
+                    borderColor: c.ndwiColor,
+                    borderWidth: 2.5,
                     pointRadius: 0,
                     tension: 0.25
                 }
@@ -1799,12 +1844,12 @@ function renderDashVigorChart(cd) {
             responsive: true,
             maintainAspectRatio: false,
             plugins: {
-                legend: { position: "top", labels: { color: c.text, font: { size: 10 } } },
+                legend: { position: "top", labels: { color: c.text, font: { weight: "700", size: 11 }, padding: 10 } },
                 tooltip: { backgroundColor: c.tooltipBg, titleColor: c.text, bodyColor: c.muted, borderColor: c.tooltipBorder, borderWidth: 1 }
             },
             scales: {
-                x: { grid: { color: c.grid }, ticks: { color: c.muted, maxTicksLimit: 7 } },
-                y: { min: 0.15, max: 0.65, grid: { color: c.grid }, ticks: { color: c.muted }, title: { display: true, text: "Spectral Index", color: c.muted } }
+                x: { grid: { color: c.grid }, ticks: { color: c.text, font: { weight: "700", size: 11 }, maxTicksLimit: 7 } },
+                y: { min: 0.15, max: 0.65, grid: { color: c.grid }, ticks: { color: c.text, font: { weight: "700", size: 11 } }, title: { display: true, text: "Spectral Index", color: c.text, font: { weight: "700", size: 11 } } }
             }
         }
     });
@@ -1825,17 +1870,17 @@ function renderDashEtLstChart(cd) {
                     type: "bar",
                     label: "MODIS ET (mm/day)",
                     data: cd.history_et,
-                    backgroundColor: c.isLight ? "rgba(28, 45, 91, 0.45)" : "rgba(247, 247, 213, 0.50)",
-                    borderColor: c.isLight ? c.navy : c.accent,
-                    borderWidth: 1,
+                    backgroundColor: c.isLight ? "rgba(180, 83, 9, 0.70)" : "rgba(247, 247, 213, 0.50)",
+                    borderColor: c.isLight ? "#B45309" : c.accent,
+                    borderWidth: 1.5,
                     yAxisID: "y"
                 },
                 {
                     type: "line",
                     label: "Landsat LST (°C)",
                     data: cd.history_lst,
-                    borderColor: c.primary,
-                    borderWidth: 2.2,
+                    borderColor: c.isLight ? "#DC2626" : c.primary,
+                    borderWidth: 2.6,
                     pointRadius: 1,
                     tension: 0.2,
                     yAxisID: "y1"
@@ -1846,13 +1891,13 @@ function renderDashEtLstChart(cd) {
             responsive: true,
             maintainAspectRatio: false,
             plugins: {
-                legend: { position: "top", labels: { color: c.text, font: { size: 10 } } },
+                legend: { position: "top", labels: { color: c.text, font: { weight: "700", size: 11 }, padding: 10 } },
                 tooltip: { backgroundColor: c.tooltipBg, titleColor: c.text, bodyColor: c.muted, borderColor: c.tooltipBorder, borderWidth: 1 }
             },
             scales: {
-                x: { grid: { color: c.grid }, ticks: { color: c.muted, maxTicksLimit: 7 } },
-                y: { type: "linear", position: "left", min: 0, max: 8, grid: { color: c.grid }, ticks: { color: c.muted }, title: { display: true, text: "ET mm/day", color: c.muted } },
-                y1: { type: "linear", position: "right", min: 20, max: 45, grid: { drawOnChartArea: false }, ticks: { color: c.primary }, title: { display: true, text: "LST °C", color: c.primary } }
+                x: { grid: { color: c.grid }, ticks: { color: c.text, font: { weight: "700", size: 11 }, maxTicksLimit: 7 } },
+                y: { type: "linear", position: "left", min: 0, max: 8, grid: { color: c.grid }, ticks: { color: c.text, font: { weight: "700", size: 11 } }, title: { display: true, text: "ET mm/day", color: c.text, font: { weight: "700", size: 11 } } },
+                y1: { type: "linear", position: "right", min: 20, max: 45, grid: { drawOnChartArea: false }, ticks: { color: c.isLight ? "#DC2626" : c.primary, font: { weight: "700", size: 11 } }, title: { display: true, text: "LST °C", color: c.isLight ? "#DC2626" : c.primary, font: { weight: "700", size: 11 } } }
             }
         }
     });
@@ -1871,7 +1916,7 @@ function renderDashStressDonut(sc) {
             labels: ["SMAP Moisture (40%)", "GPM Rain (30%)", "MODIS ET (20%)", "Landsat LST (10%)"],
             datasets: [{
                 data: [sc.smap_contrib, sc.rain_contrib, sc.et_contrib, sc.lst_contrib],
-                backgroundColor: [c.primary, c.secondary, c.accent, c.navy],
+                backgroundColor: c.isLight ? ["#236B48", "#1C2D5B", "#0284C7", "#B45309"] : [c.primary, c.secondary, c.accent, c.navy],
                 borderColor: c.isLight ? "#FFFFFF" : "#101C38",
                 borderWidth: 2
             }]
@@ -1881,7 +1926,7 @@ function renderDashStressDonut(sc) {
             maintainAspectRatio: false,
             cutout: "62%",
             plugins: {
-                legend: { position: "bottom", labels: { color: c.text, font: { size: 10 }, boxWidth: 10 } },
+                legend: { position: "bottom", labels: { color: c.text, font: { weight: "700", size: 10 }, boxWidth: 10 } },
                 tooltip: { backgroundColor: c.tooltipBg, titleColor: c.text, bodyColor: c.muted, borderColor: c.tooltipBorder, borderWidth: 1 }
             }
         }
@@ -1902,8 +1947,8 @@ function renderDashBenchmark(benchmarks) {
             datasets: [{
                 label: "Stress Score",
                 data: benchmarks.map(b => b.score),
-                backgroundColor: benchmarks.map((b, i) => [c.primary, c.secondary, c.accent, c.navy][i % 4]),
-                borderRadius: 4
+                backgroundColor: benchmarks.map((b, i) => (c.isLight ? ["#236B48", "#1C2D5B", "#0284C7", "#B45309"][i % 4] : [c.primary, c.secondary, c.accent, c.navy][i % 4])),
+                borderRadius: 0
             }]
         },
         options: {
@@ -1915,8 +1960,8 @@ function renderDashBenchmark(benchmarks) {
                 tooltip: { backgroundColor: c.tooltipBg, titleColor: c.text, bodyColor: c.muted, borderColor: c.tooltipBorder, borderWidth: 1 }
             },
             scales: {
-                x: { min: 0, max: 100, grid: { color: c.grid }, ticks: { color: c.muted } },
-                y: { grid: { display: false }, ticks: { color: c.text, font: { weight: "600" } } }
+                x: { min: 0, max: 100, grid: { color: c.grid }, ticks: { color: c.text, font: { weight: "600", size: 11 } } },
+                y: { grid: { display: false }, ticks: { color: c.text, font: { weight: "700", size: 12 } } }
             }
         }
     });
@@ -1936,15 +1981,15 @@ function renderDashScenario() {
                 {
                     label: "Water (M Litres)",
                     data: [9.0, 7.2, 7.65, 3.6],
-                    backgroundColor: c.barWater,
-                    borderRadius: 4,
+                    backgroundColor: c.isLight ? "rgba(35, 107, 72, 0.85)" : c.barWater,
+                    borderRadius: 0,
                     yAxisID: "y"
                 },
                 {
                     label: "Power Saved (kWh)",
                     data: [0, 1420, 1065, 4260],
-                    backgroundColor: c.barPower,
-                    borderRadius: 4,
+                    backgroundColor: c.isLight ? "rgba(28, 45, 91, 0.85)" : c.barPower,
+                    borderRadius: 0,
                     yAxisID: "y1"
                 }
             ]
@@ -1953,13 +1998,13 @@ function renderDashScenario() {
             responsive: true,
             maintainAspectRatio: false,
             plugins: {
-                legend: { position: "top", labels: { color: c.text, font: { size: 9 }, boxWidth: 10 } },
+                legend: { position: "top", labels: { color: c.text, font: { weight: "700", size: 10 }, boxWidth: 10 } },
                 tooltip: { backgroundColor: c.tooltipBg, titleColor: c.text, bodyColor: c.muted, borderColor: c.tooltipBorder, borderWidth: 1 }
             },
             scales: {
-                x: { grid: { display: false }, ticks: { color: c.text, font: { size: 9 } } },
-                y: { min: 0, max: 10, ticks: { color: c.primary, font: { size: 9 } }, title: { display: true, text: "M Litres", color: c.primary, font: { size: 9 } }, grid: { color: c.grid } },
-                y1: { position: "right", min: 0, max: 5000, grid: { drawOnChartArea: false }, ticks: { color: c.accent, font: { size: 9 } }, title: { display: true, text: "kWh", color: c.accent, font: { size: 9 } } }
+                x: { grid: { display: false }, ticks: { color: c.text, font: { weight: "800", size: 11 } } },
+                y: { min: 0, max: 10, ticks: { color: c.primary, font: { weight: "700", size: 11 } }, title: { display: true, text: "M Litres", color: c.primary, font: { weight: "700", size: 11 } }, grid: { color: c.grid } },
+                y1: { position: "right", min: 0, max: 5000, grid: { drawOnChartArea: false }, ticks: { color: c.isLight ? "#1C2D5B" : c.accent, font: { weight: "700", size: 11 } }, title: { display: true, text: "kWh", color: c.isLight ? "#1C2D5B" : c.accent, font: { weight: "700", size: 11 } } }
             }
         }
     });

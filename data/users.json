@@ -77,7 +77,7 @@
     "water_saved_litres": 1440000,
     "electricity_saved_kwh": 1136,
     "soil_health_grade": "A (Verified via NASA SMAP)",
-    "member_id": "PWW-2026-PB-1658",
+    "member_id": "PWW-2026-PB-8754",
     "provider": "email",
     "avatar_initials": "AS",
     "avatar": null,
@@ -86,7 +86,7 @@
     "email_verified": true,
     "sms_verified": true,
     "sms_otp": null,
-    "verification_token": "e1bcec77878234f16d94493ebca5c065346808de",
-    "created_at": "2026-11-15T17:10:25.638237"
+    "verification_token": "265fe9f3ea70650dd24eb82c125d9986c14ea72c",
+    "created_at": "2026-11-15T18:15:45.929865"
   }
 }
